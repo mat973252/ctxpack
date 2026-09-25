@@ -17,7 +17,11 @@ import type { HandoffInput } from "../core/handoff.js";
  * Pure and deterministic: identical `.ctxpack/` input always produces identical output.
  */
 export function renderGenericHandoff(input: HandoffInput): string {
-  const view = buildView(input);
+  return renderGenericView(buildView(input));
+}
+
+/** View-based render used by the token-budget path; identical layout to renderGenericHandoff. */
+export function renderGenericView(view: HandoffView): string {
   const blocks: string[] = [];
 
   blocks.push(

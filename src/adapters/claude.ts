@@ -17,7 +17,11 @@ import {
  * handoff/brief file is usually written for a Claude Code session. Not an official format.
  */
 export function renderClaudeHandoff(input: HandoffInput): string {
-  const view = buildView(input);
+  return renderClaudeView(buildView(input));
+}
+
+/** View-based render used by the token-budget path; identical layout to renderClaudeHandoff. */
+export function renderClaudeView(view: HandoffView): string {
   const blocks: string[] = [];
 
   blocks.push(

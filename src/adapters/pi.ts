@@ -8,6 +8,7 @@ import {
   isSectionEmpty,
   numbered,
   verificationLine,
+  type HandoffView,
   type Section,
 } from "./view.js";
 
@@ -16,7 +17,11 @@ import {
  * sized to drop straight into a small terminal agent's prompt. Not an official Pi format.
  */
 export function renderPiHandoff(input: HandoffInput): string {
-  const view = buildView(input);
+  return renderPiView(buildView(input));
+}
+
+/** View-based render used by the token-budget path; identical layout to renderPiHandoff. */
+export function renderPiView(view: HandoffView): string {
   const lines: string[] = [];
 
   lines.push(`CTXPACK HANDOFF — ${view.manifest.project} (for a pi session)`);

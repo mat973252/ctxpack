@@ -1,5 +1,12 @@
 import { Command } from "commander";
 import { adapterNames, resolveAdapter, type HandoffAdapter } from "./adapters/index.js";
+import {
+  BudgetExceededError,
+  COMPACT_BUDGET,
+  DEFAULT_BUDGET,
+  renderWithinBudget,
+  resolveBudget,
+} from "./adapters/budget.js";
 import { capturePack, renderCapture } from "./core/capture.js";
 import { loadHandoff } from "./core/handoff.js";
 import { initPack } from "./core/init.js";
@@ -43,8 +50,10 @@ export function createProgram(io: ProgramIO = defaultIO): Command {
     .showHelpAfterError()
     .addHelpText(
       "after",
-      "\nM4: `init`, `status`, `capture` and `handoff` are available.\n" +
-        "`handoff --to <target>` renders an agent-specific format (codex, pi, claude); default is generic.",
+      "\nM5: `init`, `status`, `capture` and `handoff` are available.\n" +
+        "`handoff --to <target>` renders an agent-specific format (codex, pi, claude); default is generic.\n" +
+        `handoff output is capped at an estimated ${DEFAULT_BUDGET} tokens by default; ` +
+        `--compact uses ${COMPACT_BUDGET}, and --budget <n> sets it explicitly (--budget wins over --compact).`,
     );
 
   program
@@ -86,15 +95,32 @@ export function createProgram(io: ProgramIO = defaultIO): Command {
     .command("handoff")
     .description("print a self-contained Markdown handoff for the next agent (read-only)")
     .option("--to <target>", `agent-specific output format (${adapterNames().join(", ")})`)
-    .action((opts: { to?: string }) => {
+    .option("--compact", `shrink the output to ~${COMPACT_BUDGET} est. tokens`)
+    .option(
+      "--budget <tokens>",
+      `estimated token budget (default ${DEFAULT_BUDGET}); overrides --compact`,
+    )
+    .action((opts: { to?: string; compact?: boolean; budget?: string }) => {
       let adapter: HandoffAdapter;
+      let resolved: ReturnType<typeof resolveBudget>;
       try {
         adapter = resolveAdapter(opts.to);
+        resolved = resolveBudget(opts);
       } catch (error) {
         throw new CliError(error instanceof Error ? error.message : String(error));
       }
+      if (resolved.budgetOverridesCompact) {
+        io.stderr(`${NAME}: note: --budget ${resolved.budget} overrides --compact\n`);
+      }
       const input = run(() => loadHandoff({ cwd: io.cwd() }));
-      io.stdout(adapter.render(input));
+      let output: string;
+      try {
+        output = renderWithinBudget(adapter, input, resolved.budget);
+      } catch (error) {
+        if (error instanceof BudgetExceededError) throw new CliError(error.message);
+        throw error;
+      }
+      io.stdout(output);
     });
 
   program.action(() => {

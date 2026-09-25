@@ -1,19 +1,23 @@
 import type { HandoffInput } from "../core/handoff.js";
-import { renderClaudeHandoff } from "./claude.js";
-import { renderCodexHandoff } from "./codex.js";
-import { renderGenericHandoff } from "./generic.js";
-import { renderPiHandoff } from "./pi.js";
+import { renderClaudeHandoff, renderClaudeView } from "./claude.js";
+import { renderCodexHandoff, renderCodexView } from "./codex.js";
+import { renderGenericHandoff, renderGenericView } from "./generic.js";
+import { renderPiHandoff, renderPiView } from "./pi.js";
+import type { HandoffView } from "./view.js";
 
 export interface HandoffAdapter {
   name: string;
+  /** Full-fidelity render straight from a ContextPack (kept for tests and callers). */
   render(input: HandoffInput): string;
+  /** Render an already-planned view; used by the token-budget path with identical layout. */
+  renderView(view: HandoffView): string;
 }
 
 const ADAPTERS: readonly HandoffAdapter[] = [
-  { name: "generic", render: renderGenericHandoff },
-  { name: "codex", render: renderCodexHandoff },
-  { name: "pi", render: renderPiHandoff },
-  { name: "claude", render: renderClaudeHandoff },
+  { name: "generic", render: renderGenericHandoff, renderView: renderGenericView },
+  { name: "codex", render: renderCodexHandoff, renderView: renderCodexView },
+  { name: "pi", render: renderPiHandoff, renderView: renderPiView },
+  { name: "claude", render: renderClaudeHandoff, renderView: renderClaudeView },
 ];
 
 export const DEFAULT_ADAPTER = "generic";

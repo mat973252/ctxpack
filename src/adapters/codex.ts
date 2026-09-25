@@ -9,6 +9,7 @@ import {
   isSectionEmpty,
   numbered,
   verificationLine,
+  type HandoffView,
   type Section,
 } from "./view.js";
 
@@ -18,7 +19,11 @@ import {
  * context follows as compact reference sections. Not an official Codex format.
  */
 export function renderCodexHandoff(input: HandoffInput): string {
-  const view = buildView(input);
+  return renderCodexView(buildView(input));
+}
+
+/** View-based render used by the token-budget path; identical layout to renderCodexHandoff. */
+export function renderCodexView(view: HandoffView): string {
   const blocks: string[] = [];
 
   blocks.push(
