@@ -30,5 +30,5 @@
 - 实际命令与结果：`corepack pnpm install --frozen-lockfile`、lint、build 均通过；Node `v24.19.0` 下测试为 2 文件、13 测试通过；构建产物帮助列出 `init`、`status`，未提前实现后续命令。
 - CLI 端到端：临时 Git 仓库中 `init` 生成 3 个 JSON、4 个 Markdown 和 `snapshots/`，manifest、state、artifacts 的规定字段可解析；修改 state 与 decisions 后再次 `init`，文件哈希不变；`status` 展示目标和障碍且文件哈希不变；非法 JSON、schema 错误、缺失 state 和非 Git 目录都返回非零退出与明确诊断。
 - 范围与许可证：仅修改 M1 所需 CLI、schema、存储、测试与 README；`PROJECT.md`、`docs/`、`LICENSE` 未改，`package.json` 仍为 Apache-2.0。
-- 环境限制：本机另一套 Node `v24.13.0` 运行测试时有 3 个失败；已用独立最小复现确认其 `fs.rmSync` 执行后文件仍存在，而 `fs.unlinkSync` 能删除。相同检出在 Node `v24.19.0` 上 13 个测试全部通过。GitHub Actions 的 Ubuntu CI 结果须在推送后另行核对。
-- 下一步：确认远端 `main` 和 CI 后，按 M2 阶段任务书交给 Devin，完成后再独立验收。
+- 环境限制：本机另一套 Node `v24.13.0` 运行测试时有 3 个失败；已用独立最小复现确认其 `fs.rmSync` 执行后文件仍存在，而 `fs.unlinkSync` 能删除。相同检出在 Node `v24.19.0` 上 13 个测试全部通过。GitHub Actions 在 `main` 提交 `9e3ef99` 上的 Ubuntu CI [运行 36092496599](https://github.com/mat973252/ctxpack/actions/runs/36092496599) 已通过安装、lint、测试、构建和 CLI 冒烟。
+- 下一步：按 M2 阶段任务书交给 Devin，完成后再独立验收。
