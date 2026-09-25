@@ -20,5 +20,5 @@
 - 独立环境：Windows PowerShell，Node `v24.13.0`，Corepack pnpm `10.17.1`；从远端分支创建全新检出目录。
 - 实际命令与结果：`corepack pnpm install --frozen-lockfile` 成功；`corepack pnpm lint` 成功；`corepack pnpm test` 为 1 文件、2 测试通过；`corepack pnpm build` 成功生成 `dist/cli.js`；`node dist/cli.js --help` 显示 `ctxpack` 和 M0 尚未实现打包命令；`node dist/cli.js --version` 输出 `0.0.1`。
 - 范围与许可证：新增 CLI、测试、工具配置和 GitHub Actions CI；`PROJECT.md`、`docs/`、`LICENSE` 未修改，`package.json` 声明 Apache-2.0。未发现提前实现 M1 命令。
-- 已知缺口：本机安装经历 npm 仓库下载超时和自动重试，最终在 5 分 11 秒完成。GitHub Actions 的 Ubuntu CI 结果须在推送 `main` 后另行核对；本机独立运行环境是 Windows，Linux 成功结果来自 Devin 报告。
-- 下一步：确认远端 `main` 和 CI 后，按 `docs/devin-m1.md` 将 M1 单独交给 Devin，完成后再独立验收。
+- 已知缺口：本机安装经历 npm 仓库下载超时和自动重试，最终在 5 分 11 秒完成。本机独立运行环境是 Windows；GitHub Actions 在 `main` 提交 `6121e3b` 上的 Ubuntu CI [运行 36091736673](https://github.com/mat973252/ctxpack/actions/runs/36091736673) 已通过安装、lint、测试、构建和 CLI 冒烟。
+- 下一步：按 `docs/devin-m1.md` 将 M1 单独交给 Devin，完成后再独立验收。
