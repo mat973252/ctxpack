@@ -12,7 +12,7 @@ V0.1 的发布判定以 `PROJECT.md` 的命令和真实 Agent 交接 Demo 为准
 
 许可证：[Apache-2.0](LICENSE)。
 
-## 本地开发（M0）
+## 本地开发
 
 要求：Node.js >= 22，pnpm 由 Corepack 提供（`packageManager` 固定为 pnpm 10.17.1）。
 
@@ -26,4 +26,11 @@ pnpm build                    # tsup -> dist/cli.js
 node dist/cli.js --help       # CLI 冒烟
 ```
 
-当前为 M0 骨架：`ctxpack` 仅打印帮助与版本；`capture`、`normalize`、`handoff` 等命令尚未实现，不会在帮助中伪装为可用。
+## 当前命令（M1）
+
+```bash
+ctxpack init [--project <name>]   # 在当前 Git 仓库创建 .ctxpack/，已有合法文件不会被覆盖
+ctxpack status                    # 只读：输出目标、进度、障碍与下一步
+```
+
+`init` 生成 `.ctxpack/{manifest.json,state.json,artifacts.json,project.md,decisions.md,failures.md,commands.md,snapshots/}`，JSON 文件由 `src/schema/` 中的 Zod schema 定义并在读取时校验；状态缺失或损坏时 `status` 与 `init` 均以非零退出码报错并说明原因。`capture`、`handoff` 等命令尚未实现。

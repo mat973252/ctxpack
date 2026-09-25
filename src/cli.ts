@@ -1,4 +1,12 @@
 #!/usr/bin/env node
-import { createProgram } from "./program.js";
+import { main } from "./program.js";
 
-createProgram().parseAsync(process.argv);
+main(process.argv).then(
+  (code) => {
+    process.exitCode = code;
+  },
+  (error: unknown) => {
+    process.stderr.write(`ctxpack: unexpected error: ${error instanceof Error ? error.stack ?? error.message : String(error)}\n`);
+    process.exitCode = 1;
+  },
+);
