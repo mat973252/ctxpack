@@ -63,4 +63,5 @@
 - CLI 端到端：同一临时 Git 仓库经 `init`、状态填写、`capture` 后分别执行默认与 `--to generic|codex|pi|claude`；四份输出均保留项目、目标、进度、决策及理由、失败及理由、障碍、下一步、文件、验证、Git 文件状态。四种格式不同且各自重复运行字节一致；默认、generic、M3 CLI 的通用输出完全一致。交接前后 `.ctxpack/` 文件 SHA-256 全部不变。未知目标与损坏状态均非零退出且给出明确错误，损坏状态文件未被覆盖。
 - 范围与许可证：仅修改 M4 所需 adapter、共享视图、CLI、测试与 README；`PROJECT.md`、`docs/`、`LICENSE`、依赖与 CI 未改，仍为 Apache-2.0。三种 Agent 格式为 ctxpack 自定布局，不宣称为各产品官方格式。
 - 已知缺口：M3 已记录的 `commands.md` 未输出、模板文本按行匹配过滤的问题仍在；M4 验收未要求更改。
-- 下一步：确认 `main` 的 Ubuntu CI 后，按 `docs/devin-m5.md` 单独派发 M5。
+- Ubuntu CI：`main` 提交 `0182353` 的 [运行 36094118213](https://github.com/mat973252/ctxpack/actions/runs/36094118213) 已通过安装、lint、测试、构建和 CLI 冒烟。
+- 下一步：按 `docs/devin-m5.md` 单独派发 M5。
