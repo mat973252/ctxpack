@@ -1,6 +1,6 @@
 # 里程碑交付记录
 
-状态日期：2026-09-25。M0、M1、M2、M3 已独立验收并集成到 `main`；M4 待 Devin 执行。
+状态日期：2026-09-25。M0、M1、M2、M3、M4 已独立验收并集成到 `main`；M5 待 Devin 执行。
 
 | 阶段 | 交付结果 | 独立验收 | 状态 |
 | --- | --- | --- | --- |
@@ -8,7 +8,7 @@
 | M1 | ContextPack schema、存储、`init`、`status` | 临时 Git 仓库初始化、状态结构、无覆盖、只读与错误路径 | 已验收 |
 | M2 | Git 工作区采集 | 变更文件后验证 branch、HEAD、文件和 diff stat | 已验收 |
 | M3 | 通用交接文档 | 新 Agent 仅凭 handoff 回答目标、进度、障碍、下一步与失败路线 | 已验收 |
-| M4 | Codex、Pi、Claude 格式适配 | 相同状态在不同输出中的语义一致 | 未开始 |
+| M4 | Codex、Pi、Claude 格式适配 | 相同状态在不同输出中的语义一致 | 已验收 |
 | M5 | 分级与 token 预算 | 大仓库默认输出受预算限制且关键内容不丢失 | 未开始 |
 | M6 | Relay 真实交接试用 | 记录对照实验与实际结论 | 未开始 |
 
@@ -54,3 +54,13 @@
 - 已知缺口：`commands.md` 已读取但未呈现在通用交接输出中；M3 任务书未要求该字段。Markdown 的模板行按文本匹配过滤，若用户内容恰好与模板行相同，也会被过滤。M4 可评估是否需调整，避免无关扩展。
 - Ubuntu CI：`main` 提交 `069bcd4` 的 [运行 36093606549](https://github.com/mat973252/ctxpack/actions/runs/36093606549) 已通过安装、lint、测试、构建和 CLI 冒烟。
 - 下一步：按 `docs/devin-m4.md` 单独派发 M4。
+
+## M4 验收记录（2026-09-25）
+
+- 源码：Devin Cloud 会话 `5cf05f27c94745c1a6aa897f80fe7584` 提交 `22df00d4dd6452fa9b8b8cac948fd240f402b0a5`；远端 `devin/m4-agent-adapters` SHA 已核对，本地 `main` 快进到同一提交。
+- 独立环境：Windows PowerShell，Node `v24.19.0`、pnpm `10.17.1`；从远端分支创建全新检出目录。
+- 实际命令与结果：`corepack pnpm install --frozen-lockfile`、`corepack pnpm check` 均通过；lint、5 个文件共 64 项测试、build 全部通过。
+- CLI 端到端：同一临时 Git 仓库经 `init`、状态填写、`capture` 后分别执行默认与 `--to generic|codex|pi|claude`；四份输出均保留项目、目标、进度、决策及理由、失败及理由、障碍、下一步、文件、验证、Git 文件状态。四种格式不同且各自重复运行字节一致；默认、generic、M3 CLI 的通用输出完全一致。交接前后 `.ctxpack/` 文件 SHA-256 全部不变。未知目标与损坏状态均非零退出且给出明确错误，损坏状态文件未被覆盖。
+- 范围与许可证：仅修改 M4 所需 adapter、共享视图、CLI、测试与 README；`PROJECT.md`、`docs/`、`LICENSE`、依赖与 CI 未改，仍为 Apache-2.0。三种 Agent 格式为 ctxpack 自定布局，不宣称为各产品官方格式。
+- 已知缺口：M3 已记录的 `commands.md` 未输出、模板文本按行匹配过滤的问题仍在；M4 验收未要求更改。
+- 下一步：确认 `main` 的 Ubuntu CI 后，按 `docs/devin-m5.md` 单独派发 M5。
