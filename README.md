@@ -26,15 +26,18 @@ pnpm build                    # tsup -> dist/cli.js
 node dist/cli.js --help       # CLI 冒烟
 ```
 
-## 当前命令（M2）
+## 当前命令（M3）
 
 ```bash
 ctxpack init [--project <name>]   # 在当前 Git 仓库创建 .ctxpack/，已有合法文件不会被覆盖
 ctxpack status                    # 只读：输出目标、进度、障碍、下一步与已采集的 Git 状态
 ctxpack capture                   # 读取 Git 工作区，写入 state.json 的 git 字段并更新 manifest.updatedAt
+ctxpack handoff                   # 只读：向标准输出生成可交给下一个 Agent 的自包含 Markdown 交接文档
 ```
 
-`init` 生成 `.ctxpack/{manifest.json,state.json,artifacts.json,project.md,decisions.md,failures.md,commands.md,snapshots/}`，JSON 文件由 `src/schema/` 中的 Zod schema 定义并在读取时校验；状态缺失或损坏时 `status`、`init` 与 `capture` 均以非零退出码报错并说明原因，且不改动已有文件。`handoff` 等命令尚未实现。
+`handoff` 汇总 `state.json`（目标、进度、障碍、下一步、相关文件、验证结果、上次采集的 Git 状态）与 `decisions.md`、`failures.md`、`project.md`。`decisions.md` 支持 `- [YYYY-MM-DD] <summary> — <reason>`，`failures.md` 支持 `- <approach>: <result> — <reason>`；不符合该格式的原文内容会原样保留在输出中。空字段以 `(not recorded)` 占位。命令只读，不改写任何文件；Git 数据来自最近一次 `capture`，不会自动重新采集。未初始化、JSON 损坏或 schema 非法时以非零退出并报出明确诊断。两次运行间 `.ctxpack/` 无变化时输出完全一致（确定性）。`handoff --to <agent>` 的各 Agent 适配格式在 M4 实现。
+
+`init` 生成 `.ctxpack/{manifest.json,state.json,artifacts.json,project.md,decisions.md,failures.md,commands.md,snapshots/}`，JSON 文件由 `src/schema/` 中的 Zod schema 定义并在读取时校验；状态缺失或损坏时 `status`、`init`、`capture` 与 `handoff` 均以非零退出码报错并说明原因，且不改动已有文件。
 
 `capture` 只写 `state.git` 与 `manifest.updatedAt`，其余用户状态和文件不动。`state.git` 字段（全部可选，M1 写出的 `git: {}` 仍可读取）：
 

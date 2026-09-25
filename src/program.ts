@@ -1,5 +1,7 @@
 import { Command } from "commander";
+import { renderGenericHandoff } from "./adapters/generic.js";
 import { capturePack, renderCapture } from "./core/capture.js";
+import { loadHandoff } from "./core/handoff.js";
 import { initPack } from "./core/init.js";
 import { loadStatus, renderStatus } from "./core/status.js";
 import { StorageError } from "./storage/index.js";
@@ -41,8 +43,8 @@ export function createProgram(io: ProgramIO = defaultIO): Command {
     .showHelpAfterError()
     .addHelpText(
       "after",
-      "\nM2: `init`, `status` and `capture` are available.\n" +
-        "Planned commands (handoff) will be added in later milestones.",
+      "\nM3: `init`, `status`, `capture` and `handoff` are available.\n" +
+        "Planned commands (handoff --to codex/pi/claude) will be added in later milestones.",
     );
 
   program
@@ -78,6 +80,14 @@ export function createProgram(io: ProgramIO = defaultIO): Command {
     .action(() => {
       const result = run(() => capturePack({ cwd: io.cwd() }));
       io.stdout(renderCapture(result));
+    });
+
+  program
+    .command("handoff")
+    .description("print a self-contained Markdown handoff for the next agent (read-only)")
+    .action(() => {
+      const input = run(() => loadHandoff({ cwd: io.cwd() }));
+      io.stdout(renderGenericHandoff(input));
     });
 
   program.action(() => {

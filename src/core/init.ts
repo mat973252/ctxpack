@@ -32,7 +32,7 @@ export interface InitResult {
   kept: string[];
 }
 
-const MARKDOWN_TEMPLATES: Record<"project" | "decisions" | "failures" | "commands", string> = {
+export const MARKDOWN_TEMPLATES: Record<"project" | "decisions" | "failures" | "commands", string> = {
   project: "# Project\n\nDescribe the project purpose, scope and constraints.\n",
   decisions:
     "# Decisions\n\nRecord important design decisions.\n\n" +
