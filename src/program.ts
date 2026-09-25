@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { renderGenericHandoff } from "./adapters/generic.js";
+import { adapterNames, resolveAdapter, type HandoffAdapter } from "./adapters/index.js";
 import { capturePack, renderCapture } from "./core/capture.js";
 import { loadHandoff } from "./core/handoff.js";
 import { initPack } from "./core/init.js";
@@ -43,8 +43,8 @@ export function createProgram(io: ProgramIO = defaultIO): Command {
     .showHelpAfterError()
     .addHelpText(
       "after",
-      "\nM3: `init`, `status`, `capture` and `handoff` are available.\n" +
-        "Planned commands (handoff --to codex/pi/claude) will be added in later milestones.",
+      "\nM4: `init`, `status`, `capture` and `handoff` are available.\n" +
+        "`handoff --to <target>` renders an agent-specific format (codex, pi, claude); default is generic.",
     );
 
   program
@@ -85,9 +85,16 @@ export function createProgram(io: ProgramIO = defaultIO): Command {
   program
     .command("handoff")
     .description("print a self-contained Markdown handoff for the next agent (read-only)")
-    .action(() => {
+    .option("--to <target>", `agent-specific output format (${adapterNames().join(", ")})`)
+    .action((opts: { to?: string }) => {
+      let adapter: HandoffAdapter;
+      try {
+        adapter = resolveAdapter(opts.to);
+      } catch (error) {
+        throw new CliError(error instanceof Error ? error.message : String(error));
+      }
       const input = run(() => loadHandoff({ cwd: io.cwd() }));
-      io.stdout(renderGenericHandoff(input));
+      io.stdout(adapter.render(input));
     });
 
   program.action(() => {

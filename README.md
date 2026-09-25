@@ -26,16 +26,24 @@ pnpm build                    # tsup -> dist/cli.js
 node dist/cli.js --help       # CLI 冒烟
 ```
 
-## 当前命令（M3）
+## 当前命令（M4）
 
 ```bash
 ctxpack init [--project <name>]   # 在当前 Git 仓库创建 .ctxpack/，已有合法文件不会被覆盖
 ctxpack status                    # 只读：输出目标、进度、障碍、下一步与已采集的 Git 状态
 ctxpack capture                   # 读取 Git 工作区，写入 state.json 的 git 字段并更新 manifest.updatedAt
-ctxpack handoff                   # 只读：向标准输出生成可交给下一个 Agent 的自包含 Markdown 交接文档
+ctxpack handoff [--to <target>]   # 只读：向标准输出生成可交给下一个 Agent 的自包含 Markdown 交接文档
 ```
 
-`handoff` 汇总 `state.json`（目标、进度、障碍、下一步、相关文件、验证结果、上次采集的 Git 状态）与 `decisions.md`、`failures.md`、`project.md`。`decisions.md` 支持 `- [YYYY-MM-DD] <summary> — <reason>`，`failures.md` 支持 `- <approach>: <result> — <reason>`；不符合该格式的原文内容会原样保留在输出中。空字段以 `(not recorded)` 占位。命令只读，不改写任何文件；Git 数据来自最近一次 `capture`，不会自动重新采集。未初始化、JSON 损坏或 schema 非法时以非零退出并报出明确诊断。两次运行间 `.ctxpack/` 无变化时输出完全一致（确定性）。`handoff --to <agent>` 的各 Agent 适配格式在 M4 实现。
+`handoff` 汇总 `state.json`（目标、进度、障碍、下一步、相关文件、验证结果、上次采集的 Git 状态）与 `decisions.md`、`failures.md`、`project.md`。`decisions.md` 支持 `- [YYYY-MM-DD] <summary> — <reason>`，`failures.md` 支持 `- <approach>: <result> — <reason>`；不符合该格式的原文内容会原样保留在输出中。空字段以 `(not recorded)` 占位。命令只读，不改写任何文件；Git 数据来自最近一次 `capture`，不会自动重新采集。未初始化、JSON 损坏或 schema 非法时以非零退出并报出明确诊断。两次运行间 `.ctxpack/` 无变化时输出完全一致（确定性）。
+
+`--to` 选择输出格式，可用目标：`generic`（默认，同 `ctxpack handoff`）、`codex`、`pi`、`claude`。三种特定格式复用同一份已校验的 ContextPack，只改变排版，保留全部关键语义（目标、进度、决策及原因、失败方案及原因、障碍、下一步、相关文件、验证结果、上次采集的 Git 状态），并明确声明这是交接状态而非已完成记录——这些格式是本项目自定义的约定，不是各产品官方规定的格式：
+
+- `codex`：任务简报式布局——开头给出继续执行的指令清单，`## Do Not Retry` 单独列出已失败方案，其余事实收进 `## Reference` 参考区。
+- `pi`：紧凑的 `KEY: value` 单栏字段加缩进列表，适合直接粘贴到小型终端 Agent 的提示词。
+- `claude`：结构化交接文档——前置阅读说明、目标与进度、`- [ ]` 待办清单、`## Constraints & Pitfalls` 汇总失败方案与障碍。
+
+未知 `--to` 值会列出全部可用目标并以非零退出。
 
 `init` 生成 `.ctxpack/{manifest.json,state.json,artifacts.json,project.md,decisions.md,failures.md,commands.md,snapshots/}`，JSON 文件由 `src/schema/` 中的 Zod schema 定义并在读取时校验；状态缺失或损坏时 `status`、`init`、`capture` 与 `handoff` 均以非零退出码报错并说明原因，且不改动已有文件。
 
