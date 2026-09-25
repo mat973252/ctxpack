@@ -1,4 +1,5 @@
 import { Command } from "commander";
+import { capturePack, renderCapture } from "./core/capture.js";
 import { initPack } from "./core/init.js";
 import { loadStatus, renderStatus } from "./core/status.js";
 import { StorageError } from "./storage/index.js";
@@ -40,8 +41,8 @@ export function createProgram(io: ProgramIO = defaultIO): Command {
     .showHelpAfterError()
     .addHelpText(
       "after",
-      "\nM1: `init` and `status` are available.\n" +
-        "Planned commands (capture, handoff) will be added in later milestones.",
+      "\nM2: `init`, `status` and `capture` are available.\n" +
+        "Planned commands (handoff) will be added in later milestones.",
     );
 
   program
@@ -69,6 +70,14 @@ export function createProgram(io: ProgramIO = defaultIO): Command {
     .action(() => {
       const pack = run(() => loadStatus({ cwd: io.cwd() }));
       io.stdout(renderStatus(pack));
+    });
+
+  program
+    .command("capture")
+    .description("record branch, HEAD, changed files, diff stat and recent commits into .ctxpack/state.json")
+    .action(() => {
+      const result = run(() => capturePack({ cwd: io.cwd() }));
+      io.stdout(renderCapture(result));
     });
 
   program.action(() => {

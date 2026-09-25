@@ -1,5 +1,5 @@
 import path from "node:path";
-import type { ContextPack } from "../schema/index.js";
+import type { ContextPack, GitState } from "../schema/index.js";
 import { StorageError, findGitRoot, readPack, resolvePackPaths } from "../storage/index.js";
 
 export interface StatusOptions {
@@ -39,7 +39,29 @@ export function renderStatus(pack: ContextPack): string {
       state.verification.map((v) => `${v.name}: ${v.result.toUpperCase()}${v.detail ? ` (${v.detail})` : ""}`),
     ),
   );
+  lines.push(renderGit(state.git));
   return lines.join("\n").trimEnd() + "\n";
+}
+
+function renderGit(git: GitState): string {
+  if (git.headState === undefined && git.branch === undefined && git.head === undefined) {
+    return "Git:\n  (not captured; run `ctxpack capture`)\n";
+  }
+  const out: string[] = ["Git:"];
+  if (git.branch !== undefined) out.push(`  Branch: ${git.branch}`);
+  if (git.headState !== undefined) out.push(`  HEAD state: ${git.headState}`);
+  if (git.head !== undefined) out.push(`  HEAD: ${git.head}`);
+  if (git.changedFiles !== undefined) out.push(`  Changed files: ${git.changedFiles.length}`);
+  if (git.stat !== undefined) {
+    const s = git.stat;
+    out.push(`  Staged: ${s.staged.files} files, +${s.staged.insertions} -${s.staged.deletions}`);
+    out.push(`  Unstaged: ${s.unstaged.files} files, +${s.unstaged.insertions} -${s.unstaged.deletions}`);
+  }
+  if (git.recentCommits !== undefined) {
+    out.push(`  Recent commits (${git.recentCommits.length}):`);
+    for (const c of git.recentCommits) out.push(`    ${c.shortSha} ${c.subject}`);
+  }
+  return out.join("\n") + "\n";
 }
 
 function section(title: string, items: string[], numbered = false): string {

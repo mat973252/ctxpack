@@ -26,11 +26,27 @@ pnpm build                    # tsup -> dist/cli.js
 node dist/cli.js --help       # CLI 冒烟
 ```
 
-## 当前命令（M1）
+## 当前命令（M2）
 
 ```bash
 ctxpack init [--project <name>]   # 在当前 Git 仓库创建 .ctxpack/，已有合法文件不会被覆盖
-ctxpack status                    # 只读：输出目标、进度、障碍与下一步
+ctxpack status                    # 只读：输出目标、进度、障碍、下一步与已采集的 Git 状态
+ctxpack capture                   # 读取 Git 工作区，写入 state.json 的 git 字段并更新 manifest.updatedAt
 ```
 
-`init` 生成 `.ctxpack/{manifest.json,state.json,artifacts.json,project.md,decisions.md,failures.md,commands.md,snapshots/}`，JSON 文件由 `src/schema/` 中的 Zod schema 定义并在读取时校验；状态缺失或损坏时 `status` 与 `init` 均以非零退出码报错并说明原因。`capture`、`handoff` 等命令尚未实现。
+`init` 生成 `.ctxpack/{manifest.json,state.json,artifacts.json,project.md,decisions.md,failures.md,commands.md,snapshots/}`，JSON 文件由 `src/schema/` 中的 Zod schema 定义并在读取时校验；状态缺失或损坏时 `status`、`init` 与 `capture` 均以非零退出码报错并说明原因，且不改动已有文件。`handoff` 等命令尚未实现。
+
+`capture` 只写 `state.git` 与 `manifest.updatedAt`，其余用户状态和文件不动。`state.git` 字段（全部可选，M1 写出的 `git: {}` 仍可读取）：
+
+| 字段 | 含义 |
+| --- | --- |
+| `headState` | `branch` / `detached` / `unborn`（尚无提交） |
+| `branch` | 当前分支名；detached 时缺省 |
+| `head` | HEAD 完整 SHA；unborn 时缺省 |
+| `clean` | 排除 `.ctxpack/` 后工作区是否干净 |
+| `changedFiles` | 排序去重后的相对路径，含 tracked 修改、staged、untracked |
+| `changes` | `git status --porcelain` 每条记录：`path`、`index`/`worktree` 原始状态码（`?` 为 untracked）、重命名的 `from` |
+| `stat.staged` / `stat.unstaged` | `files`、`insertions`、`deletions`、`binary`，来自 `git diff [--cached] --numstat` |
+| `recentCommits` | 最近最多 5 条：`sha`、`shortSha`、`author`、`date`（ISO）、`subject` |
+
+不写入完整 diff 或文件正文；`.ctxpack/` 自身的改动不计入任何字段。

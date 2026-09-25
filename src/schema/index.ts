@@ -31,11 +31,58 @@ export const VerificationSchema = z
   .strict();
 export type Verification = z.infer<typeof VerificationSchema>;
 
+export const GitHeadStateSchema = z.enum(["branch", "detached", "unborn"]);
+export type GitHeadState = z.infer<typeof GitHeadStateSchema>;
+
+/** One entry of `git status --porcelain`; `index`/`worktree` are the raw X/Y status codes (`?` = untracked). */
+export const GitChangeSchema = z
+  .object({
+    path: z.string().min(1),
+    index: z.string().length(1),
+    worktree: z.string().length(1),
+    from: z.string().min(1).optional(),
+  })
+  .strict();
+export type GitChange = z.infer<typeof GitChangeSchema>;
+
+export const GitDiffStatSchema = z
+  .object({
+    files: z.number().int().nonnegative(),
+    insertions: z.number().int().nonnegative(),
+    deletions: z.number().int().nonnegative(),
+    binary: z.number().int().nonnegative(),
+  })
+  .strict();
+export type GitDiffStat = z.infer<typeof GitDiffStatSchema>;
+
+export const GitCommitSchema = z
+  .object({
+    sha: z.string().min(1),
+    shortSha: z.string().min(1),
+    author: z.string(),
+    date: z.string(),
+    subject: z.string(),
+  })
+  .strict();
+export type GitCommit = z.infer<typeof GitCommitSchema>;
+
+// Every field is optional so state written by M1 (`git: {}` or branch/head/changedFiles only) still validates.
 export const GitStateSchema = z
   .object({
     branch: z.string().optional(),
     head: z.string().optional(),
+    headState: GitHeadStateSchema.optional(),
+    clean: z.boolean().optional(),
     changedFiles: z.array(z.string()).optional(),
+    changes: z.array(GitChangeSchema).optional(),
+    stat: z
+      .object({
+        staged: GitDiffStatSchema,
+        unstaged: GitDiffStatSchema,
+      })
+      .strict()
+      .optional(),
+    recentCommits: z.array(GitCommitSchema).optional(),
   })
   .strict();
 export type GitState = z.infer<typeof GitStateSchema>;
