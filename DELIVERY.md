@@ -1,6 +1,6 @@
 # 里程碑交付记录
 
-状态日期：2026-09-25。M0–M5 已独立验收并集成到 `main`，M6 Relay 隔离交接试用已验收；M7 Node TUI 待派发。
+状态日期：2026-09-25。M0–M5 与 M7 已独立验收并集成到 `main`，M6 Relay 隔离交接试用已验收；Relay 安全审查停点仍未解除。
 
 | 阶段 | 交付结果 | 独立验收 | 状态 |
 | --- | --- | --- | --- |
@@ -11,7 +11,7 @@
 | M4 | Codex、Pi、Claude 格式适配 | 相同状态在不同输出中的语义一致 | 已验收 |
 | M5 | 分级与 token 预算 | 大仓库默认输出受预算限制且关键内容不丢失 | 已验收 |
 | M6 | Relay 隔离交接试用 | 记录对照实验与实际结论 | 已验收 |
-| M7 | Node 可打包交互式 TUI | 实际包安装、键盘操作与视觉核对 | 待派发 |
+| M7 | Node 可打包交互式 TUI | 实际包安装、键盘操作与视觉核对 | 已验收 |
 
 每阶段验收记录须包含源码来源、版本或提交、运行环境、实际命令、结果、已知缺口及下一步决定。未验收成果不得标为完成；远端创建、推送和发布另行处理。
 
@@ -87,3 +87,13 @@
 - 同题只读接续：交接组仅看 codex handoff，1 次文件读取，耗时约 0.03 秒，准确复述目标、报告所称修复、待审查状态、Step 6/7 边界，并指出未来日期疑点；基线组从同一检出独立搜索，4 次检索/读取，约 27.9 秒，提供了更多 Step 6/7 细节，重复交叉核查 1 次。按该一次样本，首次回答时间降低约 99.9%，读取调用降低 75%，均超过 PROJECT.md 的 50%/30% 目标；两组工具权限不同、工作量和答案深度不同，不能据此宣称普遍收益。交接组认为 Step 6 不能开始，基线组认为可进入准备但不能宣称通过；正确的阶段表述应区分“准备”与“验收通过”。
 - 结论：M6 的本地交接能力与安全边界试用通过；Relay 安全修复和发布准备度仍须独立审查。此次交接中 `Do Not Retry` 对历史错误路线的措辞可能被误读为禁止重跑安全回归；这是本次实验状态填写与模板共同造成的表达风险，后续应在真实使用时写明“禁止重复不安全操作，允许隔离回归验证”。M6 不代表 Relay 的 Step 6 或 Step 7 获准推进。
 - 下一步：启动 AgentLens M0，由 Devin Cloud 实现；ctxpack 的后续产品改进须以新的独立里程碑交给 Devin。
+
+## M7 TUI 验收记录（2026-09-25）
+
+- 源码：Devin Cloud 会话 `5b175fe705a04f96846f08341d67953e`，PR [#1](https://github.com/mat973252/ctxpack/pull/1)，最终产品提交 `eacb521725eb5dc3c6f0ebf188d9918e270c69c6`；远端分支与 PR head 已核对，合入 `main` 为 `86972f5164e423b1ddef9dbadae06095c6385bd3`。
+- 返工与环境边界：首版新增 TUI 测试在 Windows ASCII 回退时仍期待 Unicode 分隔符，Devin 修复该断言。另五项旧测试在 `main` 与首版均因本机 Node v24.13.0 对中文临时路径的 `fs.rmSync` 异常失败；最小复现中 `unlinkSync`、`rmdirSync` 正常，Node v24.19.0 正常。最终未将该运行时问题的临时规避代码并入产品。
+- 独立环境与命令：Windows PowerShell、Git `core.autocrlf=true`、Node v24.19.0、pnpm 10.17.1；最终 SHA 的全新检出 `D:\code\aiproject\_review\ctxpack-m7-eacb521` 上冻结安装、lint、134/134 tests、build 均通过。实际 `npm pack` 并在仓库外空目录安装 tarball；包内含构建后的 CLI 和 Apache-2.0 许可证，安装后的 `ctxpack ui --help` 可运行。
+- 终端端到端：使用仓外安装包在 Windows ConPTY 的 80×24 终端中操作临时 Git 仓库，确认总览、章节、generic/codex/pi/claude 四种交接预览、预算切换、键盘导航和退出。样本包含目标、完成事项、障碍、决策、失败说明与中文路径。预览前后 `.ctxpack/` 文件 SHA-256 不变；`c` 后选 `n` 取消写入且哈希不变，明确选 `y` 后才执行既有 capture，写入限于原有 manifest/state 契约。`NO_COLOR=1` 加显式色彩选项时无应用色彩 SGR，退出恢复终端。以 `cmd.exe` 宿主运行时 `q` 返回 0；同一已安装包在 PowerShell 宿主的退出状态为 1，未见应用错误输出，故不把 PowerShell 宿主退出码视为已通过。
+- 视觉与 CI：PR 正文内可访问的 Konsole 截图已经目视核对，布局为紧凑深色界面、左侧导航和内容区、薄荷色强调及确认覆盖层；120×30 分栏、窗口调整、Unicode、窄终端与 Ctrl+C 的实际 PTY 证据由 Devin 提供。本机未在 Windows Terminal 应用中单独测试。最终 PR [运行 36115418772](https://github.com/mat973252/ctxpack/actions/runs/36115418772) 与合入 `main` 的 [运行 36115939553](https://github.com/mat973252/ctxpack/actions/runs/36115939553) 均通过 Ubuntu CI。
+- 范围：审查确认仅涉及 TUI、相关测试、CLI/包配置和说明，无 Relay 产品代码修改；Node 包可安装但尚未发布到 npm。M7 不解除 Relay 的独立安全审查停点，不代表 Step 6/7 已通过，也未向 Relay 推送代码。
+- 下一步：在不运行 Relay 外部效果的安全边界内规划 AgentLens M8 试用，并明确试用样本与不可验证部分。
