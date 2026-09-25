@@ -12,6 +12,12 @@ import { main, type ProgramIO } from "../src/program.js";
 import { GitStateSchema, ManifestSchema, StateSchema } from "../src/schema/index.js";
 import { StorageError, resolvePackPaths } from "../src/storage/index.js";
 
+// Windows holds transient locks (AV/indexer) on just-written paths, so bare
+// rmSync is flaky there; retry removes so assertions stay honest on every host.
+function rmrf(p: string): void {
+  rmSync(p, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+}
+
 let repo: string;
 
 function git(args: string[], cwd = repo): string {
@@ -68,7 +74,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  rmSync(repo, { recursive: true, force: true });
+  rmrf(repo);
 });
 
 describe("captureGitState", () => {
@@ -343,7 +349,7 @@ describe("capturePack", () => {
     expect(() => capturePack({ cwd: repo })).toThrow(/failed schema validation/);
     expect(hashTree(paths.dir)).toBe(before2);
 
-    rmSync(paths.dir, { recursive: true, force: true });
+    rmrf(paths.dir);
     expect(() => capturePack({ cwd: repo })).toThrow(/no \.ctxpack\/ directory found/);
     expect(existsSync(paths.dir)).toBe(false);
 
@@ -352,7 +358,7 @@ describe("capturePack", () => {
       expect(() => capturePack({ cwd: plain })).toThrow(/not a git repository/);
       expect(readdirSync(plain)).toEqual([]);
     } finally {
-      rmSync(plain, { recursive: true, force: true });
+      rmrf(plain);
     }
   });
 });

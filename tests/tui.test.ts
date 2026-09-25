@@ -25,6 +25,12 @@ import { runUi, type UiInput, type UiOutput } from "../src/tui/app.js";
 import { SECTIONS, detailRows, renderFrame, type UiState } from "../src/tui/render.js";
 import { loadScreen } from "../src/tui/model.js";
 
+// Windows holds transient locks (AV/indexer) on just-written paths, so bare
+// rmSync is flaky there; retry removes so assertions stay honest on every host.
+function rmrf(p: string): void {
+  rmSync(p, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+}
+
 // ---------- fixtures ----------
 
 let repo: string;
@@ -181,7 +187,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  if (repo !== "") rmSync(repo, { recursive: true, force: true });
+  if (repo !== "") rmrf(repo);
 });
 
 // ---------- ansi ----------
@@ -434,18 +440,38 @@ describe("runUi", () => {
   it("navigates sections with j/k and opens detail with Tab", async () => {
     initFilledRepo();
     const { stdin, stdout, done } = await launch();
+    // Header rules and hints degrade to ASCII when the locale/platform has no UTF-8
+    // (e.g. Windows without Windows Terminal); assert whichever path this host takes.
+    const unicode = supportsUnicode({ LANG: "C.UTF-8" }, process.platform);
+    const rule = unicode ? "─" : "-";
     stdin.feed("j");
     await tick();
-    expect(stdout.lastFrame()).toContain("Progress ─");
+    expect(stdout.lastFrame()).toContain(`Progress ${rule}`);
     stdin.feed("k");
     await tick();
-    expect(stdout.lastFrame()).toContain("Overview ─");
+    expect(stdout.lastFrame()).toContain(`Overview ${rule}`);
     stdin.feed("\t"); // open detail
     await tick();
-    expect(stdout.lastFrame()).toContain("↑↓/jk scroll");
+    expect(stdout.lastFrame()).toContain(unicode ? "↑↓/jk scroll" : "j/k scroll");
     stdin.feed("h"); // back
     await tick();
     expect(stdout.lastFrame()).toContain("q quit");
+    stdin.feed("q");
+    await done;
+  });
+
+  it("renders ASCII glyphs when the locale has no UTF-8", async () => {
+    initFilledRepo();
+    const { stdin, stdout, done } = await launch({ env: { LANG: "C" } });
+    let frame = stdout.lastFrame();
+    expect(frame).toContain(" M *"); // ASCII M mark
+    expect(frame).not.toContain("▐M▌");
+    expect(frame).not.toContain("─");
+    expect(frame).toContain("Overview -");
+    stdin.feed("j");
+    await tick();
+    frame = stdout.lastFrame();
+    expect(frame).toContain("Progress -");
     stdin.feed("q");
     await done;
   });
@@ -562,7 +588,7 @@ describe("runUi", () => {
       stdin.feed("q");
       await done;
     } finally {
-      rmSync(plain, { recursive: true, force: true });
+      rmrf(plain);
     }
   });
 

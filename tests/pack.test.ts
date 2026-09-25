@@ -10,6 +10,12 @@ import { main, type ProgramIO } from "../src/program.js";
 import { ArtifactsSchema, ManifestSchema, StateSchema } from "../src/schema/index.js";
 import { StorageError, resolvePackPaths } from "../src/storage/index.js";
 
+// Windows holds transient locks (AV/indexer) on just-written paths, so bare
+// rmSync is flaky there; retry removes so assertions stay honest on every host.
+function rmrf(p: string): void {
+  rmSync(p, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+}
+
 let repo: string;
 
 function hashTree(dir: string): string {
@@ -39,7 +45,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  rmSync(repo, { recursive: true, force: true });
+  rmrf(repo);
 });
 
 describe("init", () => {
@@ -106,7 +112,7 @@ describe("init", () => {
       expect(() => initPack({ cwd: plain })).toThrow(/not a git repository/);
       expect(existsSync(path.join(plain, ".ctxpack"))).toBe(false);
     } finally {
-      rmSync(plain, { recursive: true, force: true });
+      rmrf(plain);
     }
   });
 
@@ -130,8 +136,8 @@ describe("init", () => {
   it("recreates only missing files and keeps the rest", () => {
     initPack({ cwd: repo });
     const paths = resolvePackPaths(repo);
-    rmSync(paths.commands);
-    rmSync(paths.snapshots, { recursive: true });
+    rmrf(paths.commands);
+    rmrf(paths.snapshots);
     const result = initPack({ cwd: repo });
     expect(result.created).toEqual([".ctxpack/commands.md"]);
     expect(existsSync(paths.snapshots)).toBe(true);
@@ -141,7 +147,7 @@ describe("init", () => {
     initPack({ cwd: repo });
     const paths = resolvePackPaths(repo);
     writeFileSync(paths.state, "{ not json");
-    rmSync(paths.commands);
+    rmrf(paths.commands);
     expect(() => initPack({ cwd: repo })).toThrow(StorageError);
     expect(() => initPack({ cwd: repo })).toThrow(/state \(state\.json\) is not valid JSON/);
     expect(existsSync(paths.commands)).toBe(false);
@@ -186,7 +192,7 @@ describe("status", () => {
     writeFileSync(paths.state, JSON.stringify({ goal: 1 }));
     expect(() => loadStatus({ cwd: repo })).toThrow(/failed schema validation/);
     expect(() => loadStatus({ cwd: repo })).toThrow(/goal/);
-    rmSync(paths.manifest);
+    rmrf(paths.manifest);
     expect(() => loadStatus({ cwd: repo })).toThrow(/manifest not found/);
   });
 });
