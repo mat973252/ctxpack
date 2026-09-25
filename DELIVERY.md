@@ -76,3 +76,13 @@
 - 范围与许可证：仅修改 M5 所需预算层、adapter 接口、CLI、测试与 README；`PROJECT.md`、`docs/`、`LICENSE`、依赖与 CI 未改，仍为 Apache-2.0。
 - 已知缺口：沿用 M3/M4 的 `commands.md` 未输出和模板文本按行匹配过滤问题；尚未用真实 Relay 仓库测量交接价值。预算规划按离散阶梯取舍，可能在有剩余预算时仍省略部分 Relevant；M6 将核对真实效果。
 - 下一步：确认 `main` 的 Ubuntu CI，然后依 `docs/m6-dogfood.md` 在隔离的 Relay 检出中做只读试用与对照；产品代码若需修复仍由 Devin 单独实现。
+
+## M6 Relay 交接试用（2026-09-25）
+
+- M5 集成后的 Ubuntu CI：[运行 36094977215](https://github.com/mat973252/ctxpack/actions/runs/36094977215) 已通过安装、lint、测试、构建与 CLI 冒烟。
+- 实验范围：Relay 提交 `17f460523c76e84271dac8c50bd93c269e2c9693` 的隔离检出 `D:\code\aiproject\_review\relay-ctxpack-m6`；没有 Git 远端、未推送或运行 Relay 外部效果。使用 M5 已验收构建产物和 Node v24.19.0，执行 `init --project Relay`、填写仅供实验的安全审查状态、`capture` 和四种 `handoff`。`.ctxpack/` 与输出均未提交 Relay。
+- 事实边界：当前 `reports/MCP_SAFETY_REVIEW_RESULT.md` 报告五类 MCP 安全修复已完成、WSL Node 22 下 142/142 测试及 crash demo 4/4 通过，但明确停在独立审查前；Step 6 CI 矩阵、Windows Node 24 全量检查和 Step 7 发布准备尚未完成。该报告内的 host operation ID 含 `2027-03-08`，晚于当前提交日期 `2026-09-25`，需核实其来源；交接文件将这些测试记为报告所称，未冒充本次独立重跑。
+- 输出验收：generic、codex、pi、claude 四种 handoff 均生成（约 3.8–4.5 KB）；每种再次执行与原输出一致，包含目标、当前阻塞、下一步与相关证据路径；7 个 `.ctxpack/` 文件在 handoff 前后 SHA-256 均不变。对 pack 运行凭据模式扫描，命中 0；扫描不是完整泄密证明。
+- 同题只读接续：交接组仅看 codex handoff，1 次文件读取，耗时约 0.03 秒，准确复述目标、报告所称修复、待审查状态、Step 6/7 边界，并指出未来日期疑点；基线组从同一检出独立搜索，4 次检索/读取，约 27.9 秒，提供了更多 Step 6/7 细节，重复交叉核查 1 次。按该一次样本，首次回答时间降低约 99.9%，读取调用降低 75%，均超过 PROJECT.md 的 50%/30% 目标；两组工具权限不同、工作量和答案深度不同，不能据此宣称普遍收益。交接组认为 Step 6 不能开始，基线组认为可进入准备但不能宣称通过；正确的阶段表述应区分“准备”与“验收通过”。
+- 结论：M6 的本地交接能力与安全边界试用通过；Relay 安全修复和发布准备度仍须独立审查。此次交接中 `Do Not Retry` 对历史错误路线的措辞可能被误读为禁止重跑安全回归；这是本次实验状态填写与模板共同造成的表达风险，后续应在真实使用时写明“禁止重复不安全操作，允许隔离回归验证”。M6 不代表 Relay 的 Step 6 或 Step 7 获准推进。
+- 下一步：启动 AgentLens M0，由 Devin Cloud 实现；ctxpack 的后续产品改进须以新的独立里程碑交给 Devin。
