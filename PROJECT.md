@@ -865,6 +865,12 @@ tool calls
 
 ---
 
+# M7 — Node TUI（2026-09-25 用户追加）
+
+交付可通过 Node 包安装和运行的交互式终端界面，展示项目状态、Git 采集、分级交接预览和目标格式。紧凑布局参考 Claude Code TUI，配色和 M 标志参考用户 GitHub 头像与个人网站；具体任务和验收见 `docs/devin-m7-tui.md`。保留现有 CLI 的确定性输出与状态安全边界。TUI 成为后续公开发布验收门槛。
+
+---
+
 # 15. V0.1 发布标准
 
 必须达到：
@@ -876,6 +882,7 @@ ctxpack status
 ctxpack handoff
 ctxpack handoff --to codex
 ctxpack handoff --to pi
+ctxpack ui（从 Node 安装包运行）
 ```
 
 并通过一个真实 Demo：
