@@ -52,4 +52,5 @@
 - CLI 端到端：独立临时 Git 仓库中 `init --project relay`，写入目标、进度、决策、失败原因、障碍、下一步、相关文件与验证结果，再 `capture`、`handoff`；输出覆盖五个交接问题，包含自由格式决策备注和上次 Git 采集状态。连续两次输出完全一致；`.ctxpack/` 七个文件在 handoff 前后 SHA-256 均不变。损坏 state 时非零退出且原文件哈希不变。
 - 范围与许可证：仅修改 M3 所需通用渲染、读取、CLI、测试与 README；`PROJECT.md`、`docs/`、`LICENSE`、依赖与 CI 未改，仍为 Apache-2.0。
 - 已知缺口：`commands.md` 已读取但未呈现在通用交接输出中；M3 任务书未要求该字段。Markdown 的模板行按文本匹配过滤，若用户内容恰好与模板行相同，也会被过滤。M4 可评估是否需调整，避免无关扩展。
-- 下一步：确认 `main` 的 Ubuntu CI 后，按 `docs/devin-m4.md` 单独派发 M4。
+- Ubuntu CI：`main` 提交 `069bcd4` 的 [运行 36093606549](https://github.com/mat973252/ctxpack/actions/runs/36093606549) 已通过安装、lint、测试、构建和 CLI 冒烟。
+- 下一步：按 `docs/devin-m4.md` 单独派发 M4。
