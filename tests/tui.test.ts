@@ -25,11 +25,6 @@ import { runUi, type UiInput, type UiOutput } from "../src/tui/app.js";
 import { SECTIONS, detailRows, renderFrame, type UiState } from "../src/tui/render.js";
 import { loadScreen } from "../src/tui/model.js";
 
-// Windows holds transient locks (AV/indexer) on just-written paths, so bare
-// rmSync is flaky there; retry removes so assertions stay honest on every host.
-function rmrf(p: string): void {
-  rmSync(p, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
-}
 
 // ---------- fixtures ----------
 
@@ -187,7 +182,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  if (repo !== "") rmrf(repo);
+  if (repo !== "") rmSync(repo, { recursive: true, force: true });
 });
 
 // ---------- ansi ----------
@@ -588,7 +583,7 @@ describe("runUi", () => {
       stdin.feed("q");
       await done;
     } finally {
-      rmrf(plain);
+      rmSync(plain, { recursive: true, force: true });
     }
   });
 
