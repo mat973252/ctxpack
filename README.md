@@ -26,13 +26,14 @@ pnpm build                    # tsup -> dist/cli.js
 node dist/cli.js --help       # CLI 冒烟
 ```
 
-## 当前命令（M5）
+## 当前命令（M7）
 
 ```bash
 ctxpack init [--project <name>]   # 在当前 Git 仓库创建 .ctxpack/，已有合法文件不会被覆盖
 ctxpack status                    # 只读：输出目标、进度、障碍、下一步与已采集的 Git 状态
 ctxpack capture                   # 读取 Git 工作区，写入 state.json 的 git 字段并更新 manifest.updatedAt
 ctxpack handoff [--to <target>] [--compact] [--budget <n>]   # 只读：向标准输出生成可交给下一个 Agent 的自包含 Markdown 交接文档
+ctxpack ui [--to <target>] [--compact] [--budget <n>] [--color <mode>]   # 交互式终端界面（见下节）
 ```
 
 `handoff` 汇总 `state.json`（目标、进度、障碍、下一步、相关文件、验证结果、上次采集的 Git 状态）与 `decisions.md`、`failures.md`、`project.md`。`decisions.md` 支持 `- [YYYY-MM-DD] <summary> — <reason>`，`failures.md` 支持 `- <approach>: <result> — <reason>`；不符合该格式的原文内容会原样保留在输出中。空字段以 `(not recorded)` 占位。命令只读，不改写任何文件；Git 数据来自最近一次 `capture`，不会自动重新采集。未初始化、JSON 损坏或 schema 非法时以非零退出并报出明确诊断。两次运行间 `.ctxpack/` 无变化时输出完全一致（确定性）。
@@ -82,3 +83,15 @@ ctxpack handoff [--to <target>] [--compact] [--budget <n>]   # 只读：向标�
 | `recentCommits` | 最近最多 5 条：`sha`、`shortSha`、`author`、`date`（ISO）、`subject` |
 
 不写入完整 diff 或文件正文；`.ctxpack/` 自身的改动不计入任何字段。
+
+### 交互式界面 `ctxpack ui`（M7）
+
+`ctxpack ui` 从真实安装的 Node 包启动（`bin` 指向 `dist/cli.js`，不依赖 tsx 或 devDependencies），在当前 Git 工作区读取 `.ctxpack/` 并显示可交互的状态视图：项目目标、进度、决策及原因、失败方案及原因、阻塞、下一步、相关文件、验证结果、上次采集的 Git 分支/HEAD/改动摘要。Handoff 区可预览 generic/codex/pi/claude 四种交接文本（含估算用量与省略提示），预览走与 `handoff` 完全相同的渲染路径，输出逐字节一致。
+
+**键位**：`↑/k` `↓/j` 选区，`Tab`/`→`/`l`/`Enter` 进入内容区（之后 `↑↓/jk` 滚动、`PgUp/PgDn` 翻页），`Esc`/`←`/`h` 返回，`1`–`4` 切换 handoff 目标，`b` 在默认/compact 预算间切换，`p` 直达 Handoff，`r` 重新读取 `.ctxpack/`，`q`/`Esc`/`Ctrl+C` 退出。屏幕底部常驻键位提示。
+
+**写操作边界**：界面导航与预览全部只读，绝不改写 `.ctxpack/`。仅有的两个写入口 `c`（`capture`）与 `i`（`init`）都会先弹出标有 `WRITE ACTION` 的确认框，列出将修改的文件，必须显式按 `y` 才执行；`n`/`Esc` 取消且不落盘。确认后只改变 CLI 契约允许的字段（capture 只写 `state.git` 与 `manifest.updatedAt`）。
+
+**错误与边界**：非 Git 仓库、未初始化、JSON 损坏/schema 非法时显示可操作的错误屏（损坏状态可用 `r` 重试，未初始化可用 `i` 确认初始化），stdin/stdout 非 TTY 时以非零退出。终端小于 40×10 显示“too small”提示；≥100 列时左侧为导航栏，<100 列折叠为顶部区段条；窗口 resize 时实时重排。
+
+**颜色与字符**：配色取 `--ink #142121`、`--paper #fbf9f8`、`--mint #83cebe`、`--muted #61706b`、辅色 `#4aab96`；`--color` 支持 `auto`（默认，探测 TERM/COLORTERM/WT_SESSION）、`always`（真彩色）、`256`、`16`、`never`。`NO_COLOR` 环境变量优先生效——即使显式给了 `--color` 也不输出颜色 SGR（选中态退化为反白）。无 UTF-8 locale 时边框与标记退化为 ASCII。标志用字符 `▐M▌●`（深底白 `M` + 薄荷色圆点；ASCII 模式为 ` M *`），不依赖图片协议。CJK/emoji 按宽字符计宽并正确截断。

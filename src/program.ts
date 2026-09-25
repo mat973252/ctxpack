@@ -12,6 +12,8 @@ import { loadHandoff } from "./core/handoff.js";
 import { initPack } from "./core/init.js";
 import { loadStatus, renderStatus } from "./core/status.js";
 import { StorageError } from "./storage/index.js";
+import { COLOR_FLAGS, type ColorFlag } from "./tui/ansi.js";
+import { runUi } from "./tui/app.js";
 
 export const NAME = "ctxpack";
 export const VERSION = "0.0.1";
@@ -34,6 +36,8 @@ export class CliError extends Error {
   constructor(
     message: string,
     readonly exitCode = 1,
+    /** When true the message was already reported (e.g. by the TUI) — do not reprint it. */
+    readonly quiet = false,
   ) {
     super(message);
     this.name = "CliError";
@@ -50,7 +54,7 @@ export function createProgram(io: ProgramIO = defaultIO): Command {
     .showHelpAfterError()
     .addHelpText(
       "after",
-      "\nM5: `init`, `status`, `capture` and `handoff` are available.\n" +
+      "\nM7: `init`, `status`, `capture`, `handoff` and `ui` are available.\n" +
         "`handoff --to <target>` renders an agent-specific format (codex, pi, claude); default is generic.\n" +
         `handoff output is capped at an estimated ${DEFAULT_BUDGET} tokens by default; ` +
         `--compact uses ${COMPACT_BUDGET}, and --budget <n> sets it explicitly (--budget wins over --compact).`,
@@ -123,6 +127,52 @@ export function createProgram(io: ProgramIO = defaultIO): Command {
       io.stdout(output);
     });
 
+  program
+    .command("ui")
+    .description(
+      "interactive terminal UI over .ctxpack/ (read-only; init/capture require explicit confirmation)",
+    )
+    .option("--to <target>", `initial handoff preview format (${adapterNames().join(", ")})`)
+    .option("--compact", `start handoff previews at ~${COMPACT_BUDGET} est. tokens`)
+    .option(
+      "--budget <tokens>",
+      `initial preview budget (default ${DEFAULT_BUDGET}); overrides --compact`,
+    )
+    .option(
+      "--color <mode>",
+      `color mode (${COLOR_FLAGS.join(", ")}); NO_COLOR always wins, even over an explicit flag`,
+      "auto",
+    )
+    .action(async (opts: { to?: string; compact?: boolean; budget?: string; color: string }) => {
+      let adapter: HandoffAdapter;
+      let resolved: ReturnType<typeof resolveBudget>;
+      try {
+        adapter = resolveAdapter(opts.to);
+        resolved = resolveBudget(opts);
+      } catch (error) {
+        throw new CliError(error instanceof Error ? error.message : String(error));
+      }
+      if (!COLOR_FLAGS.includes(opts.color as ColorFlag)) {
+        throw new CliError(
+          `invalid --color "${opts.color}": expected one of ${COLOR_FLAGS.join(", ")}`,
+        );
+      }
+      if (resolved.budgetOverridesCompact) {
+        io.stderr(`${NAME}: note: --budget ${resolved.budget} overrides --compact\n`);
+      }
+      const code = await runUi({
+        cwd: io.cwd(),
+        env: process.env,
+        stdin: process.stdin,
+        stdout: process.stdout,
+        stderr: io.stderr,
+        colorFlag: opts.color as ColorFlag,
+        budget: resolved.budget,
+        target: adapter.name,
+      });
+      if (code !== 0) throw new CliError("ui exited", code, true);
+    });
+
   program.action(() => {
     program.outputHelp();
   });
@@ -136,7 +186,7 @@ export async function main(argv: string[], io: ProgramIO = defaultIO): Promise<n
     return 0;
   } catch (error) {
     if (error instanceof CliError) {
-      io.stderr(`${NAME}: error: ${error.message}\n`);
+      if (!error.quiet) io.stderr(`${NAME}: error: ${error.message}\n`);
       return error.exitCode;
     }
     throw error;
