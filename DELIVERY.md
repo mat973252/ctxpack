@@ -41,4 +41,5 @@
 - CLI 端到端：独立临时 Git 仓库中先提交基线，再制造 unstaged、含空格文件名的 staged 和中文文件名的 untracked 文件；`capture` 的 branch、HEAD、3 个 changedFiles、staged/unstaged 文件数与 Git 对照一致，最近提交 SHA 正确。重复 capture 的 `state.git` 不变；预填的 goal/blockers 保留。损坏 state 时命令非零退出且原始损坏文件字节不变。
 - 范围与许可证：只修改 M2 所需 Git 采集、schema、CLI/status、测试和 README；`PROJECT.md`、`docs/`、`LICENSE`、依赖与 CI 未改，仍为 Apache-2.0。
 - 已知缺口：`state.json` 与 `manifest.json` 依次直接写入，未实现跨文件原子提交；这不是 M2 已规定的验收项，但崩溃时可能出现一新一旧。Windows 测试使用 Node `v24.19.0`；本机 Node `v24.13.0` 的 `fs.rmSync` 异常仍适用。
-- 下一步：确认 `main` 的 Ubuntu CI 后，按 `docs/devin-m3.md` 单独派发 M3。
+- Ubuntu CI：`main` 提交 `1c8b3dd` 的 [运行 36093196440](https://github.com/mat973252/ctxpack/actions/runs/36093196440) 已通过安装、lint、测试、构建和 CLI 冒烟。
+- 下一步：按 `docs/devin-m3.md` 单独派发 M3。
