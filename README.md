@@ -2,7 +2,7 @@
 
 面向 Coding Agent 的本地上下文打包与交接工具。目标是在切换 Agent、会话或电脑时，保留当前目标、进度、决策、失败经验和验证结果。
 
-项目范围、CLI、技术栈与 M0–M6 里程碑见 [PROJECT.md](PROJECT.md)。目前仅建立项目文档与本地 Git 基线，代码开发由 Devin Cloud 按里程碑交付。
+项目范围、CLI、技术栈与 M0–M6 里程碑见 [PROJECT.md](PROJECT.md)。M0–M7 的 CLI 与 TUI 已按里程碑交付并经维护者独立复核（见 [DELIVERY.md](DELIVERY.md)）；Node 包可本地构建安装，尚未发布到 npm。
 
 ## 开发与验收
 
@@ -32,9 +32,36 @@ node dist/cli.js --help       # CLI 冒烟
 ctxpack init [--project <name>]   # 在当前 Git 仓库创建 .ctxpack/，已有合法文件不会被覆盖
 ctxpack status                    # 只读：输出目标、进度、障碍、下一步与已采集的 Git 状态
 ctxpack capture                   # 读取 Git 工作区，写入 state.json 的 git 字段并更新 manifest.updatedAt
+ctxpack validate                  # 只读：交接前预检，退出码 0/1（见下节）
 ctxpack handoff [--to <target>] [--compact] [--budget <n>]   # 只读：向标准输出生成可交给下一个 Agent 的自包含 Markdown 交接文档
 ctxpack ui [--to <target>] [--compact] [--budget <n>] [--color <mode>]   # 交互式终端界面（见下节）
 ```
+
+### 推荐工作流：init → 编辑 → capture → validate → handoff
+
+```bash
+ctxpack init                      # 一次性：创建 .ctxpack/
+$EDITOR .ctxpack/state.json       # 手工填写 goal、status、nextActions、blockers 等；decisions.md / failures.md 记录决策与失败
+ctxpack capture                   # 记录当前分支、HEAD、改动文件与 diff stat
+ctxpack validate && ctxpack handoff --to codex > HANDOFF.md   # 预检通过才生成交接文档
+```
+
+`validate` 是只读、确定性的交接预检，不改写任何文件（含 `.git/index`，Git 读取以 `GIT_OPTIONAL_LOCKS=0` 执行），不联网、不调用模型、不自动补字段、不自动重新 capture。检查两件事：
+
+1. **必填字段**：`goal` 非空白；`status` 不是 `completed` 时 `nextActions` 至少有一条非空白条目。缺失时给出编辑 `state.json` 的具体建议。记录了 `blockers` 的 `blocked` 项目是合法的交接状态，不算失败。
+2. **Git 快照**：用与 `capture` 相同的读取逻辑（同样排除 `.ctxpack/`）取当前元数据，与 `state.git` 逐字段比较 `branch`、`head`、`headState`、`clean`、`changedFiles`、`changes`、`stat`；不比较 `recentCommits`（作者/日期）。结果分五类：未采集、旧版不完整快照、元数据已变化（列出变化字段与新旧值）、干净且匹配、脏工作区但匹配。已知字段有变化时优先报“已变化”，再判定“不完整”。
+
+| 退出码 | 含义 |
+| --- | --- |
+| `0` | 必填字段齐全，且快照完整、与当前工作区匹配、采集时工作区干净 |
+| `1` | 需要处理：字段缺失、未采集、快照不完整、元数据已变化、脏快照需人工复核、pack 不在 Git 工作区内（报告走 stdout）；或 pack 缺失/损坏、git 不可用等读取错误（诊断走 stderr） |
+
+**局限（必须如实理解）**：
+
+- 脏工作区的快照只有文件名和 diff 行数，**无法证明未提交文件内容没有变化**，因此即使元数据完全一致也判定为需复核并退出 1。
+- 干净且匹配只说明**元数据一致**，不证明语义上仍然新鲜、上下文完整或验证结论仍然成立；这些仍需下一个 Agent 自行判断。
+- `manifest.updatedAt` 是 pack 更新时间，不是可信的采集时间；`validate` 不引入任何 TTL 或时间判断。
+- 不计算文件指纹、不做 schema 迁移。
 
 `handoff` 汇总 `state.json`（目标、进度、障碍、下一步、相关文件、验证结果、上次采集的 Git 状态）与 `decisions.md`、`failures.md`、`project.md`。`decisions.md` 支持 `- [YYYY-MM-DD] <summary> — <reason>`，`failures.md` 支持 `- <approach>: <result> — <reason>`；不符合该格式的原文内容会原样保留在输出中。空字段以 `(not recorded)` 占位。命令只读，不改写任何文件；Git 数据来自最近一次 `capture`，不会自动重新采集。未初始化、JSON 损坏或 schema 非法时以非零退出并报出明确诊断。两次运行间 `.ctxpack/` 无变化时输出完全一致（确定性）。
 

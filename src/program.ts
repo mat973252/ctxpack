@@ -11,6 +11,7 @@ import { capturePack, renderCapture } from "./core/capture.js";
 import { loadHandoff } from "./core/handoff.js";
 import { initPack } from "./core/init.js";
 import { loadStatus, renderStatus } from "./core/status.js";
+import { renderValidate, validatePack } from "./core/validate.js";
 import { StorageError } from "./storage/index.js";
 import { COLOR_FLAGS, type ColorFlag } from "./tui/ansi.js";
 import { runUi } from "./tui/app.js";
@@ -54,7 +55,7 @@ export function createProgram(io: ProgramIO = defaultIO): Command {
     .showHelpAfterError()
     .addHelpText(
       "after",
-      "\nM7: `init`, `status`, `capture`, `handoff` and `ui` are available.\n" +
+      "\nM7: `init`, `status`, `capture`, `handoff` and `ui` are available; `validate` is a read-only handoff preflight (exit 1 = fix or review before handoff).\n" +
         "`handoff --to <target>` renders an agent-specific format (codex, pi, claude); default is generic.\n" +
         `handoff output is capped at an estimated ${DEFAULT_BUDGET} tokens by default; ` +
         `--compact uses ${COMPACT_BUDGET}, and --budget <n> sets it explicitly (--budget wins over --compact).`,
@@ -93,6 +94,17 @@ export function createProgram(io: ProgramIO = defaultIO): Command {
     .action(() => {
       const result = run(() => capturePack({ cwd: io.cwd() }));
       io.stdout(renderCapture(result));
+    });
+
+  program
+    .command("validate")
+    .description(
+      "read-only handoff preflight: require goal/nextActions and compare the captured Git snapshot with the work tree (exit 1 when review is needed)",
+    )
+    .action(() => {
+      const result = run(() => validatePack({ cwd: io.cwd() }));
+      io.stdout(renderValidate(result));
+      if (!result.ok) throw new CliError("validation failed", 1, true);
     });
 
   program

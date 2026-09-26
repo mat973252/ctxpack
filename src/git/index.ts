@@ -25,6 +25,8 @@ export function createGitRunner(root: string): GitRunner {
       return execFileSync("git", args, {
         cwd: root,
         encoding: "utf8",
+        // Read-only queries must never opportunistically rewrite .git/index.
+        env: { ...process.env, GIT_OPTIONAL_LOCKS: "0" },
         stdio: ["ignore", "pipe", "pipe"],
         maxBuffer: 64 * 1024 * 1024,
       });
