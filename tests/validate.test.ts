@@ -148,6 +148,17 @@ describe("validatePack: required fields", () => {
 });
 
 describe("validatePack: Git snapshot", () => {
+  it("accepts complete unborn and detached snapshots with legitimately absent fields", () => {
+    readyPack();
+    capturePack({ cwd: repo });
+    expect(validatePack({ cwd: repo }).git.kind).toBe("match_clean");
+    write("a.txt", "1\n");
+    commit("baseline");
+    git(["checkout", "--detach", "-q"]);
+    capturePack({ cwd: repo });
+    expect(validatePack({ cwd: repo }).git.kind).toBe("match_clean");
+  });
+
   it("passes on captured, clean, matching metadata and says so is metadata consistency only", () => {
     write("a.txt", "1\n");
     commit("baseline");

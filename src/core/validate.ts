@@ -130,6 +130,9 @@ function checkGit(stored: GitState, gitRoot: string | undefined): GitCheck {
   const missingFields: StableGitField[] = [];
   for (const field of STABLE_GIT_FIELDS) {
     if (!(field in stored)) {
+      // These absences are part of the capture format, not legacy data.
+      if (field === "head" && stored.headState === "unborn") continue;
+      if (field === "branch" && stored.headState === "detached") continue;
       missingFields.push(field);
       continue;
     }
