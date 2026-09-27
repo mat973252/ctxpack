@@ -1,6 +1,8 @@
 {
-  "name": "ctxpack",
-  "version": "0.0.1",
+  "name": "@mat973252/ctxpack",
+  "version": "0.1.0",
+  "repository": "github:mat973252/ctxpack",
+  "publishConfig": { "access": "public", "registry": "https://registry.npmjs.org" },
   "description": "Local-first context packing and handoff CLI for coding agents",
   "license": "Apache-2.0",
   "type": "module",

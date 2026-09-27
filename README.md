@@ -2,7 +2,16 @@
 
 面向 Coding Agent 的本地上下文打包与交接工具。目标是在切换 Agent、会话或电脑时，保留当前目标、进度、决策、失败经验和验证结果。
 
-项目范围、CLI、技术栈与 M0–M6 里程碑见 [PROJECT.md](PROJECT.md)。M0–M7 的 CLI 与 TUI 已按里程碑交付并经维护者独立复核（见 [DELIVERY.md](DELIVERY.md)）；Node 包可本地构建安装，尚未发布到 npm。
+项目范围、CLI、技术栈与 M0–M6 里程碑见 [PROJECT.md](PROJECT.md)。M0–M7 的 CLI 与 TUI 已按里程碑交付并经维护者独立复核（见 [DELIVERY.md](DELIVERY.md)）。
+
+## 安装
+
+```bash
+npm install -g @mat973252/ctxpack@0.1.0
+ctxpack --version
+```
+
+需要 Node.js 22+。npm 包名带作者 scope；命令仍是 `ctxpack`。不带 scope 的同名 npm 包属于其他作者。
 
 ## 开发与验收
 

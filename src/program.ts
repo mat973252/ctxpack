@@ -17,7 +17,7 @@ import { COLOR_FLAGS, type ColorFlag } from "./tui/ansi.js";
 import { runUi } from "./tui/app.js";
 
 export const NAME = "ctxpack";
-export const VERSION = "0.0.1";
+export const VERSION = "0.1.0";
 export const DESCRIPTION =
   "Local-first context packing and handoff CLI for coding agents";
 
