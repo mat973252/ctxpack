@@ -17,25 +17,31 @@ import { applyHistoricalEdit } from "./historical-edits.mjs";
 import { historicalCase, taskCommand } from "./historical-case.mjs";
 import { manualHandoff, prepareHandoffInputs, recoveryPrompt } from "./handoff-inputs.mjs";
 import { assertCandidateFiles, candidateCommands, verifyHistoricalCandidate } from "./verify-historical-candidate.mjs";
+import { assertIndependentCwd, assertInputEvidence, claimSamplingSlot, runtimeSnapshot, samplingLimits, sourceFiles } from "./sampling-plan.mjs";
 
-const { values } = parseArgs({ options: { codex: { type: "string" }, image: { type: "string" }, id: { type: "string", default: "markdown-text" }, condition: { type: "string" } } });
+const { values } = parseArgs({ options: { codex: { type: "string" }, image: { type: "string" }, id: { type: "string" }, condition: { type: "string" },
+  plan: { type: "string" }, "plan-sha256": { type: "string" }, slot: { type: "string" } } });
 assert.ok(values.codex, "Supply verified --codex");
 assert.ok(values.condition === undefined || ["manual", "native", "ctxpack"].includes(values.condition));
-const task = historicalCase(values.id);
+assert.ok(values.plan ? values.slot && values["plan-sha256"] && !values.id && !values.condition && !values.image : !values.slot && !values["plan-sha256"]);
+const sampling = values.plan ? claimSamplingSlot(values.plan, values["plan-sha256"], values.slot, resolve(values.codex)) : undefined;
+const condition = sampling?.metadata.condition ?? values.condition;
+const task = historicalCase(sampling?.metadata.task ?? values.id ?? "markdown-text");
 const approved = { files: task.files };
 const frozenImage = task.imageId;
 const sha = (value) => createHash("sha256").update(value).digest("hex");
-const root = mkdtempSync(join(tmpdir(), "ctxpack-real-smoke-"));
-const cwd = join(root, "empty-host"); mkdirSync(cwd);
-const executedSources = join(root, "executed-sources"); mkdirSync(executedSources);
+const root = sampling?.root ?? mkdtempSync(join(tmpdir(), "ctxpack-real-smoke-"));
+let cwd;
+const executedSources = join(root, "executed-sources");
 function captureSource(file) {
   const bytes = readFileSync(new URL(file, import.meta.url));
   writeFileSync(join(executedSources, file), bytes);
   return sha(bytes);
 }
-const limits = { read_file: 24, apply_edit: 4, run_tests: 4, wallMs: 480000 };
-const evidence = { schema: "ctxpack.real-smoke/5", id: task.id, condition: values.condition ?? "coding", formalSample: false, result: "unverified", limits, calls: [], host: {}, violations: [],
-  sourceHashes: Object.fromEntries(["run-real-smoke.mjs", "handoff-inputs.mjs", "access-policy.mjs", "restricted-host.mjs", "recovery-container.mjs", "historical-edits.mjs", "historical-case.mjs", "verify-historical-candidate.mjs", "JavaEditScope.java", "historical-environments-2026-10-03.json", "real-task-files.json", "smoke-environment.json", "HISTORICAL-EXECUTION.md"].map((file) => [file, captureSource(file)])) };
+const limits = samplingLimits;
+const evidence = { schema: "ctxpack.real-smoke/6", id: task.id, condition: condition ?? "coding", formalSample: Boolean(sampling),
+  ...(sampling ? { sampling: sampling.metadata } : {}), createdAt: new Date().toISOString(), result: "unverified", limits,
+  calls: [], host: {}, violations: [], firstRequiredRead: null, sourceHashes: {} };
 let commandCount = 0;
 let host;
 let hostClosed = false;
@@ -44,6 +50,9 @@ let startedAt;
 let candidate;
 let candidateEdit;
 let fatal = false;
+let stage = "initialization";
+let setupDeadline = Infinity;
+let preparationAt;
 const counts = {};
 const readPaths = new Set();
 const testPasses = {};
@@ -78,6 +87,14 @@ function runSuite(environment, suite) {
   return { status: 0, stdout: output, stderr: "" };
 }
 try {
+  cwd = join(sampling ? mkdtempSync(join(tmpdir(), "ctxpack-sampling-host-")) : root, "empty-host");
+  mkdirSync(cwd); mkdirSync(executedSources);
+  assertIndependentCwd(cwd);
+  evidence.hostCwd = cwd;
+  if (sampling) writeFileSync(join(root, "plan.json"), sampling.planBytes, { flag: "wx" });
+  evidence.sourceHashes = Object.fromEntries(sourceFiles.map((file) => [file, captureSource(file)]));
+  writeFileSync(join(root, "evidence.json"), JSON.stringify(evidence, null, 2));
+  stage = "environment";
   const imageId = checked(["image", "inspect", values.image ?? frozenImage, "--format", "{{.Id}}"]);
   assert.equal(imageId, frozenImage);
   evidence.imageId = imageId;
@@ -114,10 +131,10 @@ try {
           const waitingAt = performance.now();
           writeFileSync(join(root, "pending-review.json"), JSON.stringify({ id: task.id, candidateSha256: candidateHash, edit: candidateEdit, approvalFile }, null, 2));
           writeFileSync(join(root, "pending-candidate.txt"), candidate);
-          while (!existsSync(approvalFile) && performance.now() < deadline && isOpen()) await setTimeout(100);
+          try { while (!existsSync(approvalFile) && performance.now() < deadline && isOpen()) await setTimeout(100); }
+          finally { call.sourceReviewWaitMs = performance.now() - waitingAt; }
           assert.ok(isOpen() && performance.now() < deadline);
           assert.equal(readFileSync(approvalFile, "utf8").trim(), candidateHash);
-          call.sourceReviewWaitMs = performance.now() - waitingAt;
         }
         const result = runSuite(worker, args.suite);
         call.exitCode = result.status; call.candidateSha256 = sha(candidate);
@@ -127,10 +144,16 @@ try {
       assertFiles(worker, candidate);
       assert.ok(performance.now() <= deadline);
       call.success = true; call.output = text; call.elapsedMs = performance.now() - startedAt - call.ms;
+      if (evidence.firstRequiredRead === null && tool === "read_file" && [task.source, task.test].includes(args.path)) {
+        evidence.firstRequiredRead = { callIndex: evidence.calls.length - 1, path: args.path, startedMs: call.ms, completedMs: call.ms + call.elapsedMs };
+      }
       writeFileSync(join(root, "calls.json"), JSON.stringify(evidence.calls, null, 2));
       return { success: true, text };
     } catch {
       call.success = false; evidence.violations.push(tool);
+      call.elapsedMs = performance.now() - startedAt - call.ms;
+      call.failureCode = performance.now() >= deadline ? "deadline_exceeded" : fatal ? "environment_command_error" : "scope_budget_or_integrity_rejected";
+      try { writeFileSync(join(root, "calls.json"), JSON.stringify(evidence.calls, null, 2)); } catch { evidence.loggingFailed = true; }
       if (fatal) host?.abort();
       return { success: false, text: "Rejected by frozen task scope, budget or integrity check. Stop if the environment is unavailable." };
     }
@@ -145,29 +168,35 @@ try {
     : task.id === "lens-wal" ? "getRun花括号内部的原始正文（包含换行和缩进），以及紧接方法后新增的最多4个必要private实例辅助方法（helpers包含前置换行/缩进）；禁止字段、构造器、装饰器、静态成员或改签名"
       : `${{ "markdown-text": "stripTemplate", "ctx-fences": "parseList", "relay-clock": "until" }[task.id]}函数体内部正文，不含外层花括号或声明，最多8000字符`;
   tools.push({ type: "function", name: "apply_edit", description: `从冻结原文重新应用完整候选（不累计前次编辑）。范围：${scope}。`, inputSchema: { type: "object", properties, required: Object.keys(properties), additionalProperties: false } });
-  const preparationAt = performance.now();
-  const setupDeadline = preparationAt + 120000;
-  const prepared = values.condition ? prepareHandoffInputs(task, setupDeadline) : undefined;
+  preparationAt = performance.now();
+  stage = "preparation";
+  setupDeadline = preparationAt + 120000;
+  const prepared = condition ? prepareHandoffInputs(task, setupDeadline) : undefined;
   if (prepared) evidence.handoff = { directory: prepared.directory, ...prepared.evidence };
+  if (sampling) assertInputEvidence(sampling.plan.inputs[task.id], prepared.evidence);
   host = await restrictedHost({ executable: resolve(values.codex), cwd, dynamicTools: tools, onTool, evidence: evidence.host, setupDeadline });
-  if (values.condition === "native") {
+  if (sampling) assert.equal(evidence.host.version, sampling.plan.runtime.codex.version);
+  if (condition === "native") {
     await host.turn(prepared.inputs.nativePreparation, setupDeadline, "prepare");
     await host.compact(setupDeadline);
     evidence.handoff.nativeCompacted = true;
   }
   assert.ok(performance.now() < setupDeadline);
   evidence.preparationMs = performance.now() - preparationAt;
-  const history = values.condition === "native" ? "" : values.condition === "ctxpack" ? prepared.inputs.ctxpack : prepared?.inputs.manual ?? manualHandoff(task);
+  const history = condition === "native" ? "" : condition === "ctxpack" ? prepared.inputs.ctxpack : prepared?.inputs.manual ?? manualHandoff(task);
   const prompt = `${history}\n\n${recoveryPrompt(task, scope, limits)}`;
   evidence.prompt = prompt;
   console.log(JSON.stringify({ root, phase: "prepared" }));
   startedAt = performance.now(); deadline = startedAt + limits.wallMs;
+  stage = "recovery";
   await host.turn(prompt, deadline);
   evidence.recoveryMs = performance.now() - startedAt;
   evidence.host.cleanupComplete = await host.close(); hostClosed = true;
+  stage = "protocol";
   host.assertFinalProtocol();
   deadline = Infinity;
   assert.deepEqual(evidence.violations, []);
+  stage = "candidate";
   assert.ok(candidateEdit);
   assert.equal(testPasses.regression, sha(candidate)); assert.equal(testPasses.check, sha(candidate));
   assertFiles(worker, candidate);
@@ -175,20 +204,34 @@ try {
   writeFileSync(join(root, "candidate.txt"), candidate);
   writeFileSync(join(root, "candidate.diff"), worker.exec(["git", "diff", "--", task.source]));
   evidence.candidateSha256 = sha(candidate);
+  stage = "verification";
   evidence.verification = verifyHistoricalCandidate(task.id, candidateEdit, sha(candidate));
   assert.equal(evidence.verification.evidence.result, "verified_pending_source_review");
   evidence.result = "verified_pending_source_review";
 } catch {
   evidence.result = "failed"; evidence.failedAfterCommand = commandCount; process.exitCode = 1;
+  evidence.failure = { phase: stage, code: performance.now() >= (stage === "preparation" ? setupDeadline : deadline)
+    ? "deadline_exceeded" : fatal ? "environment_command_error" : evidence.violations.length ? "broker_rejection" : `${stage}_failed` };
 } finally {
+  if (startedAt !== undefined && evidence.recoveryMs === undefined) evidence.recoveryMs = performance.now() - startedAt;
+  if (preparationAt !== undefined && evidence.preparationMs === undefined) evidence.preparationMs = performance.now() - preparationAt;
   deadline = Infinity;
   if (!hostClosed) evidence.host.cleanupComplete = host ? await host.close() : evidence.host.cleanupComplete ?? true;
   evidence.workerCleanupComplete = worker.close(); evidence.verifierCleanupComplete = evidence.verification?.evidence.cleanupComplete ?? true;
-  if (!evidence.host.cleanupComplete || !evidence.workerCleanupComplete || !evidence.verifierCleanupComplete) { evidence.result = "cleanup_failed"; process.exitCode = 1; }
+  if (!evidence.host.cleanupComplete || !evidence.workerCleanupComplete || !evidence.verifierCleanupComplete) {
+    evidence.cleanupFailure = true; evidence.failure ??= { phase: "cleanup", code: "cleanup_failed" };
+    evidence.result = "cleanup_failed"; process.exitCode = 1;
+  }
   try {
+    if (sampling) {
+      try { assert.deepEqual(runtimeSnapshot(resolve(values.codex)), sampling.plan.runtime); evidence.runtimeUnchanged = true; }
+      catch { evidence.runtimeUnchanged = false; evidence.result = "runtime_changed"; process.exitCode = 1; }
+    }
     if (candidateEdit) { writeFileSync(join(root, "candidate-edit.json"), JSON.stringify(candidateEdit)); writeFileSync(join(root, "candidate.txt"), candidate); }
     if (evidence.loggingFailed) { evidence.result = "evidence_write_failed"; process.exitCode = 1; }
     writeFileSync(join(root, "evidence.json"), JSON.stringify(evidence, null, 2));
+    if (sampling) writeFileSync(join(root, "completion.json"), JSON.stringify({ terminal: true, result: evidence.result,
+      planSha256: sampling.metadata.planSha256, slotId: sampling.metadata.id, completedAt: new Date().toISOString() }, null, 2), { flag: "wx" });
   } catch { evidence.result = "evidence_write_failed"; process.exitCode = 1; }
   console.log(JSON.stringify({ root, result: evidence.result, calls: evidence.calls.length, verification: evidence.verification?.root }));
 }
