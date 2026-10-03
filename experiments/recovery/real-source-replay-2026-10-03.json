@@ -1,0 +1,119 @@
+{
+  "schema": "ctxpack.real-source-replay/1",
+  "node": "v24.19.0",
+  "scope": "Historical source declarations only; not a full CLI or model recovery trial",
+  "results": [
+    {
+      "label": "baseline",
+      "revision": "6e0c89555e6afb5f71c5f87812a679c97edcc057",
+      "declarations": [
+        {
+          "revision": "6e0c89555e6afb5f71c5f87812a679c97edcc057",
+          "file": "src/core/init.ts",
+          "symbol": "MARKDOWN_TEMPLATES",
+          "startLine": 35,
+          "endLine": 45,
+          "sourceSha256": "dd600e83edc9bbec354ce2f7955f88d170f22b49465fe1feaae622b639ad5c39"
+        },
+        {
+          "revision": "6e0c89555e6afb5f71c5f87812a679c97edcc057",
+          "file": "src/core/handoff.ts",
+          "symbol": "stripTemplate",
+          "startLine": 102,
+          "endLine": 108,
+          "sourceSha256": "0f0cdd1e8d9f66079b05a1aa9f54224eb6bad9bfa8c9db688d32d094f1bad9cf"
+        }
+      ],
+      "cases": [
+        {
+          "key": "project",
+          "input": "# Project\n\nDescribe the project purpose, scope and constraints.\n\nMy notes  \n\n```markdown\n# Project\n\nDescribe the project purpose, scope and constraints.\n```\n",
+          "expected": "My notes  \n\n```markdown\n# Project\n\nDescribe the project purpose, scope and constraints.\n```",
+          "actual": "My notes\n```markdown\n```",
+          "crlfActual": "My notes\n```markdown\n```",
+          "preserved": false
+        },
+        {
+          "key": "decisions",
+          "input": "# Decisions\n\nRecord important design decisions.\n\nFormat: `- [YYYY-MM-DD] <summary> — <reason>`\n\nMy notes  \n\n```markdown\n# Decisions\n\nRecord important design decisions.\n\nFormat: `- [YYYY-MM-DD] <summary> — <reason>`\n```\n",
+          "expected": "My notes  \n\n```markdown\n# Decisions\n\nRecord important design decisions.\n\nFormat: `- [YYYY-MM-DD] <summary> — <reason>`\n```",
+          "actual": "My notes\n```markdown\n```",
+          "crlfActual": "My notes\n```markdown\n```",
+          "preserved": false
+        },
+        {
+          "key": "failures",
+          "input": "# Failed Approaches\n\nRecord approaches that were tried and did not work, so the next agent does not repeat them.\n\nFormat: `- <approach>: <result> — <reason>`\n\nMy notes  \n\n```markdown\n# Failed Approaches\n\nRecord approaches that were tried and did not work, so the next agent does not repeat them.\n\nFormat: `- <approach>: <result> — <reason>`\n```\n",
+          "expected": "My notes  \n\n```markdown\n# Failed Approaches\n\nRecord approaches that were tried and did not work, so the next agent does not repeat them.\n\nFormat: `- <approach>: <result> — <reason>`\n```",
+          "actual": "My notes\n```markdown\n```",
+          "crlfActual": "My notes\n```markdown\n```",
+          "preserved": false
+        },
+        {
+          "key": "commands",
+          "input": "# Commands\n\nList the commands used to install, lint, test, build and run.\n\nMy notes  \n\n```markdown\n# Commands\n\nList the commands used to install, lint, test, build and run.\n```\n",
+          "expected": "My notes  \n\n```markdown\n# Commands\n\nList the commands used to install, lint, test, build and run.\n```",
+          "actual": "My notes\n```markdown\n```",
+          "crlfActual": "My notes\n```markdown\n```",
+          "preserved": false
+        }
+      ]
+    },
+    {
+      "label": "candidate",
+      "revision": "7cdd523c7b1d1aa23194855053c44e7644b08cf4",
+      "declarations": [
+        {
+          "revision": "7cdd523c7b1d1aa23194855053c44e7644b08cf4",
+          "file": "src/core/init.ts",
+          "symbol": "MARKDOWN_TEMPLATES",
+          "startLine": 38,
+          "endLine": 48,
+          "sourceSha256": "9e0d28d34b1939bddf003cad064800030b47468778fa0c8522f928f53306cc2d"
+        },
+        {
+          "revision": "7cdd523c7b1d1aa23194855053c44e7644b08cf4",
+          "file": "src/core/handoff.ts",
+          "symbol": "stripTemplate",
+          "startLine": 102,
+          "endLine": 110,
+          "sourceSha256": "79b4cc04722f58fa02bf870b59124b7957f76e947ef1e3c9e54019bbd80d63a6"
+        }
+      ],
+      "cases": [
+        {
+          "key": "project",
+          "input": "# Project\n\nDescribe the project purpose, scope and constraints.\n\nMy notes  \n\n```markdown\n# Project\n\nDescribe the project purpose, scope and constraints.\n```\n",
+          "expected": "My notes  \n\n```markdown\n# Project\n\nDescribe the project purpose, scope and constraints.\n```",
+          "actual": "My notes  \n\n```markdown\n# Project\n\nDescribe the project purpose, scope and constraints.\n```",
+          "crlfActual": "My notes  \n\n```markdown\n# Project\n\nDescribe the project purpose, scope and constraints.\n```",
+          "preserved": true
+        },
+        {
+          "key": "decisions",
+          "input": "# Decisions\n\nRecord important design decisions.\n\nFormat: `- [YYYY-MM-DD] <summary> — <reason>`\n\nMy notes  \n\n```markdown\n# Decisions\n\nRecord important design decisions.\n\nFormat: `- [YYYY-MM-DD] <summary> — <reason>`\n```\n",
+          "expected": "My notes  \n\n```markdown\n# Decisions\n\nRecord important design decisions.\n\nFormat: `- [YYYY-MM-DD] <summary> — <reason>`\n```",
+          "actual": "My notes  \n\n```markdown\n# Decisions\n\nRecord important design decisions.\n\nFormat: `- [YYYY-MM-DD] <summary> — <reason>`\n```",
+          "crlfActual": "My notes  \n\n```markdown\n# Decisions\n\nRecord important design decisions.\n\nFormat: `- [YYYY-MM-DD] <summary> — <reason>`\n```",
+          "preserved": true
+        },
+        {
+          "key": "failures",
+          "input": "# Failed Approaches\n\nRecord approaches that were tried and did not work, so the next agent does not repeat them.\n\nFormat: `- <approach>: <result> — <reason>`\n\nMy notes  \n\n```markdown\n# Failed Approaches\n\nRecord approaches that were tried and did not work, so the next agent does not repeat them.\n\nFormat: `- <approach>: <result> — <reason>`\n```\n",
+          "expected": "My notes  \n\n```markdown\n# Failed Approaches\n\nRecord approaches that were tried and did not work, so the next agent does not repeat them.\n\nFormat: `- <approach>: <result> — <reason>`\n```",
+          "actual": "My notes  \n\n```markdown\n# Failed Approaches\n\nRecord approaches that were tried and did not work, so the next agent does not repeat them.\n\nFormat: `- <approach>: <result> — <reason>`\n```",
+          "crlfActual": "My notes  \n\n```markdown\n# Failed Approaches\n\nRecord approaches that were tried and did not work, so the next agent does not repeat them.\n\nFormat: `- <approach>: <result> — <reason>`\n```",
+          "preserved": true
+        },
+        {
+          "key": "commands",
+          "input": "# Commands\n\nList the commands used to install, lint, test, build and run.\n\nMy notes  \n\n```markdown\n# Commands\n\nList the commands used to install, lint, test, build and run.\n```\n",
+          "expected": "My notes  \n\n```markdown\n# Commands\n\nList the commands used to install, lint, test, build and run.\n```",
+          "actual": "My notes  \n\n```markdown\n# Commands\n\nList the commands used to install, lint, test, build and run.\n```",
+          "crlfActual": "My notes  \n\n```markdown\n# Commands\n\nList the commands used to install, lint, test, build and run.\n```",
+          "preserved": true
+        }
+      ]
+    }
+  ]
+}
