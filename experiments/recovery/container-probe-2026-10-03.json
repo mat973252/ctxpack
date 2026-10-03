@@ -1,0 +1,68 @@
+{
+  "schema": "ctxpack.container-probe/2",
+  "result": "bounded_container_probe_passed",
+  "tests": {
+    "exitCode": 1,
+    "commandLog": "command-10.log",
+    "failedTests": 8,
+    "titles": [
+      "preserves project text",
+      "preserves decisions text",
+      "preserves failures text",
+      "preserves commands text",
+      "preserves text through generic without writing",
+      "preserves text through codex without writing",
+      "preserves text through pi without writing",
+      "preserves text through claude without writing"
+    ],
+    "unhandledErrors": []
+  },
+  "sourceHashes": {
+    "Containerfile": "0f703383d6676d0a2447d9344f1a6eb5ba782d2d10f593745d39d0e0ec741b89",
+    "probe-container-isolation.mjs": "d9229535deb7b602c1ec208a2b01805afeb49c39e625fba4578ca207c8388933",
+    "container-report.mjs": "cb80e606a5b3be4c34d138e2e4b36c3cc37acdc71a28d9ad8ee821bc6bcb1201",
+    "real-task-files.json": "129cacf817d0317d2ae26961c30e103a570dd8429701d74020b74ba5cac5948f"
+  },
+  "imageId": "sha256:8c3b08e1addc12193851b5cc89a56a91d892639dd9887e844595458e9bb7605e",
+  "profile": {
+    "user": "1000:1000",
+    "network": "none",
+    "readOnlyRoot": true,
+    "capDrop": [
+      "ALL"
+    ],
+    "securityOpt": [
+      "no-new-privileges:true"
+    ],
+    "memory": 1073741824,
+    "pids": 128,
+    "nanoCpus": 2000000000,
+    "envNames": [
+      "CI",
+      "NODE_VERSION",
+      "PATH",
+      "YARN_VERSION"
+    ],
+    "mountTypes": [
+      "volume"
+    ],
+    "tmpfs": {
+      "/tmp": "rw,noexec,nosuid,size=134217728"
+    }
+  },
+  "approvedFiles": 52,
+  "baselineArchiveSha256": "53c290013a3ff4e0dfeea4c7e7a4ac7f94ce5dc8eb48f06dd9b719546281fedf",
+  "pnpmVersion": "10.17.1",
+  "gitVersion": "git version 2.39.5",
+  "observed": {
+    "node": "v22.23.3",
+    "uid": 1000,
+    "rootWrite": "EROFS",
+    "network": "ENETUNREACH",
+    "handoffSha256": "5ad1a13f156c2b27e5f8e928f2e1b1f37d1e0558ac67db393ba8793878d9f871",
+    "handoffLfSha256": "0f0cdd1e8d9f66079b05a1aa9f54224eb6bad9bfa8c9db688d32d094f1bad9cf",
+    "regressionSha256": "699a5855bebfdfbf8fb5f00e7056e75c90622410f52f0dbf2f22b42e7fdc3ff6"
+  },
+  "cleanupComplete": true,
+  "redactedHostPaths": true
+}

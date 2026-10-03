@@ -98,13 +98,15 @@ export function parseFailures(text: string): ParsedMarkdown<Failure> {
   });
 }
 
-/** Returns the user-authored lines of a Markdown file, dropping the lines that `init` wrote as a template. */
+/** Drop only an unchanged initial template; matching text elsewhere belongs to the user. */
 export function stripTemplate(text: string, key: MarkdownKey): string[] {
-  const templateLines = new Set(MARKDOWN_TEMPLATES[key].split(/\r?\n/).map((l) => l.trim()));
-  return text
-    .split(/\r?\n/)
-    .map((line) => line.trimEnd())
-    .filter((line) => line.trim() !== "" && !templateLines.has(line.trim()));
+  const normalized = text.replace(/\r\n/g, "\n");
+  const template = MARKDOWN_TEMPLATES[key];
+  const body = normalized.startsWith(template) ? normalized.slice(template.length) : normalized;
+  const lines = body.split("\n");
+  while (lines.length > 0 && lines[0]?.trim() === "") lines.shift();
+  while (lines.length > 0 && lines.at(-1)?.trim() === "") lines.pop();
+  return lines;
 }
 
 function parseList<T>(
@@ -114,7 +116,20 @@ function parseList<T>(
 ): ParsedMarkdown<T> {
   const entries: T[] = [];
   const notes: string[] = [];
+  let fence: string | undefined;
   for (const line of stripTemplate(text, key)) {
+    if (fence !== undefined) {
+      notes.push(line);
+      const closing = /^ {0,3}(`{3,}|~{3,})\s*$/.exec(line)?.[1];
+      if (closing !== undefined && closing[0] === fence[0] && closing.length >= fence.length) fence = undefined;
+      continue;
+    }
+    const opening = /^ {0,3}(`{3,}|~{3,})(.*)$/.exec(line);
+    if (opening && !(opening[1]?.[0] === "`" && opening[2]?.includes("`"))) {
+      fence = opening[1];
+      notes.push(line);
+      continue;
+    }
     const entry = parseItem(line.trim());
     if (entry) entries.push(entry);
     else notes.push(line);

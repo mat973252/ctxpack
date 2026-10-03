@@ -247,7 +247,7 @@ describe("git parsers", () => {
 });
 
 describe("capturePack", () => {
-  it("writes state.git and manifest.updatedAt only, preserving user state and other files", () => {
+  it("writes captured fields and transaction metadata, preserving other user files", () => {
     write("a.txt", "1\n");
     commit("baseline");
     const t0 = new Date("2026-09-25T00:00:00.000Z");
@@ -262,7 +262,7 @@ describe("capturePack", () => {
     writeFileSync(paths.state, JSON.stringify(state, null, 2) + "\n");
     writeFileSync(paths.decisions, "# Decisions\n\n- SQLite first\n");
     writeFileSync(paths.artifacts, JSON.stringify({ schemaVersion: 1, artifacts: [{ path: "x" }] }) + "\n");
-    const beforeOthers = hashTree(paths.dir, ["state.json", "manifest.json"]);
+    const beforeOthers = hashTree(paths.dir, ["state.json", "manifest.json", ".capture-revision"]);
     const beforeManifest = readManifest();
 
     write("a.txt", "2\n");
@@ -283,7 +283,8 @@ describe("capturePack", () => {
 
     const manifest = readManifest();
     expect(manifest).toEqual({ ...beforeManifest, updatedAt: t1.toISOString() });
-    expect(hashTree(paths.dir, ["state.json", "manifest.json"])).toBe(beforeOthers);
+    expect(hashTree(paths.dir, ["state.json", "manifest.json", ".capture-revision"])).toBe(beforeOthers);
+    expect(existsSync(path.join(paths.dir, ".capture-pending"))).toBe(false);
   });
 
   it("is stable across repeated captures when the work tree is unchanged", () => {

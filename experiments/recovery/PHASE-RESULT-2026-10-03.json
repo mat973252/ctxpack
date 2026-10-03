@@ -1,0 +1,396 @@
+{
+  "planSha256": "b4ef0927038d7b224e03da646a4f97a1dc9f7e68f4d0949641ca3387fe087f99",
+  "modelReturned": "gpt-6.1-sol",
+  "requestedEffort": "medium",
+  "effectiveEffortVerified": false,
+  "provisional": false,
+  "scope": "Read-only phase diagnostic; not coding performance, old-failure causality or independent adoption",
+  "rows": [
+    {
+      "id": "01-relay-clock-manual-implicit-r1",
+      "task": "relay-clock",
+      "condition": "manual",
+      "style": "implicit",
+      "repeat": 1,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 8147.406499999999,
+      "recoveryMs": 11195.6168
+    },
+    {
+      "id": "02-relay-clock-manual-explicit-r1",
+      "task": "relay-clock",
+      "condition": "manual",
+      "style": "explicit",
+      "repeat": 1,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 5426.7817,
+      "recoveryMs": 8046.927900000001
+    },
+    {
+      "id": "03-relay-clock-native-explicit-r1",
+      "task": "relay-clock",
+      "condition": "native",
+      "style": "explicit",
+      "repeat": 1,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 2193.727500000001,
+      "recoveryMs": 4578.232799999998
+    },
+    {
+      "id": "04-relay-clock-native-implicit-r1",
+      "task": "relay-clock",
+      "condition": "native",
+      "style": "implicit",
+      "repeat": 1,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 2746.4051,
+      "recoveryMs": 5062.8848
+    },
+    {
+      "id": "05-relay-clock-ctxpack-implicit-r1",
+      "task": "relay-clock",
+      "condition": "ctxpack",
+      "style": "implicit",
+      "repeat": 1,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 7225.588500000001,
+      "recoveryMs": 9667.4958
+    },
+    {
+      "id": "06-relay-clock-ctxpack-explicit-r1",
+      "task": "relay-clock",
+      "condition": "ctxpack",
+      "style": "explicit",
+      "repeat": 1,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 5844.9241999999995,
+      "recoveryMs": 9643.3222
+    },
+    {
+      "id": "07-markdown-text-native-implicit-r1",
+      "task": "markdown-text",
+      "condition": "native",
+      "style": "implicit",
+      "repeat": 1,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 2288.685300000001,
+      "recoveryMs": 4350.4221
+    },
+    {
+      "id": "08-markdown-text-native-explicit-r1",
+      "task": "markdown-text",
+      "condition": "native",
+      "style": "explicit",
+      "repeat": 1,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 2385.6543999999994,
+      "recoveryMs": 4733.945
+    },
+    {
+      "id": "09-markdown-text-ctxpack-explicit-r1",
+      "task": "markdown-text",
+      "condition": "ctxpack",
+      "style": "explicit",
+      "repeat": 1,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 8701.510999999999,
+      "recoveryMs": 11124.615399999999
+    },
+    {
+      "id": "10-markdown-text-ctxpack-implicit-r1",
+      "task": "markdown-text",
+      "condition": "ctxpack",
+      "style": "implicit",
+      "repeat": 1,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 8050.623200000001,
+      "recoveryMs": 10855.709200000001
+    },
+    {
+      "id": "11-markdown-text-manual-explicit-r1",
+      "task": "markdown-text",
+      "condition": "manual",
+      "style": "explicit",
+      "repeat": 1,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 7339.3465,
+      "recoveryMs": 10949.4041
+    },
+    {
+      "id": "12-markdown-text-manual-implicit-r1",
+      "task": "markdown-text",
+      "condition": "manual",
+      "style": "implicit",
+      "repeat": 1,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 6031.311199999999,
+      "recoveryMs": 8301.167000000001
+    },
+    {
+      "id": "13-relay-clock-native-implicit-r2",
+      "task": "relay-clock",
+      "condition": "native",
+      "style": "implicit",
+      "repeat": 2,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 3417.5106000000014,
+      "recoveryMs": 6514.7441
+    },
+    {
+      "id": "14-relay-clock-native-explicit-r2",
+      "task": "relay-clock",
+      "condition": "native",
+      "style": "explicit",
+      "repeat": 2,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 2136.893699999997,
+      "recoveryMs": 4865.401099999999
+    },
+    {
+      "id": "15-relay-clock-ctxpack-explicit-r2",
+      "task": "relay-clock",
+      "condition": "ctxpack",
+      "style": "explicit",
+      "repeat": 2,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 6368.9039,
+      "recoveryMs": 8948.9653
+    },
+    {
+      "id": "16-relay-clock-ctxpack-implicit-r2",
+      "task": "relay-clock",
+      "condition": "ctxpack",
+      "style": "implicit",
+      "repeat": 2,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 7330.421600000001,
+      "recoveryMs": 9313.712
+    },
+    {
+      "id": "17-relay-clock-manual-explicit-r2",
+      "task": "relay-clock",
+      "condition": "manual",
+      "style": "explicit",
+      "repeat": 2,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 9158.2711,
+      "recoveryMs": 12099.773
+    },
+    {
+      "id": "18-relay-clock-manual-implicit-r2",
+      "task": "relay-clock",
+      "condition": "manual",
+      "style": "implicit",
+      "repeat": 2,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 6345.4539,
+      "recoveryMs": 8867.552599999999
+    },
+    {
+      "id": "19-markdown-text-ctxpack-implicit-r2",
+      "task": "markdown-text",
+      "condition": "ctxpack",
+      "style": "implicit",
+      "repeat": 2,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 6169.274300000001,
+      "recoveryMs": 8157.000900000001
+    },
+    {
+      "id": "20-markdown-text-ctxpack-explicit-r2",
+      "task": "markdown-text",
+      "condition": "ctxpack",
+      "style": "explicit",
+      "repeat": 2,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 7489.3096000000005,
+      "recoveryMs": 9833.5492
+    },
+    {
+      "id": "21-markdown-text-manual-implicit-r2",
+      "task": "markdown-text",
+      "condition": "manual",
+      "style": "implicit",
+      "repeat": 2,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 8086.211300000001,
+      "recoveryMs": 11417.4706
+    },
+    {
+      "id": "22-markdown-text-manual-explicit-r2",
+      "task": "markdown-text",
+      "condition": "manual",
+      "style": "explicit",
+      "repeat": 2,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 8761.178600000001,
+      "recoveryMs": 10837.0413
+    },
+    {
+      "id": "23-markdown-text-native-explicit-r2",
+      "task": "markdown-text",
+      "condition": "native",
+      "style": "explicit",
+      "repeat": 2,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 2628.6185000000005,
+      "recoveryMs": 7547.584699999999
+    },
+    {
+      "id": "24-markdown-text-native-implicit-r2",
+      "task": "markdown-text",
+      "condition": "native",
+      "style": "implicit",
+      "repeat": 2,
+      "result": "passed",
+      "reads": 1,
+      "firstReadMs": 2839.9981000000007,
+      "recoveryMs": 4695.038499999999
+    }
+  ],
+  "groups": [
+    {
+      "task": "relay-clock",
+      "condition": "manual",
+      "style": "implicit",
+      "planned": 2,
+      "passed": 2,
+      "failed": 0,
+      "firstReadN": 2,
+      "firstReadMedianMs": 7246.4302
+    },
+    {
+      "task": "relay-clock",
+      "condition": "manual",
+      "style": "explicit",
+      "planned": 2,
+      "passed": 2,
+      "failed": 0,
+      "firstReadN": 2,
+      "firstReadMedianMs": 7292.5264
+    },
+    {
+      "task": "relay-clock",
+      "condition": "native",
+      "style": "implicit",
+      "planned": 2,
+      "passed": 2,
+      "failed": 0,
+      "firstReadN": 2,
+      "firstReadMedianMs": 3081.9578500000007
+    },
+    {
+      "task": "relay-clock",
+      "condition": "native",
+      "style": "explicit",
+      "planned": 2,
+      "passed": 2,
+      "failed": 0,
+      "firstReadN": 2,
+      "firstReadMedianMs": 2165.310599999999
+    },
+    {
+      "task": "relay-clock",
+      "condition": "ctxpack",
+      "style": "implicit",
+      "planned": 2,
+      "passed": 2,
+      "failed": 0,
+      "firstReadN": 2,
+      "firstReadMedianMs": 7278.005050000001
+    },
+    {
+      "task": "relay-clock",
+      "condition": "ctxpack",
+      "style": "explicit",
+      "planned": 2,
+      "passed": 2,
+      "failed": 0,
+      "firstReadN": 2,
+      "firstReadMedianMs": 6106.914049999999
+    },
+    {
+      "task": "markdown-text",
+      "condition": "manual",
+      "style": "implicit",
+      "planned": 2,
+      "passed": 2,
+      "failed": 0,
+      "firstReadN": 2,
+      "firstReadMedianMs": 7058.76125
+    },
+    {
+      "task": "markdown-text",
+      "condition": "manual",
+      "style": "explicit",
+      "planned": 2,
+      "passed": 2,
+      "failed": 0,
+      "firstReadN": 2,
+      "firstReadMedianMs": 8050.26255
+    },
+    {
+      "task": "markdown-text",
+      "condition": "native",
+      "style": "implicit",
+      "planned": 2,
+      "passed": 2,
+      "failed": 0,
+      "firstReadN": 2,
+      "firstReadMedianMs": 2564.341700000001
+    },
+    {
+      "task": "markdown-text",
+      "condition": "native",
+      "style": "explicit",
+      "planned": 2,
+      "passed": 2,
+      "failed": 0,
+      "firstReadN": 2,
+      "firstReadMedianMs": 2507.13645
+    },
+    {
+      "task": "markdown-text",
+      "condition": "ctxpack",
+      "style": "implicit",
+      "planned": 2,
+      "passed": 2,
+      "failed": 0,
+      "firstReadN": 2,
+      "firstReadMedianMs": 7109.948750000001
+    },
+    {
+      "task": "markdown-text",
+      "condition": "ctxpack",
+      "style": "explicit",
+      "planned": 2,
+      "passed": 2,
+      "failed": 0,
+      "firstReadN": 2,
+      "firstReadMedianMs": 8095.4103
+    }
+  ]
+}

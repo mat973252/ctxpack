@@ -1,0 +1,198 @@
+{
+  "schema": "ctxpack.historical-calibration/1",
+  "date": "2026-10-03",
+  "platform": "Windows",
+  "node": "24.19.0",
+  "java": "21.0.9",
+  "modelCodingSamples": 0,
+  "formalComparisonSamples": 0,
+  "scope": "Maintainer reference calibration, not adoption or model performance",
+  "materializerSha256": "7a4e48b47d169b55f0faca48e7d8be3316b515a5ee544340ab32dd452077619d",
+  "cases": [
+    {
+      "id": "ctx-fences",
+      "baseline": {
+        "revision": "6e0c89555e6afb5f71c5f87812a679c97edcc057",
+        "tests": 4,
+        "failed": 4,
+        "failures": [
+          {
+            "test": "keeps backtick decision examples in notes and parses the following fact",
+            "firstMessageLine": "AssertionError: expected { …(2) } to deeply equal { entries: [ { …(3) } ], …(1) }"
+          },
+          {
+            "test": "does not close a tilde example with a shorter fence",
+            "firstMessageLine": "AssertionError: expected { entries: [ { …(3) }, …(2) ], …(1) } to deeply equal { entries: [ { …(3) } ], …(1) }"
+          },
+          {
+            "test": "does not close a backtick example with the other fence marker",
+            "firstMessageLine": "AssertionError: expected { …(2) } to deeply equal { entries: [ { …(3) } ], …(1) }"
+          },
+          {
+            "test": "keeps an unclosed decision example entirely in notes",
+            "firstMessageLine": "AssertionError: expected { entries: [ { …(3) } ], …(1) } to deeply equal { entries: [], notes: [ …(2) ] }"
+          }
+        ]
+      },
+      "reference": "7cdd523c7b1d1aa23194855053c44e7644b08cf4",
+      "source": "src/core/handoff.ts",
+      "test": "tests/recovery-fences.test.ts",
+      "baselineArchiveSha256": "53c290013a3ff4e0dfeea4c7e7a4ac7f94ce5dc8eb48f06dd9b719546281fedf",
+      "regressionSha256": "9231db85db5aaf58e7af099c6fe4d8d7b5b3304602eab4881e2d1767abc18433",
+      "sourceSha256": "5ad1a13f156c2b27e5f8e928f2e1b1f37d1e0558ac67db393ba8793878d9f871",
+      "beforeSha256": "5ad1a13f156c2b27e5f8e928f2e1b1f37d1e0558ac67db393ba8793878d9f871",
+      "afterSha256": "880d0ce682a78cf413bb441dc36c0c5e605b01a39f2569a74c4cc5e422fafb6f",
+      "testBeforeSha256": "9231db85db5aaf58e7af099c6fe4d8d7b5b3304602eab4881e2d1767abc18433",
+      "testAfterSha256": "9231db85db5aaf58e7af099c6fe4d8d7b5b3304602eab4881e2d1767abc18433",
+      "outsideBefore": "a04eb88f99468f96cb55393ad89ac9693c0008fa1421aebeb4d06d1712db30ba",
+      "outsideAfter": "a04eb88f99468f96cb55393ad89ac9693c0008fa1421aebeb4d06d1712db30ba",
+      "provenance": "Maintainer known historical reference, not a model recovery result",
+      "singleCommitWithoutRemote": true,
+      "referenceChangesOnlyAllowedFile": true,
+      "referenceAcceptance": {
+        "passed": 156,
+        "failed": 0,
+        "skipped": 0,
+        "checkExit": 0
+      },
+      "rawEvidenceSha256": {
+        "material-ctx-fences-20261003.json": "dea221e69ae01665584c02eb1256de8ce035ac7545e59dd91fb3b2a506148f61",
+        "material-ctx-fences-green.log": "af77aa1df0a6626270d2f0776919c7eeb7522aafed6b7bc0ff3744369044bf2f",
+        "material-ctx-fences-install.log": "2fccf639e6e603b7f95ca9d1128a7faf182ad50e57c651d62e4f16d537d2a43b",
+        "material-ctx-fences-red.json": "f8190193bb71078db35db64415c9da8cb79d2c7e50c53092157a5d63889626bc",
+        "material-ctx-fences-red.log": "2ab42f8e2f8a6fa8ca344eaaa94426e56d3825cb7225a8bbeaf07e810a6a7db3",
+        "material-ctx-fences-reference.diff": "b7d526a670bdb716e720408aef73dbc46c2f3d5d478dc5837ff28fce42e01cb3",
+        "material-ctx-fences-reference.json": "bb56aff0347196460e1b5b04b2f46efebd60bb74792bde056bd451ed4f7886a3"
+      }
+    },
+    {
+      "id": "lens-wal",
+      "baseline": {
+        "revision": "784c511b89982472f4d09bc624536b030ae16be2",
+        "tests": 14,
+        "failed": 1,
+        "failures": [
+          {
+            "test": "reads one committed snapshot when another connection finishes between queries",
+            "firstMessageLine": "AgentLensStorageError: Run 80159da4-0f52-4d04-8c5e-dd304c4bb4f3 is stored in an invalid state: Invalid Run: ✖ a running run cannot end with run.completed"
+          }
+        ]
+      },
+      "reference": "5e5cf3da3cf9cdc5ec5b5bbc425869da53a7579d",
+      "source": "src/storage/sqlite/store.ts",
+      "test": "tests/incremental-recorder.test.ts",
+      "baselineArchiveSha256": "db9ae6e105182061959a61083e1ab8337f535260dfaf60604386cea2de2380f4",
+      "regressionSha256": "da0bf652271f33d074cb07bcf6308ffaa8236adb415bc3f5aa88e1f396932794",
+      "sourceSha256": "eb18a3a4b970182dbb235761958b877c0304bf3ddb0ff0c552bbfb78355904fd",
+      "beforeSha256": "eb18a3a4b970182dbb235761958b877c0304bf3ddb0ff0c552bbfb78355904fd",
+      "afterSha256": "b4785ed2dd701da145fb375a1265c42008dcdafef70b613777f5503ee9f99e3d",
+      "testBeforeSha256": "da0bf652271f33d074cb07bcf6308ffaa8236adb415bc3f5aa88e1f396932794",
+      "testAfterSha256": "da0bf652271f33d074cb07bcf6308ffaa8236adb415bc3f5aa88e1f396932794",
+      "provenance": "Maintainer known historical reference, not a model recovery result",
+      "singleCommitWithoutRemote": true,
+      "referenceChangesOnlyAllowedFile": true,
+      "referenceAcceptance": {
+        "passed": 266,
+        "failed": 0,
+        "skipped": 0,
+        "lint": true,
+        "build": true
+      },
+      "rawEvidenceSha256": {
+        "material-lens-wal-20261003.json": "c62dfa22ca24836f6c99702386cc771bc1c611998b91b5f3c487e1af5a50da58",
+        "material-lens-wal-build.log": "01ee2373a82566ac4f2b906284479b0d272798a85c1d4d0b20158141c61eaf9e",
+        "material-lens-wal-green.json": "d78dc593c391388088eecc234c9b801dfaa5aaeed206fd3e9e986205781a8246",
+        "material-lens-wal-green.log": "a2a4c810f42717a33e883dfa4c343910f4fbf61b2bf74d279cdd0cd9e3756199",
+        "material-lens-wal-install.log": "f61b8cf86817ad879c05902ad432f18dd2e0bdc8339693b4fb1b7a591b279965",
+        "material-lens-wal-lint.log": "4a3d9c654871a2e7bd8e497dba15c983b59235eff335ba75baee25cede86d958",
+        "material-lens-wal-red.json": "8d797b0bc2ca39d8d280a31338daf910432bcbe5449d8442917a6b92cef24f6e",
+        "material-lens-wal-red.log": "1365e98d44104cbe9430dbb0131643c32a426696945c77d660b5a1f4005968c0",
+        "material-lens-wal-reference.diff": "ff2714a4ac710e859b5893d83fd9a43320f171759405c590d853838505b28d5a",
+        "material-lens-wal-reference.json": "9170ccd45e1c0b46336f63b92dbefa9db4e96efdfb600a10639fb320f10b57da"
+      }
+    },
+    {
+      "id": "relay-clock",
+      "baseline": {
+        "revision": "934d5dbe1dfcb8181910dc201b66eaa818d5b1a6",
+        "tests": 2,
+        "failed": 2
+      },
+      "reference": "e51d518c7fc5574c6d6c2cf52d09bcb096d828bc",
+      "source": "packages/mcp/test/business-sandbox.test.ts",
+      "test": "packages/mcp/test/business-sandbox.test.ts",
+      "baselineArchiveSha256": "bbe6bca311644eb8a2a758d3873d567a44a9874bcba69e0386617a29edea4fd2",
+      "regressionSha256": "532edfd03c9abfffd8a3f73155b30a4ef9391d84d044bae4d3800e59715fce94",
+      "sourceSha256": "532edfd03c9abfffd8a3f73155b30a4ef9391d84d044bae4d3800e59715fce94",
+      "beforeSha256": "532edfd03c9abfffd8a3f73155b30a4ef9391d84d044bae4d3800e59715fce94",
+      "afterSha256": "5bc3bc03b496587447d4330513b65fdd95017127dc57f464090a52ea51757314",
+      "testBeforeSha256": "532edfd03c9abfffd8a3f73155b30a4ef9391d84d044bae4d3800e59715fce94",
+      "testAfterSha256": "5bc3bc03b496587447d4330513b65fdd95017127dc57f464090a52ea51757314",
+      "outsideBefore": "da80f93703665d40ac9a7241d40d4f071c2e991b3034adb78d7f6694dad9d558",
+      "outsideAfter": "da80f93703665d40ac9a7241d40d4f071c2e991b3034adb78d7f6694dad9d558",
+      "provenance": "Maintainer known historical reference, not a model recovery result",
+      "singleCommitWithoutRemote": true,
+      "referenceChangesOnlyAllowedFile": true,
+      "category": "test_helper_not_product_recovery",
+      "referenceAcceptance": {
+        "passed": 206,
+        "failed": 0,
+        "skipped": 2,
+        "checkExit": 0
+      },
+      "rawEvidenceSha256": {
+        "material-relay-clock-20261003.json": "654dcf2cdeabc9bcb25b525a3c36a64f6be12f2cfada3dfc38c63631a56d6ef7",
+        "material-relay-clock-build-red.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "material-relay-clock-green.log": "dc50bdf7a14cf73ad981cb299fe5052e334caa4782c0222b258c16d09ed13fe8",
+        "material-relay-clock-install-online.log": "546404df52ed055c4421a4d74ccf5a92e807043a52126695b84a6f7df5b99a44",
+        "material-relay-clock-install.log": "869db79a0c3f11b23841c77499fc1ce9f1778b33bb62fec4746d7c1528283b44",
+        "material-relay-clock-red.log": "0860f39e4faca1f43063ffef3826db69b69ab1a597a004c94b62401eccba8bed",
+        "material-relay-clock-reference.diff": "c9d15fdeb6b750615de352951a69b19e6496c8099384bcd5c9b0c256a7ce963e",
+        "material-relay-clock-reference.json": "9a4e15fc9f33ad2cca710de5ed9f44f2c86a8b02731d33543aef615edd1ff4ad"
+      }
+    },
+    {
+      "id": "permit-proxy",
+      "baseline": {
+        "revision": "7b90a6ea936a98b90b7cea2a1511161cda2b9fc9",
+        "tests": 4,
+        "assertionFailures": 1,
+        "errors": 1
+      },
+      "reference": "c113515bad05919aab18b1da496cfac86a42bad9",
+      "source": "agent-permit-spring-ai/src/main/java/io/github/agentpermit4j/springai/GuardedToolMethods.java",
+      "test": "agent-permit-spring-ai/src/test/java/io/github/agentpermit4j/springai/consumer/GuardedToolMethodsAcceptanceTest.java",
+      "baselineArchiveSha256": "8686dec67d8c17d16be6a7852a388f7b0a9ea666a802e759d9c6aba4c2614945",
+      "regressionSha256": "9679a3e09bbfcbccb53c87901331de5e886465abe6fba7f460a4c28a8a3d3bd7",
+      "sourceSha256": "fb7ee60899a51609b2e6f8a8482a7a58c978a50f5c29480ac0c05994ae4caed2",
+      "beforeSha256": "fb7ee60899a51609b2e6f8a8482a7a58c978a50f5c29480ac0c05994ae4caed2",
+      "afterSha256": "7feef6d0212115afe41bf1c93114912fff8508b874c6d73e3dac2ba0b66cb586",
+      "testBeforeSha256": "9679a3e09bbfcbccb53c87901331de5e886465abe6fba7f460a4c28a8a3d3bd7",
+      "testAfterSha256": "9679a3e09bbfcbccb53c87901331de5e886465abe6fba7f460a4c28a8a3d3bd7",
+      "provenance": "Maintainer known historical reference, not a model recovery result",
+      "singleCommitWithoutRemote": true,
+      "referenceChangesOnlyAllowedFile": true,
+      "referenceAcceptance": {
+        "surefire": {
+          "tests": 216,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "suites": 43,
+        "onlineVerifyExit": 0,
+        "offlineVerifyExit": 0
+      },
+      "rawEvidenceSha256": {
+        "material-permit-proxy-20261003.json": "25a2250f671f4b730a8b0e8abd8405d7297c20628a81d71771c80b161d60a4a4",
+        "material-permit-proxy-green-offline.log": "7b783e2e1afeeae3f3dc3c4a4d4169d5df4eb208096655456facba945085cbc5",
+        "material-permit-proxy-green-online.log": "367344be670c0bb80a26a5182ab6d6ac7fafe0b5df7e12d9ce3361a514f4b921",
+        "material-permit-proxy-green.log": "aab1faaeeeb56d0984c4a045c6d60e0db24dc962264a4e9d7230ba8cf3a89eab",
+        "material-permit-proxy-red.log": "e846a0434a10cd7a7d1705536641d3b228d801f0c638c16242ae5b55072bc0b3",
+        "material-permit-proxy-red.xml": "843b00d205e0456dc4d168d7d054211c89c4bd67f74ffde135634ac661cfc392",
+        "material-permit-proxy-reference.diff": "ed520807deb7ba3a5f82a498317df0f38bc0d17928dd836fe08919da0dd0317b",
+        "material-permit-proxy-reference.json": "f5ae7c510638e1b1b50c06caa5a01b2d6a040957f3479d1380d2fbed38b0d8d7"
+      }
+    }
+  ]
+}

@@ -11,7 +11,7 @@ import { capturePack, renderCapture } from "./core/capture.js";
 import { loadHandoff } from "./core/handoff.js";
 import { initPack } from "./core/init.js";
 import { loadStatus, renderStatus } from "./core/status.js";
-import { renderValidate, validatePack } from "./core/validate.js";
+import { renderValidate, validatePack, validateReport, validateErrorReport } from "./core/validate.js";
 import { StorageError } from "./storage/index.js";
 import { COLOR_FLAGS, type ColorFlag } from "./tui/ansi.js";
 import { runUi } from "./tui/app.js";
@@ -101,7 +101,16 @@ export function createProgram(io: ProgramIO = defaultIO): Command {
     .description(
       "read-only handoff preflight: require goal/nextActions and compare the captured Git snapshot with the work tree (exit 1 when review is needed)",
     )
-    .action(() => {
+    .option("--json", "emit ctxpack.validate/1 with stable diagnostic codes")
+    .action((opts: { json?: boolean }) => {
+      if (opts.json) {
+        let report: ReturnType<typeof validateReport> | ReturnType<typeof validateErrorReport>;
+        try { report = validateReport(validatePack({ cwd: io.cwd() })); }
+        catch (error) { report = validateErrorReport(error); }
+        io.stdout(JSON.stringify(report, null, 2) + "\n");
+        if (!report.ok) throw new CliError("validation failed", 1, true);
+        return;
+      }
       const result = run(() => validatePack({ cwd: io.cwd() }));
       io.stdout(renderValidate(result));
       if (!result.ok) throw new CliError("validation failed", 1, true);

@@ -5,10 +5,9 @@ import {
   PACK_DIR,
   StorageError,
   findGitRoot,
-  readManifest,
-  readState,
+  readCaptureState,
+  commitCapture,
   resolvePackPaths,
-  writeJson,
 } from "../storage/index.js";
 import { existsSync, statSync } from "node:fs";
 
@@ -27,7 +26,8 @@ export interface CaptureResult {
 
 /**
  * Reads the Git work tree and persists the result to `state.git`, bumping `manifest.updatedAt`.
- * All reads and validation happen before any write, so a failure never touches existing files.
+ * Validation precedes publication. Interrupted writes retain a marker and backups
+ * so readers cannot accept a mixed state/manifest pair.
  */
 export function capturePack(options: CaptureOptions): CaptureResult {
   const root = findGitRoot(options.cwd);
@@ -42,8 +42,7 @@ export function capturePack(options: CaptureOptions): CaptureResult {
     throw new StorageError(`no ${PACK_DIR}/ directory found at ${root}. Run \`ctxpack init\` first.`, paths.dir);
   }
 
-  const manifest = readManifest(paths);
-  const state = readState(paths);
+  const { manifest, state } = readCaptureState(paths);
 
   let git: GitState;
   try {
@@ -57,8 +56,7 @@ export function capturePack(options: CaptureOptions): CaptureResult {
   const nextState: State = { ...state, git };
   const nextManifest: Manifest = { ...manifest, updatedAt: now };
 
-  writeJson(paths.state, nextState);
-  writeJson(paths.manifest, nextManifest);
+  commitCapture(paths, { manifest, state }, { manifest: nextManifest, state: nextState });
 
   return { root, dir: paths.dir, manifest: nextManifest, state: nextState, git };
 }

@@ -1,0 +1,27 @@
+import { describe, expect, it } from "vitest";
+import { parseDecisions, parseFailures } from "../src/core/handoff.js";
+
+describe("real recovery: fenced examples are not recorded facts", () => {
+  it("keeps backtick decision examples in notes and parses the following fact", () => {
+    const notes = ["```markdown", "- [2026-10-03] Example -- demonstration", "```"];
+    expect(parseDecisions([...notes, "- [2026-10-04] Actual -- chosen"].join("\n")))
+      .toEqual({ entries: [{ date: "2026-10-04", summary: "Actual", reason: "chosen" }], notes });
+  });
+
+  it("does not close a tilde example with a shorter fence", () => {
+    const notes = ["~~~~markdown", "- example: result -- demonstration", "~~~", "- still an example: result", "~~~~"];
+    expect(parseFailures([...notes, "- actual: failed -- confirmed"].join("\n")))
+      .toEqual({ entries: [{ approach: "actual", result: "failed", reason: "confirmed" }], notes });
+  });
+
+  it("does not close a backtick example with the other fence marker", () => {
+    const notes = ["```markdown", "~~~", "- example: result -- demonstration", "```"];
+    expect(parseFailures([...notes, "- actual: failed -- confirmed"].join("\n")))
+      .toEqual({ entries: [{ approach: "actual", result: "failed", reason: "confirmed" }], notes });
+  });
+
+  it("keeps an unclosed decision example entirely in notes", () => {
+    const notes = ["```markdown", "- [2026-10-03] Example -- demonstration"];
+    expect(parseDecisions(notes.join("\n"))).toEqual({ entries: [], notes });
+  });
+});

@@ -185,7 +185,8 @@ const CAPTURE_OVERLAY_LINES = [
   "ctxpack capture — WRITE operation",
   "",
   "Reads the Git work tree and writes .ctxpack/state.json (state.git)",
-  "and .ctxpack/manifest.json (updatedAt). No other files change.",
+  "and .ctxpack/manifest.json (updatedAt), plus capture transaction metadata.",
+  "An interrupted write keeps .capture-pending and original JSON backups.",
   "",
   "Press y to confirm, or n / Esc to cancel.",
 ];
@@ -195,6 +196,7 @@ const INIT_OVERLAY_LINES = [
   "",
   "Creates .ctxpack/{manifest,state,artifacts}.json, four Markdown",
   "files and snapshots/ in the current repository root.",
+  "Repairs use capture transaction metadata; interruptions remain marked.",
   "Existing valid files are kept; corrupt files abort with an error.",
   "",
   "Press y to confirm, or n / Esc to cancel.",

@@ -1,0 +1,57 @@
+import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
+import { mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { afterEach, describe, expect, it } from "vitest";
+import { stripTemplate } from "../src/core/handoff.js";
+import { initPack, MARKDOWN_TEMPLATES } from "../src/core/init.js";
+import { main, type ProgramIO } from "../src/program.js";
+import { resolvePackPaths } from "../src/storage/index.js";
+
+const temporary: string[] = [];
+afterEach(() => {
+  for (const dir of temporary.splice(0)) rmSync(dir, { recursive: true, force: true });
+});
+function hashTree(dir: string): string {
+  const hash = createHash("sha256");
+  function walk(current: string) {
+    for (const name of readdirSync(current).sort()) {
+      if (name === ".git") continue;
+      const full = path.join(current, name);
+      if (statSync(full).isDirectory()) walk(full);
+      else hash.update(path.relative(dir, full).split(path.sep).join("/")).update("\0").update(readFileSync(full));
+    }
+  }
+  walk(dir);
+  return hash.digest("hex");
+}
+describe("real recovery: preserve user Markdown", () => {
+  it.each(["project", "decisions", "failures", "commands"] as const)("preserves %s text", (key) => {
+    const template = MARKDOWN_TEMPLATES[key];
+    const text = "My notes  \n\n```markdown\n" + template + "```";
+    const input = template + "\n" + text + "\n";
+    expect(stripTemplate(input, key).join("\n")).toBe(text);
+    expect(stripTemplate(input.replace(/\n/g, "\r\n"), key).join("\n")).toBe(text);
+    expect(stripTemplate(template, key)).toEqual([]);
+    expect(stripTemplate("User introduction\n" + template, key).join("\n"))
+      .toBe("User introduction\n" + template.trimEnd());
+  });
+  it.each(["generic", "codex", "pi", "claude"])("preserves text through %s without writing", async (target) => {
+    const repo = mkdtempSync(path.join(tmpdir(), "ctxpack-real-task-"));
+    temporary.push(repo);
+    execFileSync("git", ["init", "-q"], { cwd: repo });
+    initPack({ cwd: repo });
+    const text = "User notes  \n\n```markdown\n# Project\n\nDescribe the project purpose, scope and constraints.\n```";
+    writeFileSync(resolvePackPaths(repo).project, MARKDOWN_TEMPLATES.project + "\n" + text + "\n", "utf8");
+    const before = hashTree(repo);
+    const out: string[] = [];
+    const err: string[] = [];
+    const io: ProgramIO = { cwd: () => repo, stdout: (value) => out.push(value), stderr: (value) => err.push(value) };
+    expect(await main(["node", "ctxpack", "handoff", "--to", target], io)).toBe(0);
+    expect(err).toEqual([]);
+    const expected = target === "pi" ? text.split("\n").map((line) => `PROJECT: ${line}`).join("\n") : text;
+    expect(out.join("")).toContain(expected);
+    expect(hashTree(repo)).toBe(before);
+  });
+});
