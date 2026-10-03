@@ -97,3 +97,12 @@
 - 视觉与 CI：PR 正文内可访问的 Konsole 截图已经目视核对，布局为紧凑深色界面、左侧导航和内容区、薄荷色强调及确认覆盖层；120×30 分栏、窗口调整、Unicode、窄终端与 Ctrl+C 的实际 PTY 证据由 Devin 提供。本机未在 Windows Terminal 应用中单独测试。最终 PR [运行 36115418772](https://github.com/mat973252/ctxpack/actions/runs/36115418772) 与合入 `main` 的 [运行 36115939553](https://github.com/mat973252/ctxpack/actions/runs/36115939553) 均通过 Ubuntu CI。
 - 范围：审查确认仅涉及 TUI、相关测试、CLI/包配置和说明，无 Relay 产品代码修改；Node 包可安装但尚未发布到 npm。M7 不解除 Relay 的独立安全审查停点，不代表 Step 6/7 已通过，也未向 Relay 推送代码。
 - 下一步：在不运行 Relay 外部效果的安全边界内规划 AgentLens M8 试用，并明确试用样本与不可验证部分。
+
+## C1 可靠交接验收（2026-10-03，当前源码）
+
+- 修复模板过滤与围栏解析吞掉用户原文的问题；capture 使用排他 pending 标记、两份原始 JSON 备份和 revision 代号，读者拒绝中断或跨代快照。init 修复共享写入保护；完整包重复 init 不改写。
+- `validate --json` 输出版本化原因码，缺字段、Git 变化/dirty、文件与事务错误可由脚本判别。错误 JSON 不回显非法文件正文。整个预检（含 Git 读取）受一致性检查保护；revision 读取错误保留文件定位。最后两项由独立审查发现，新增回归先失败、修复后通过。
+- Windows Node 24.19：lint、174 tests、build 通过。强杀覆盖 state/manifest/revision 替换后；保留人工恢复、非断电保证及外部编辑器不遵守标记的边界。
+- 最终本地 tarball 在独立目录、空依赖缓存安装；Node 22.23.3/24.19 均验证四种 handoff 原文、中文空格路径、只读 hash 不变、pending 拒绝及实际 JSON 原因码/退出码。属于候选包验收，未发布本轮代码，不是外部采用。
+- C1 本轮工程切片通过。C2 显式 Codex skill 已随候选包提供，默认禁止隐式调用；真实宿主读取 skill、显示快照且未执行快照中的写文件建议，前后哈希不变。宿主 Node 子进程启动 Git 报 EPERM，故该次 Git 预检不通过；没有修改沙箱或 ACL。补充 EPERM/EACCES 文本诊断后 lint、176 tests、build 通过，JSON 原因码仍为 git_read_failed。
+- Codex app-server 原生 contextCompaction 已实测完成并保留合成任务四项事实；这只是对照执行器探针，五任务等权限/等材料/固定模型的重复对照仍未完成。历史不公平样本不能证明效果。独立使用和重复使用仍未测量。

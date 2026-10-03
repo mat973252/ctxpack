@@ -36,6 +36,9 @@ export function createGitRunner(root: string): GitRunner {
         if (error.code === "ENOENT") {
           throw new GitError("git executable not found on PATH", cmd);
         }
+        if (error.code === "EPERM" || error.code === "EACCES") {
+          throw new GitError(`git process could not start (${error.code})`, cmd);
+        }
         const stderr = (error.stderr ?? "").toString().trim();
         throw new GitError(`\`${cmd}\` failed${stderr ? `: ${stderr}` : ""}`, cmd);
       }

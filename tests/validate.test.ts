@@ -1,9 +1,10 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { cpSync, existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import * as gitModule from "../src/git/index.js";
 import { capturePack } from "../src/core/capture.js";
 import { loadHandoff } from "../src/core/handoff.js";
 import { initPack } from "../src/core/init.js";
@@ -84,6 +85,76 @@ beforeEach(() => {
 
 afterEach(() => {
   rmSync(repo, { recursive: true, force: true });
+});
+
+describe("validate --json", () => {
+  async function json() {
+    const { io, out, err } = makeIO(repo);
+    const exitCode = await main(["node", "ctxpack", "validate", "--json"], io);
+    expect(err).toEqual([]);
+    return { exitCode, report: JSON.parse(out.join("")) };
+  }
+
+  it("publishes stable field and Git diagnostics without writes", async () => {
+    initPack({ cwd: repo });
+    const before = snapshot(repo);
+    const { exitCode, report } = await json();
+    expect(exitCode).toBe(1);
+    expect(report.schema).toBe("ctxpack.validate/1");
+    expect(report.diagnostics.map((d: { code: string }) => d.code)).toEqual(["goal_missing", "next_actions_missing", "git_not_captured"]);
+    expect(snapshot(repo)).toEqual(before);
+  });
+
+  it("distinguishes clean unborn, detached, dirty and changed snapshots", async () => {
+    readyPack(); capturePack({ cwd: repo });
+    expect((await json()).report.git).toMatchObject({ kind: "match_clean", headState: "unborn" });
+    write("a.txt", "a"); commit("baseline"); git(["checkout", "--detach", "-q"]);
+    capturePack({ cwd: repo });
+    expect((await json()).report.git).toMatchObject({ kind: "match_clean", headState: "detached" });
+    write("a.txt", "changed");
+    expect((await json()).report.git.kind).toBe("changed");
+    capturePack({ cwd: repo });
+    const dirty = await json();
+    expect(dirty.exitCode).toBe(1);
+    expect(dirty.report.diagnostics.at(-1).code).toBe("git_match_dirty");
+  });
+
+  it("returns parseable error codes without echoing invalid file contents", async () => {
+    expect((await json()).report.diagnostics[0].code).toBe("pack_missing");
+    readyPack();
+    const file = resolvePackPaths(repo).state;
+    writeFileSync(file, '{ "private": "do-not-echo" invalid }');
+    const invalid = await json();
+    expect(invalid.exitCode).toBe(1);
+    expect(invalid.report.diagnostics[0]).toMatchObject({ code: "invalid_json", file });
+    expect(JSON.stringify(invalid.report)).not.toContain("do-not-echo");
+    mkdirSync(path.join(resolvePackPaths(repo).dir, ".capture-pending"));
+    expect((await json()).report.diagnostics[0].code).toBe("capture_incomplete");
+  });
+
+  it("rejects capture starting while Git preflight is being read", async () => {
+    readyPack(); capturePack({ cwd: repo });
+    const original = gitModule.captureGitState;
+    const spy = vi.spyOn(gitModule, "captureGitState").mockImplementationOnce((root) => {
+      const result = original(root);
+      mkdirSync(path.join(resolvePackPaths(repo).dir, ".capture-pending"));
+      return result;
+    });
+    try {
+      const result = await json();
+      expect(result.exitCode).toBe(1);
+      expect(result.report.diagnostics[0].code).toBe("capture_incomplete");
+    } finally { spy.mockRestore(); }
+  });
+
+  it("keeps the file location when revision metadata cannot be read", async () => {
+    readyPack();
+    const file = path.join(resolvePackPaths(repo).dir, ".capture-revision");
+    rmSync(file); mkdirSync(file);
+    const result = await json();
+    expect(result.exitCode).toBe(1);
+    expect(result.report.diagnostics[0]).toMatchObject({ code: "file_unreadable", file });
+  });
 });
 
 describe("validatePack: required fields", () => {

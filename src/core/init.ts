@@ -1,4 +1,4 @@
-import { existsSync, writeFileSync } from "node:fs";
+import { existsSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import {
   ArtifactsSchema,
@@ -11,6 +11,9 @@ import {
 import {
   PACK_DIR,
   StorageError,
+  assertCaptureComplete,
+  consistentRead,
+  initializeConsistently,
   ensureDir,
   findGitRoot,
   readJsonFile,
@@ -54,55 +57,77 @@ export function initPack(options: InitOptions): InitResult {
   }
 
   const paths = resolvePackPaths(root);
+  assertCaptureComplete(paths);
   const now = (options.now ?? (() => new Date))().toISOString();
   const project = options.project?.trim() || path.basename(root) || PACK_DIR;
   const created: string[] = [];
   const kept: string[] = [];
 
   // Validate existing JSON files before touching anything so a corrupt pack is never overwritten.
-  const existing = {
-    manifest: existsSync(paths.manifest),
-    state: existsSync(paths.state),
-    artifacts: existsSync(paths.artifacts),
+  const inspect = () => {
+    const existing = {
+      manifest: existsSync(paths.manifest),
+      state: existsSync(paths.state),
+      artifacts: existsSync(paths.artifacts),
+    };
+    if (existing.manifest) readJsonFile(paths.manifest, ManifestSchema, "manifest");
+    if (existing.state) readJsonFile(paths.state, StateSchema, "state");
+    if (existing.artifacts) readJsonFile(paths.artifacts, ArtifactsSchema, "artifacts");
+    return existing;
   };
-  if (existing.manifest) readJsonFile(paths.manifest, ManifestSchema, "manifest");
-  if (existing.state) readJsonFile(paths.state, StateSchema, "state");
-  if (existing.artifacts) readJsonFile(paths.artifacts, ArtifactsSchema, "artifacts");
+  const complete = consistentRead(paths, () => {
+    const existing = inspect();
+    return Object.values(existing).every(Boolean) &&
+      [paths.project, paths.decisions, paths.failures, paths.commands].every(existsSync) &&
+      existsSync(paths.snapshots) && statSync(paths.snapshots).isDirectory();
+  });
+  if (complete) return {
+    root, dir: paths.dir, created,
+    kept: [paths.manifest, paths.state, paths.artifacts, paths.project, paths.decisions, paths.failures, paths.commands].map((file) => rel(paths, file)),
+  };
 
   ensureDir(paths.dir);
-  ensureDir(paths.snapshots);
+  return initializeConsistently(paths, (markWriting) => {
+    // Revalidate after acquiring the writer marker; another writer may have finished.
+    const existing = inspect();
+    ensureDir(paths.snapshots);
 
-  const track = (file: string, wasCreated: boolean) =>
-    (wasCreated ? created : kept).push(rel(paths, file));
+    const track = (file: string, wasCreated: boolean) =>
+      (wasCreated ? created : kept).push(rel(paths, file));
 
-  if (existing.manifest) track(paths.manifest, false);
-  else {
-    writeJson(paths.manifest, createDefaultManifest(project, now));
-    track(paths.manifest, true);
-  }
-
-  if (existing.state) track(paths.state, false);
-  else {
-    writeJson(paths.state, createDefaultState());
-    track(paths.state, true);
-  }
-
-  if (existing.artifacts) track(paths.artifacts, false);
-  else {
-    writeJson(paths.artifacts, createDefaultArtifacts());
-    track(paths.artifacts, true);
-  }
-
-  for (const key of ["project", "decisions", "failures", "commands"] as const) {
-    const file = paths[key];
-    if (existsSync(file)) track(file, false);
+    if (existing.manifest) track(paths.manifest, false);
     else {
-      writeFileSync(file, MARKDOWN_TEMPLATES[key], "utf8");
-      track(file, true);
+      markWriting();
+      writeJson(paths.manifest, createDefaultManifest(project, now));
+      track(paths.manifest, true);
     }
-  }
 
-  return { root, dir: paths.dir, created, kept };
+    if (existing.state) track(paths.state, false);
+    else {
+      markWriting();
+      writeJson(paths.state, createDefaultState());
+      track(paths.state, true);
+    }
+
+    if (existing.artifacts) track(paths.artifacts, false);
+    else {
+      markWriting();
+      writeJson(paths.artifacts, createDefaultArtifacts());
+      track(paths.artifacts, true);
+    }
+
+    for (const key of ["project", "decisions", "failures", "commands"] as const) {
+      const file = paths[key];
+      if (existsSync(file)) track(file, false);
+      else {
+        markWriting();
+        writeFileSync(file, MARKDOWN_TEMPLATES[key], "utf8");
+        track(file, true);
+      }
+    }
+
+    return { root, dir: paths.dir, created, kept };
+  });
 }
 
 function rel(paths: PackPaths, file: string): string {

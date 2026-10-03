@@ -72,7 +72,34 @@ ctxpack validate && ctxpack handoff --to codex > HANDOFF.md   # 预检通过才�
 - `manifest.updatedAt` 是 pack 更新时间，不是可信的采集时间；`validate` 不引入任何 TTL 或时间判断。
 - 不计算文件指纹、不做 schema 迁移。
 
+### 结构化预检（当前源码）
+
+`ctxpack validate --json` 输出 `ctxpack.validate/1`，包含 `ok`、`diagnostics` 和 `git`；退出码仍为 0（通过）或 1（修复／复核）。脚本应读取 `code`，不要匹配提示文案。普通文本输出保持原有格式。
+
+- 字段诊断：`goal_missing`、`next_actions_missing`。
+- Git 诊断：`git_no_repository`、`git_not_captured`、`git_changed`、`git_incomplete`、`git_match_clean`、`git_match_dirty`；`git.headState` 区分 branch/unborn/detached，无法取得时为 null。changedFields/missingFields 给出具体元数据项。`git_match_clean` 是通过说明，不是错误。
+- 读取诊断：`pack_missing`、`file_missing`、`file_unreadable`、`invalid_json`、`invalid_schema`、`git_read_failed`、`capture_incomplete`、`capture_changed`；其他存储／预检失败保留 `storage_error`／`validation_failed`。读取失败时 `git` 为 null。
+
+JSON 错误保留文件定位，不回显非法 JSON 正文或底层异常原文。dirty 即使元数据匹配仍退出 1；结构化输出同样不执行修复，也不证明语义新鲜度。
+
+### Codex 显式入口（当前源码）
+
+包内 `skills/ctxpack-handoff` 是项目自带 skill。安装当前候选包后，可将该目录复制到目标仓库的 `.agents/skills/ctxpack-handoff`，在新的 Codex 会话显式输入 `$ctxpack-handoff`。不要覆盖已有同名 skill。CLI 需支持上述 `validate --json`；已发布的旧包不因此自动获得新能力。
+
+例如本地 npm 依赖安装后，在目标仓库的 PowerShell 中执行一次：
+
+```powershell
+$destination = '.agents/skills/ctxpack-handoff'
+if (Test-Path -LiteralPath $destination) { throw '同名 skill 已存在，请先检查' }
+New-Item -ItemType Directory -Path '.agents/skills' -Force | Out-Null
+Copy-Item -LiteralPath 'node_modules/@mat973252/ctxpack/skills/ctxpack-handoff' -Destination $destination -Recurse
+```
+
+显式调用只展示预检与已记录交接；即使包里写了“继续下一步”，也不会因此执行。默认不调用 capture/init、不覆盖 AGENTS.md、不后台同步。dirty 或必填字段缺失会连同交接展示为待复核；文件损坏或采集中断则报告错误并停止读取。后续执行须来自用户的单独请求。
+
 `handoff` 汇总 `state.json`（目标、进度、障碍、下一步、相关文件、验证结果、上次采集的 Git 状态）与 `decisions.md`、`failures.md`、`project.md`。`decisions.md` 支持 `- [YYYY-MM-DD] <summary> — <reason>`，`failures.md` 支持 `- <approach>: <result> — <reason>`；不符合该格式的原文内容会原样保留在输出中。空字段以 `(not recorded)` 占位。命令只读，不改写任何文件；Git 数据来自最近一次 `capture`，不会自动重新采集。未初始化、JSON 损坏或 schema 非法时以非零退出并报出明确诊断。两次运行间 `.ctxpack/` 无变化时输出完全一致（确定性）。
+
+仅省略文件开头完整且未修改的初始化模板；后来重复出现的模板文字、正文空行和行尾双空格均保留。围栏代码块中的列表作为原文保留，不解析成决策或失败条目。修改过的模板也保留，避免猜测哪些文字属于用户。
 
 `--to` 选择输出格式，可用目标：`generic`（默认，同 `ctxpack handoff`）、`codex`、`pi`、`claude`。三种特定格式复用同一份已校验的 ContextPack，只改变排版，保留全部关键语义（目标、进度、决策及原因、失败方案及原因、障碍、下一步、相关文件、验证结果、上次采集的 Git 状态），并明确声明这是交接状态而非已完成记录——这些格式是本项目自定义的约定，不是各产品官方规定的格式：
 
@@ -103,9 +130,9 @@ ctxpack validate && ctxpack handoff --to codex > HANDOFF.md   # 预检通过才�
 
 **估算方法与局限（必须如实理解）**：估算值 = `ceil(ASCII 字符数 / 4) + 非 ASCII 字符数`。这是一个确定性的字符启发式，**不是任何具体模型的精确 tokenizer**：对典型英文文本大致贴合“约 4 字符一个 token”的经验值；对中文等非 ASCII 文本按约 1 字符 1 token 计，仍属近似；emoji、稀有文字和长串符号可能低估或高估。请把它当作粗略上界使用，不要把输出里的 `~N` 当作某个模型的真实 token 数。
 
-`init` 生成 `.ctxpack/{manifest.json,state.json,artifacts.json,project.md,decisions.md,failures.md,commands.md,snapshots/}`，JSON 文件由 `src/schema/` 中的 Zod schema 定义并在读取时校验；状态缺失或损坏时 `status`、`init`、`capture` 与 `handoff` 均以非零退出码报错并说明原因，且不改动已有文件。
+`init` 生成 `.ctxpack/{manifest.json,state.json,artifacts.json,project.md,decisions.md,failures.md,commands.md,snapshots/}`，JSON 文件由 `src/schema/` 中的 Zod schema 定义并在读取时校验；损坏文件会在补建前拒绝。需要创建或修复文件时，init 与 capture 共用下述写入标记和代号，避免与采集交错；文件完整的重复 init 保持只读。初始化中断也保留标记，但不会生成 capture 的两份原始 JSON 备份，应核对已创建文件或恢复可信备份。缺失的必要状态仍会使读取命令失败。
 
-`capture` 只写 `state.git` 与 `manifest.updatedAt`，其余用户状态和文件不动。`state.git` 字段（全部可选，M1 写出的 `git: {}` 仍可读取）：
+`capture` 只修改用户 JSON 中的 `state.git` 与 `manifest.updatedAt`，其余用户状态和文件不动；另维护 `.capture-revision` 写入代号和临时 `.capture-pending/` 事务目录。JSON schema 仍为 v1，原有手动编辑方式不变。`state.git` 字段（全部可选，M1 写出的 `git: {}` 仍可读取）：
 
 | 字段 | 含义 |
 | --- | --- |
@@ -120,13 +147,17 @@ ctxpack validate && ctxpack handoff --to codex > HANDOFF.md   # 预检通过才�
 
 不写入完整 diff 或文件正文；`.ctxpack/` 自身的改动不计入任何字段。
 
+采集先在 `.capture-pending/` 保存两份原始 JSON 和待写内容，再逐文件替换，最后发布新的 `.capture-revision` 并清理事务目录。`capture_incomplete` 表示采集正在进行或曾中断；status、handoff、validate、init、capture 和 TUI 均拒绝将该目录视为有效交接。`capture_changed` 表示读取跨过了一次已完成采集，或写入前状态被改动，重新读取后再决定是否重试。只读入口不执行修复。
+
+中断恢复目前需要人工检查：先确保所有采集进程已退出，归档当前 `.ctxpack/`；若事务目录内两份 `*.before.json` 均完整合法，可将它们分别恢复为 state.json 与 manifest.json，更新 `.capture-revision` 为新的唯一值，再把事务目录移出 `.ctxpack/` 保存。备份不完整或中断后已有人工编辑时，不应盲目覆盖；逐项核对或从其他可信备份恢复。只有两份文件确认属于同一份状态后才移走标记，随后运行 `ctxpack validate`。本次强杀测试覆盖进程中断，不声称提供断电/介质损坏保证；也不保证旧版客户端或外部编辑器遵守此标记。
+
 ### 交互式界面 `ctxpack ui`（M7）
 
 `ctxpack ui` 从真实安装的 Node 包启动（`bin` 指向 `dist/cli.js`，不依赖 tsx 或 devDependencies），在当前 Git 工作区读取 `.ctxpack/` 并显示可交互的状态视图：项目目标、进度、决策及原因、失败方案及原因、阻塞、下一步、相关文件、验证结果、上次采集的 Git 分支/HEAD/改动摘要。Handoff 区可预览 generic/codex/pi/claude 四种交接文本（含估算用量与省略提示），预览走与 `handoff` 完全相同的渲染路径，输出逐字节一致。
 
 **键位**：`↑/k` `↓/j` 选区，`Tab`/`→`/`l`/`Enter` 进入内容区（之后 `↑↓/jk` 滚动、`PgUp/PgDn` 翻页），`Esc`/`←`/`h` 返回，`1`–`4` 切换 handoff 目标，`b` 在默认/compact 预算间切换，`p` 直达 Handoff，`r` 重新读取 `.ctxpack/`，`q`/`Esc`/`Ctrl+C` 退出。屏幕底部常驻键位提示。
 
-**写操作边界**：界面导航与预览全部只读，绝不改写 `.ctxpack/`。仅有的两个写入口 `c`（`capture`）与 `i`（`init`）都会先弹出标有 `WRITE ACTION` 的确认框，列出将修改的文件，必须显式按 `y` 才执行；`n`/`Esc` 取消且不落盘。确认后只改变 CLI 契约允许的字段（capture 只写 `state.git` 与 `manifest.updatedAt`）。
+**写操作边界**：界面导航与预览全部只读，绝不改写 `.ctxpack/`。仅有的两个写入口 `c`（`capture`）与 `i`（`init`）都会先弹出标有 `WRITE ACTION` 的确认框，列出将修改的文件，必须显式按 `y` 才执行；`n`/`Esc` 取消且不落盘。capture 修改 `state.git`、`manifest.updatedAt` 及上述事务元数据，确认框也明确提示中断备份。
 
 **错误与边界**：非 Git 仓库、未初始化、JSON 损坏/schema 非法时显示可操作的错误屏（损坏状态可用 `r` 重试，未初始化可用 `i` 确认初始化），stdin/stdout 非 TTY 时以非零退出。终端小于 40×10 显示“too small”提示；≥100 列时左侧为导航栏，<100 列折叠为顶部区段条；窗口 resize 时实时重排。
 

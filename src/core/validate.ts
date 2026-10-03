@@ -1,7 +1,7 @@
 import path from "node:path";
 import { GitError, captureGitState } from "../git/index.js";
 import type { ContextPack, GitState, ProgressStatus } from "../schema/index.js";
-import { PACK_DIR, StorageError, findGitRoot, readPack, resolvePackPaths } from "../storage/index.js";
+import { PACK_DIR, StorageError, consistentRead, findGitRoot, readPack, resolvePackPaths } from "../storage/index.js";
 
 export interface ValidateOptions {
   cwd: string;
@@ -69,27 +69,29 @@ export function validatePack(options: ValidateOptions): ValidateResult {
   const gitRoot = findGitRoot(options.cwd);
   const root = gitRoot ?? path.resolve(options.cwd);
   const paths = resolvePackPaths(root);
-  let pack: ContextPack;
-  try {
-    pack = readPack(paths);
-  } catch (error) {
-    if (error instanceof StorageError) throw error;
-    throw new StorageError(error instanceof Error ? error.message : String(error));
-  }
+  return consistentRead(paths, () => {
+    let pack: ContextPack;
+    try {
+      pack = readPack(paths);
+    } catch (error) {
+      if (error instanceof StorageError) throw error;
+      throw new StorageError(error instanceof Error ? error.message : String(error));
+    }
 
-  const { state } = pack;
-  const fields = checkFields(state.goal, state.status, state.nextActions);
-  const git = checkGit(state.git, gitRoot);
+    const { state } = pack;
+    const fields = checkFields(state.goal, state.status, state.nextActions);
+    const git = checkGit(state.git, gitRoot);
 
-  return {
-    root,
-    dir: paths.dir,
-    status: state.status,
-    blockers: state.blockers,
-    fields,
-    git,
-    ok: fields.ok && git.kind === "match_clean",
-  };
+    return {
+      root,
+      dir: paths.dir,
+      status: state.status,
+      blockers: state.blockers,
+      fields,
+      git,
+      ok: fields.ok && git.kind === "match_clean",
+    };
+  });
 }
 
 function checkFields(goal: string, status: ProgressStatus, nextActions: string[]): ValidateResult["fields"] {
@@ -122,7 +124,7 @@ function checkGit(stored: GitState, gitRoot: string | undefined): GitCheck {
   try {
     current = captureGitState(gitRoot);
   } catch (error) {
-    if (error instanceof GitError) throw new StorageError(`git read failed: ${error.message}`);
+    if (error instanceof GitError) throw new StorageError(`git read failed: ${error.message}`, undefined, "git_read_failed");
     throw error;
   }
 
@@ -282,4 +284,56 @@ function short(value: unknown): string {
     return `staged ${s.staged.files}f +${s.staged.insertions} -${s.staged.deletions}, unstaged ${s.unstaged.files}f +${s.unstaged.insertions} -${s.unstaged.deletions}`;
   }
   return JSON.stringify(value);
+}
+
+/** Versioned preflight output; callers branch on codes, never English prose. */
+export function validateReport(result: ValidateResult) {
+  return {
+    schema: "ctxpack.validate/1" as const,
+    ok: result.ok,
+    diagnostics: [
+      ...result.fields.issues.map((issue) => ({
+        code: issue.field === "goal" ? "goal_missing" : "next_actions_missing",
+        field: issue.field,
+        file: STATE_FILE,
+        message: issue.message,
+        advice: issue.advice,
+      })),
+      {
+        code: `git_${result.git.kind}`,
+        message: describeGit(result.git),
+        advice: gitNotes(result.git).join("\n"),
+      },
+    ],
+    git: {
+      kind: result.git.kind,
+      headState: result.git.current?.headState ?? result.git.stored.headState ?? null,
+      changedFields: result.git.changedFields,
+      missingFields: result.git.missingFields,
+    },
+  };
+}
+
+export function validateErrorReport(error: unknown) {
+  const code = error instanceof StorageError ? error.code : "validation_failed";
+  const messages: Record<string, string> = {
+    pack_missing: "No context pack found; run ctxpack init in the owning repository.",
+    file_missing: "A required context file is missing; review the pack before repair.",
+    file_unreadable: "A required context file could not be read; check its path and permissions.",
+    invalid_json: "A context file contains invalid JSON; repair it without discarding user data.",
+    invalid_schema: "A context file does not match the supported schema; review its fields and version.",
+    git_read_failed: "Git state could not be read; check repository access and Git availability.",
+    capture_incomplete: "Capture is running or was interrupted; inspect the pending marker and backups before recovery.",
+    capture_changed: "Capture changed during this read; retry validation.",
+  };
+  return {
+    schema: "ctxpack.validate/1" as const,
+    ok: false,
+    diagnostics: [{
+      code,
+      ...(error instanceof StorageError && error.file !== undefined ? { file: error.file } : {}),
+      message: messages[code] ?? "Validation could not read a complete context pack.",
+    }],
+    git: null,
+  };
 }

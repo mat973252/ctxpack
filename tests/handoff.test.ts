@@ -5,8 +5,8 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderGenericHandoff } from "../src/adapters/generic.js";
-import { parseDecisions, parseFailures, type HandoffInput } from "../src/core/handoff.js";
-import { initPack } from "../src/core/init.js";
+import { parseDecisions, parseFailures, stripTemplate, type HandoffInput } from "../src/core/handoff.js";
+import { initPack, MARKDOWN_TEMPLATES } from "../src/core/init.js";
 import { main, type ProgramIO } from "../src/program.js";
 import { resolvePackPaths } from "../src/storage/index.js";
 
@@ -60,6 +60,27 @@ afterEach(() => {
 });
 
 describe("parseDecisions / parseFailures", () => {
+  it.each(["project", "decisions", "failures", "commands"] as const)(
+    "preserves repeated template text and Markdown whitespace in %s",
+    (key) => {
+      const userText = "My notes  \n\n```markdown\n" + MARKDOWN_TEMPLATES[key] + "```";
+      expect(stripTemplate(MARKDOWN_TEMPLATES[key] + "\n" + userText + "\n", key).join("\n"))
+        .toBe(userText);
+      expect(stripTemplate(MARKDOWN_TEMPLATES[key], key)).toEqual([]);
+      expect(stripTemplate((MARKDOWN_TEMPLATES[key] + userText).replace(/\n/g, "\r\n"), key).join("\n"))
+        .toBe(userText);
+      expect(stripTemplate("User introduction\n" + MARKDOWN_TEMPLATES[key], key).join("\n"))
+        .toBe("User introduction\n" + MARKDOWN_TEMPLATES[key].trimEnd());
+    },
+  );
+
+  it("preserves list-shaped examples inside fenced code blocks", () => {
+    const decision = "```markdown\n- [2026-10-03] Example — not an actual decision\n\n```";
+    expect(parseDecisions(decision)).toEqual({ entries: [], notes: decision.split("\n") });
+    const failure = "~~~~markdown\n- example: result — reason\n~~~\n~~~~";
+    expect(parseFailures(failure)).toEqual({ entries: [], notes: failure.split("\n") });
+  });
+
   it("parses the declared minimal format and keeps freeform lines verbatim", () => {
     const decisions = parseDecisions(
       "# Decisions\n\nRecord important design decisions.\n\n" +
@@ -201,6 +222,20 @@ describe("renderGenericHandoff", () => {
 });
 
 describe("handoff command", () => {
+  it.each(["generic", "codex", "pi", "claude"])("preserves user Markdown in the %s handoff", async (target) => {
+    initPack({ cwd: repo });
+    const paths = resolvePackPaths(repo);
+    const text = "User notes  \n\n```markdown\n# Project\n\nDescribe the project purpose, scope and constraints.\n```";
+    writeFileSync(paths.project, MARKDOWN_TEMPLATES.project + "\n" + text + "\n", "utf8");
+    const before = hashTree(repo);
+    const { io, out, err } = makeIO(repo);
+    expect(await main(["node", "ctxpack", "handoff", "--to", target], io)).toBe(0);
+    expect(err).toEqual([]);
+    const renderedText = target === "pi" ? text.split("\n").map((line) => `PROJECT: ${line}`).join("\n") : text;
+    expect(out.join("")).toContain(renderedText);
+    expect(hashTree(repo)).toBe(before);
+  });
+
   it("prints a handoff and leaves .ctxpack/ and the work tree byte-identical", async () => {
     initPack({ cwd: repo });
     writeState({
