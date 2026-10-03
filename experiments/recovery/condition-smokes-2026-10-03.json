@@ -1,0 +1,119 @@
+{
+  "schema": "ctxpack.condition-smokes/1",
+  "date": "2026-10-03",
+  "task": "ctx-fences",
+  "model": "gpt-6.1-sol",
+  "effort": "medium",
+  "samples": [
+    {
+      "condition": "manual",
+      "sampleDirectory": "ctxpack-real-smoke-ip7Ir8",
+      "result": "accepted_protocol5_condition_smoke",
+      "formalSample": false,
+      "preparationMs": 2702.4342000000006,
+      "recoveryMs": 79907.2455,
+      "firstRequiredReadStartedMs": 6960.457100000001,
+      "firstRequiredReadCompletedMs": 7678.935599999999,
+      "calls": 7,
+      "reads": 4,
+      "repeatedReads": 0,
+      "edits": 1,
+      "tests": 2,
+      "nonzeroTestExits": [],
+      "rejectedCalls": 0,
+      "sourceReviewWaitMs": 38858.53559999999,
+      "candidateSha256": "9aa7684040a0591afabd5638198ce741922dc60d4d5aa350937ed0994b75ea7f",
+      "independentContainerTests": {
+        "total": 156,
+        "passed": 156,
+        "unhandled": []
+      },
+      "nativeCompacted": false,
+      "inputHashes": {
+        "manual": "238707e35378b35a328379e514b3fa3fc74be50364ad5472516be549108a6491",
+        "nativePreparation": "cd57f45e527814596eff33ca8f9cbef39258e6f6138efdbc0acd332e426e128a",
+        "ctxpack": "6ca6674709ce75632e792eb1870c6fe3a73d84f99d06a783a404a4734e6ca615"
+      }
+    },
+    {
+      "condition": "native",
+      "sampleDirectory": "ctxpack-real-smoke-L7UdwE",
+      "result": "accepted_protocol5_condition_smoke",
+      "formalSample": false,
+      "preparationMs": 19450.3871,
+      "recoveryMs": 83119.2606,
+      "firstRequiredReadStartedMs": 3346.8038000000015,
+      "firstRequiredReadCompletedMs": 4053.977999999999,
+      "calls": 9,
+      "reads": 3,
+      "repeatedReads": 0,
+      "edits": 2,
+      "tests": 4,
+      "nonzeroTestExits": [
+        2
+      ],
+      "rejectedCalls": 0,
+      "sourceReviewWaitMs": 33319.79429999999,
+      "candidateSha256": "f1653fdd42969acdf0c5def31ab70ecdf0a93bf834bf92e3c133d1da58717338",
+      "independentContainerTests": {
+        "total": 156,
+        "passed": 156,
+        "unhandled": []
+      },
+      "nativeCompacted": true,
+      "inputHashes": {
+        "manual": "238707e35378b35a328379e514b3fa3fc74be50364ad5472516be549108a6491",
+        "nativePreparation": "cd57f45e527814596eff33ca8f9cbef39258e6f6138efdbc0acd332e426e128a",
+        "ctxpack": "6ca6674709ce75632e792eb1870c6fe3a73d84f99d06a783a404a4734e6ca615"
+      }
+    },
+    {
+      "condition": "ctxpack",
+      "sampleDirectory": "ctxpack-real-smoke-9n1QXi",
+      "result": "accepted_protocol5_condition_smoke",
+      "formalSample": false,
+      "preparationMs": 2693.4160999999995,
+      "recoveryMs": 120357.8775,
+      "firstRequiredReadStartedMs": 6392.6678999999995,
+      "firstRequiredReadCompletedMs": 7113.8941,
+      "calls": 9,
+      "reads": 3,
+      "repeatedReads": 0,
+      "edits": 2,
+      "tests": 4,
+      "nonzeroTestExits": [
+        2
+      ],
+      "rejectedCalls": 0,
+      "sourceReviewWaitMs": 65613.40909999999,
+      "candidateSha256": "a814ea81a925c28fdd4367374c180643a90e08dd54e64e0144a75c1b96122d2c",
+      "independentContainerTests": {
+        "total": 156,
+        "passed": 156,
+        "unhandled": []
+      },
+      "nativeCompacted": false,
+      "inputHashes": {
+        "manual": "238707e35378b35a328379e514b3fa3fc74be50364ad5472516be549108a6491",
+        "nativePreparation": "cd57f45e527814596eff33ca8f9cbef39258e6f6138efdbc0acd332e426e128a",
+        "ctxpack": "6ca6674709ce75632e792eb1870c6fe3a73d84f99d06a783a404a4734e6ca615"
+      }
+    }
+  ],
+  "sourceHashes": {
+    "run-real-smoke.mjs": "21b1b32e5d934377bb57b11f50f3d471828eac9bc65344170a9d7387496ef8d3",
+    "handoff-inputs.mjs": "0e6547c21f147804d89870442646841b571bb4286991e4e1110d449f47e004ef",
+    "access-policy.mjs": "704e78527d1451ec0ba074ecb22bd9eef83b1219f268e3ce93bd77ab71b2a52c",
+    "restricted-host.mjs": "84e35cf879b28f1a5865eb675ac8381690d9ed519b3999a0498ffe2d091e38d3",
+    "recovery-container.mjs": "deebd3a5ac4f6671a4b3d625051790ccede55980c4ef08d5bd3f4e45d58de330",
+    "historical-edits.mjs": "0c3ec7a3f23fc3f87964e1b20c46fac12c06d17edfcd7c1fbc63d3246cb638e5",
+    "historical-case.mjs": "0c6bbf8ad09f468d6e9ee1d8bec27f461920484e388e5bf5d48dae59ab952bf2",
+    "verify-historical-candidate.mjs": "7a8addebb2a61a2e75eae625da9cdc7813d8df5e9f019982e1d6d9caa6b0556a",
+    "JavaEditScope.java": "3181d0d254a60f2a39fc9e0c7739ed426c41c5c8e324c052a5c38fb4d8810088",
+    "historical-environments-2026-10-03.json": "446753d96ec23d9a93bff31cb81bfabdf49946cd1c4e384927dd6c712fb682a3",
+    "real-task-files.json": "129cacf817d0317d2ae26961c30e103a570dd8429701d74020b74ba5cac5948f",
+    "smoke-environment.json": "76c2a0afe030a172ff61cddd8da3ef4fa7ee9834dc0bc982281591e3c626822b",
+    "HISTORICAL-EXECUTION.md": "d8660d1ece63e7af122de226eaab4f0013fb17893b9248888818d80e09c663b1"
+  },
+  "boundary": "One pilot per condition; first required file read is an operational measure, not autonomous performance, recovery advantage or independent adoption. Human review and other host work affect durations."
+}

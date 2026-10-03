@@ -157,7 +157,7 @@ try {
   }
   assert.ok(performance.now() < setupDeadline);
   evidence.preparationMs = performance.now() - preparationAt;
-  const history = values.condition === "native" ? "" : values.condition === "ctxpack" ? prepared.inputs.ctxpack : manualHandoff(task);
+  const history = values.condition === "native" ? "" : values.condition === "ctxpack" ? prepared.inputs.ctxpack : prepared?.inputs.manual ?? manualHandoff(task);
   const prompt = `${history}\n\n${recoveryPrompt(task, scope, limits)}`;
   evidence.prompt = prompt;
   console.log(JSON.stringify({ root, phase: "prepared" }));

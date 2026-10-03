@@ -3,7 +3,7 @@ import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { performance } from "node:perf_hooks";
 import process from "node:process";
 import { fileURLToPath, URL } from "node:url";
@@ -50,10 +50,25 @@ export function prepareHandoffInputs(task, deadline = performance.now() + 120000
   const before = snapshot();
   const cli = fileURLToPath(new URL("../../dist/cli.js", import.meta.url));
   const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
-  const cliSha256 = sha(readFileSync(cli));
+  const dist = dirname(cli);
+  const buildSnapshot = () => Object.fromEntries(readdirSync(dist).sort().map((name) => [name, sha(readFileSync(join(dist, name)))]));
+  const builtFilesSha256 = buildSnapshot();
+  const cliSha256 = builtFilesSha256["cli.js"];
+  const archivedDist = join(directory, "cli-dist"); mkdirSync(archivedDist);
+  for (const name of Object.keys(builtFilesSha256)) {
+    const bytes = readFileSync(join(dist, name));
+    assert.equal(sha(bytes), builtFilesSha256[name]);
+    writeFileSync(join(archivedDist, name), bytes);
+  }
+  const dependencyInputsSha256 = {};
+  for (const name of ["package.json", "pnpm-lock.yaml"]) {
+    const bytes = readFileSync(new URL(`../../${name}`, import.meta.url));
+    dependencyInputsSha256[name] = sha(bytes);
+    writeFileSync(join(directory, name), bytes);
+  }
   const rendered = spawnSync(process.execPath, [cli, "handoff", "--to", "codex", "--budget", "4000"], { cwd: directory, encoding: "utf8", timeout: remainingTime(deadline, performance.now()) });
   assert.equal(rendered.status, 0, rendered.stderr);
-  assert.equal(sha(readFileSync(cli)), cliSha256, "CLI changed while preparing inputs");
+  assert.deepEqual(buildSnapshot(), builtFilesSha256, "CLI build changed while preparing inputs");
   assert.deepEqual(snapshot(), before, "Handoff must not mutate the prepared pack");
   const manual = manualHandoff(task);
   const nativePreparation = `${manual}\n这是交接准备阶段，记住以上事实，不使用工具，只回答READY。`;
@@ -62,7 +77,7 @@ export function prepareHandoffInputs(task, deadline = performance.now() + 120000
     for (const fact of Object.values(taskHistory(task)).flat()) assert.ok(text.includes(fact), `${name} lost a source fact`);
     writeFileSync(join(directory, `${name}.txt`), text);
   }
-  const evidence = { schema: "ctxpack.handoff-inputs/1", id: task.id, cliSha256,
+  const evidence = { schema: "ctxpack.handoff-inputs/2", id: task.id, cliSha256, builtFilesSha256, dependencyInputsSha256,
     inputsSha256: Object.fromEntries(Object.entries(inputs).map(([name, text]) => [name, sha(text)])),
     stateSha256: sha(before["state.json"]), nativeCompacted: false, formalSamples: 0 };
   writeFileSync(join(directory, "evidence.json"), `${JSON.stringify(evidence, null, 2)}\n`);
