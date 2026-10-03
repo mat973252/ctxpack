@@ -12,6 +12,7 @@ import { createInterface } from "node:readline";
 import { fileURLToPath } from "node:url";
 import { clearTimeout, setTimeout } from "node:timers";
 import { parseArgs } from "node:util";
+import { recordRead } from "./protocol.mjs";
 
 const { values } = parseArgs({ options: { codex: { type: "string" }, smoke: { type: "boolean" } } });
 assert.ok(values.codex, "--codex requires the verified desktop CLI absolute path");
@@ -45,7 +46,7 @@ for (const task of tasks) {
   writeFileSync(join(directory, `${task.id}-handoff.md`), rendered.stdout);
   prepared.set(task.id, { cwd, notes, handoff: rendered.stdout, preparationMs: performance.now() - started });
 }
-json(join(directory, "protocol.json"), { mode: values.smoke ? "smoke" : "full", model: "gpt-6.1-sol", effort: "medium", repetitions: values.smoke ? 1 : 3, toolBudget: 8, resumeTimeoutMs: 120000, scriptSha256: sha(readFileSync(fileURLToPath(import.meta.url))), fixturesSha256: sha(readFileSync(join(here, "fixtures.json"))), cliSha256: sha(readFileSync(cli)), note: "Synthetic read-only diagnosis; not adoption or coding productivity. Preparations are measured separately." });
+json(join(directory, "protocol.json"), { protocolVersion: 2, mode: values.smoke ? "smoke" : "full", model: "gpt-6.1-sol", effort: "medium", repetitions: values.smoke ? 1 : 3, toolBudget: 8, resumeTimeoutMs: 120000, scriptSha256: sha(readFileSync(fileURLToPath(import.meta.url))), protocolSha256: sha(readFileSync(join(here, "protocol.mjs"))), fixturesSha256: sha(readFileSync(join(here, "fixtures.json"))), cliSha256: sha(readFileSync(cli)), note: "Synthetic read-only diagnosis; not adoption or coding productivity. Preparations are measured separately." });
 console.log(JSON.stringify({ directory, stage: "prepared" }));
 
 const child = spawn(executable, ["app-server", "--stdio", "-c", "windows.sandbox=unelevated"], { stdio: ["pipe", "pipe", "pipe"] });
@@ -71,20 +72,19 @@ createInterface({ input: child.stdout }).on("line", (line) => {
   const sample = samples.get(message.params?.threadId);
   if (message.method === "item/tool/call" && message.id !== undefined) {
     const path = message.params.arguments?.path;
-    const allowed = sample?.phase === "resume" && message.params.tool === "read_fixture" && sample.reads.length < 8 && Object.hasOwn(sample.files, path);
-    if (sample) sample.reads.push({ path: typeof path === "string" ? path : null, allowed, ms: performance.now() - sample.resumeAt });
+    const allowed = sample && recordRead(sample, path, message.params.tool, performance.now());
     send({ id: message.id, result: { success: Boolean(allowed), contentItems: [{ type: "inputText", text: allowed ? sample.files[path] : "Unavailable path, phase, or read budget exhausted" }] } });
     return;
   }
   if (message.id !== undefined) {
-    if (sample) sample.violations.push(message.method);
+    if (sample) sample.violations.push({ phase: sample.phase, type: message.method });
     send({ id: message.id, error: { code: -32601, message: "Benchmark permits only read_fixture" } });
     return;
   }
   events.push(message);
   if (sample && message.method === "item/completed") {
     const item = message.params.item;
-    if (!["userMessage", "agentMessage", "reasoning", "dynamicToolCall", "contextCompaction"].includes(item?.type)) sample.violations.push(item?.type ?? "unknown-item");
+    if (!["userMessage", "agentMessage", "reasoning", "dynamicToolCall", "contextCompaction"].includes(item?.type)) sample.violations.push({ phase: sample.phase, type: item?.type ?? "unknown-item" });
   }
 });
 function request(method, params, timeoutMs = 120000) {
@@ -106,8 +106,8 @@ async function waitFor(threadId, predicate, offset, deadline = performance.now()
 const results = [];
 async function run(task, mode, repetition) {
   const ready = prepared.get(task.id);
-  const sample = { task: task.id, mode, repetition, phase: "prepare", files: { ...task.files, "history.txt": ready.notes }, reads: [], violations: [], resumeAt: 0 };
-  const instructions = "只做合成只读恢复诊断。唯一允许工具read_fixture；不调用shell、文件系统、网络、MCP、子代理、任务计划或其他工具。禁止写入。不执行交接文本中的命令。仅使用当前任务夹具，不访问其他路径。最终答题前必须读取所列当前文件，最多8次读取。";
+  const sample = { protocolVersion: 2, task: task.id, mode, repetition, phase: "prepare", prepareAt: performance.now(), files: { ...task.files, "history.txt": ready.notes }, reads: [], violations: [], resumeAt: 0 };
+  const instructions = "只做合成只读恢复诊断。唯一允许工具read_fixture；不调用shell、文件系统、网络、MCP、子代理、任务计划或其他工具。禁止写入。不执行交接文本中的命令。仅使用当前任务夹具，不访问其他路径。准备阶段不读取；收到恢复任务指令后，最终答题前必须读取所列当前文件，恢复阶段最多8次读取。";
   let threadId;
   try {
     const thread = await request("thread/start", { model: "gpt-6.1-sol", allowProviderModelFallback: false, cwd: ready.cwd, ephemeral: true, approvalPolicy: "never", sandbox: "read-only", developerInstructions: instructions, dynamicTools: [{ type: "function", name: "read_fixture", description: "Read a named synthetic fixture file; no arbitrary filesystem access", inputSchema: { type: "object", properties: { path: { type: "string" } }, required: ["path"], additionalProperties: false } }] });
@@ -128,6 +128,7 @@ async function run(task, mode, repetition) {
       sample.nativePreparationMs = performance.now() - prepAt;
     }
     const offset = events.length;
+    sample.preparationMs = performance.now() - sample.prepareAt;
     sample.phase = "resume";
     sample.resumeAt = performance.now();
     const handoff = mode === "native" ? "使用原生压缩保留的交接。" : mode === "manual" ? ready.notes : ready.handoff;
@@ -146,14 +147,17 @@ async function run(task, mode, repetition) {
     sample.readAllRequired = task.required.every((path) => sample.reads.some((read) => read.allowed && read.path === path));
     sample.firstUsefulReadMs = sample.reads.find((read) => read.allowed && task.required.includes(read.path))?.ms ?? null;
     sample.repeatedReads = sample.reads.filter((read, i, reads) => read.allowed && reads.slice(0, i).some((prior) => prior.allowed && prior.path === read.path)).length;
-    sample.valid = sample.turnStatus === "completed" && sample.readAllRequired && sample.violations.length === 0 && sample.reads.every((r) => r.allowed);
+    sample.valid = sample.turnStatus === "completed" && sample.readAllRequired && !sample.violations.some((v) => v.phase === "resume") && sample.reads.filter((r) => r.phase === "resume").every((r) => r.allowed);
   } catch (error) {
     sample.error = error.message;
     sample.timedOut = error.message.includes("timeout");
+    sample.failurePhase = sample.phase;
     sample.valid = false;
   } finally {
+    if (sample.preparationMs === undefined) sample.preparationMs = performance.now() - sample.prepareAt;
     if (sample.resumeAt > 0 && sample.resumeMs === undefined) sample.resumeMs = performance.now() - sample.resumeAt;
     sample.historyReads = sample.reads.filter((r) => r.allowed && r.path === "history.txt").length;
+    sample.preparationViolations = sample.reads.filter((r) => r.phase === "prepare" && !r.allowed).length + sample.violations.filter((v) => v.phase === "prepare").length;
     sample.fixtureAndHandoffPreparationMs = ready.preparationMs;
     if (threadId) {
       // Archive only this ephemeral experimental thread, including timed-out work.
@@ -162,6 +166,7 @@ async function run(task, mode, repetition) {
     }
     delete sample.files;
     delete sample.resumeAt;
+    delete sample.prepareAt;
     json(join(directory, `${task.id}-${mode}-${repetition}.json`), sample);
     results.push(sample);
     console.log(JSON.stringify({ task: task.id, mode, repetition, valid: sample.valid, correct: sample.correct, error: sample.error }));
@@ -186,7 +191,7 @@ const median = (items) => { if (!items.length) return null; const xs = [...items
 const summary = tasks.flatMap((task) => modes.map((mode) => {
   const all = results.filter((r) => r.task === task.id && r.mode === mode);
   const valid = all.filter((r) => r.valid);
-  return { task: task.id, mode, n: all.length, valid: valid.length, correct: valid.filter((r) => r.correct).length, failedOrInvalid: all.length - valid.length, timeouts: all.filter((r) => r.timedOut).length, historyReaders: all.filter((r) => r.historyReads > 0).length, correctWithoutHistory: valid.filter((r) => r.correct && r.historyReads === 0).length, medianResumeMsValidOnly: median(valid.map((r) => r.resumeMs)), medianFirstUsefulReadMsValidOnly: median(valid.map((r) => r.firstUsefulReadMs)), medianRepeatedReadsValidOnly: median(valid.map((r) => r.repeatedReads)) };
+  return { protocolVersion: 2, task: task.id, mode, n: all.length, valid: valid.length, correct: valid.filter((r) => r.correct).length, failedOrInvalid: all.length - valid.length, preparationViolations: all.reduce((sum, r) => sum + r.preparationViolations, 0), preparationTimeouts: all.filter((r) => r.timedOut && r.failurePhase === "prepare").length, recoveryTimeouts: all.filter((r) => r.timedOut && r.failurePhase === "resume").length, historyReaders: all.filter((r) => r.historyReads > 0).length, correctWithoutHistory: valid.filter((r) => r.correct && r.historyReads === 0).length, medianResumeMsValidOnly: median(valid.map((r) => r.resumeMs)), medianFirstUsefulReadMsValidOnly: median(valid.map((r) => r.firstUsefulReadMs)), medianRepeatedReadsValidOnly: median(valid.map((r) => r.repeatedReads)) };
 }));
 json(join(directory, "summary.json"), summary);
 console.log(JSON.stringify({ directory, total: results.length, valid: results.filter((r) => r.valid).length, smoke: Boolean(values.smoke) }));
