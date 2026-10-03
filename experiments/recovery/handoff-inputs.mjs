@@ -4,8 +4,10 @@ import { createHash } from "node:crypto";
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { performance } from "node:perf_hooks";
 import process from "node:process";
 import { fileURLToPath, URL } from "node:url";
+import { remainingTime } from "./access-policy.mjs";
 
 export const taskFacts = Object.freeze({
   "markdown-text": "初始模板后的用户正文、重复模板文本、内部空行和Markdown硬换行应保留；CRLF归一为LF；纯模板不输出；四个handoff入口保持正文且不写工作树。围栏分类是另一任务，不修改它。",
@@ -34,9 +36,10 @@ export function recoveryPrompt(task, scope, limits) {
 }
 
 // Control-side preparation only. Native mode still needs a real same-thread compaction.
-export function prepareHandoffInputs(task) {
+export function prepareHandoffInputs(task, deadline = performance.now() + 120000) {
+  remainingTime(deadline, performance.now());
   const directory = mkdtempSync(join(tmpdir(), "ctxpack-handoff-inputs-"));
-  const git = spawnSync("git", ["rev-parse", "--show-toplevel"], { cwd: directory, encoding: "utf8" });
+  const git = spawnSync("git", ["rev-parse", "--show-toplevel"], { cwd: directory, encoding: "utf8", timeout: remainingTime(deadline, performance.now()) });
   assert.equal(git.status, 128, "Preparation must be outside any Git checkout");
   const pack = join(directory, ".ctxpack"); mkdirSync(pack);
   const json = (name, value) => writeFileSync(join(pack, name), `${JSON.stringify(value, null, 2)}\n`);
@@ -48,7 +51,7 @@ export function prepareHandoffInputs(task) {
   const cli = fileURLToPath(new URL("../../dist/cli.js", import.meta.url));
   const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
   const cliSha256 = sha(readFileSync(cli));
-  const rendered = spawnSync(process.execPath, [cli, "handoff", "--to", "codex", "--budget", "4000"], { cwd: directory, encoding: "utf8", timeout: 30000 });
+  const rendered = spawnSync(process.execPath, [cli, "handoff", "--to", "codex", "--budget", "4000"], { cwd: directory, encoding: "utf8", timeout: remainingTime(deadline, performance.now()) });
   assert.equal(rendered.status, 0, rendered.stderr);
   assert.equal(sha(readFileSync(cli)), cliSha256, "CLI changed while preparing inputs");
   assert.deepEqual(snapshot(), before, "Handoff must not mutate the prepared pack");
@@ -63,5 +66,6 @@ export function prepareHandoffInputs(task) {
     inputsSha256: Object.fromEntries(Object.entries(inputs).map(([name, text]) => [name, sha(text)])),
     stateSha256: sha(before["state.json"]), nativeCompacted: false, formalSamples: 0 };
   writeFileSync(join(directory, "evidence.json"), `${JSON.stringify(evidence, null, 2)}\n`);
+  remainingTime(deadline, performance.now());
   return { directory, inputs, evidence };
 }

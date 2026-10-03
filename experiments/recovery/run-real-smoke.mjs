@@ -15,20 +15,27 @@ import { recoveryContainer } from "./recovery-container.mjs";
 import { restrictedHost } from "./restricted-host.mjs";
 import { applyHistoricalEdit } from "./historical-edits.mjs";
 import { historicalCase, taskCommand } from "./historical-case.mjs";
-import { manualHandoff, recoveryPrompt } from "./handoff-inputs.mjs";
+import { manualHandoff, prepareHandoffInputs, recoveryPrompt } from "./handoff-inputs.mjs";
 import { assertCandidateFiles, candidateCommands, verifyHistoricalCandidate } from "./verify-historical-candidate.mjs";
 
-const { values } = parseArgs({ options: { codex: { type: "string" }, image: { type: "string" }, id: { type: "string", default: "markdown-text" } } });
+const { values } = parseArgs({ options: { codex: { type: "string" }, image: { type: "string" }, id: { type: "string", default: "markdown-text" }, condition: { type: "string" } } });
 assert.ok(values.codex, "Supply verified --codex");
+assert.ok(values.condition === undefined || ["manual", "native", "ctxpack"].includes(values.condition));
 const task = historicalCase(values.id);
 const approved = { files: task.files };
 const frozenImage = task.imageId;
 const sha = (value) => createHash("sha256").update(value).digest("hex");
 const root = mkdtempSync(join(tmpdir(), "ctxpack-real-smoke-"));
 const cwd = join(root, "empty-host"); mkdirSync(cwd);
+const executedSources = join(root, "executed-sources"); mkdirSync(executedSources);
+function captureSource(file) {
+  const bytes = readFileSync(new URL(file, import.meta.url));
+  writeFileSync(join(executedSources, file), bytes);
+  return sha(bytes);
+}
 const limits = { read_file: 24, apply_edit: 4, run_tests: 4, wallMs: 480000 };
-const evidence = { schema: "ctxpack.real-smoke/2", id: task.id, result: "unverified", limits, calls: [], host: {}, violations: [],
-  sourceHashes: Object.fromEntries(["run-real-smoke.mjs", "handoff-inputs.mjs", "restricted-host.mjs", "recovery-container.mjs", "historical-edits.mjs", "historical-case.mjs", "verify-historical-candidate.mjs", "JavaEditScope.java", "historical-environments-2026-10-03.json", "real-task-files.json", "smoke-environment.json", "HISTORICAL-EXECUTION.md"].map((file) => [file, sha(readFileSync(new URL(file, import.meta.url)))])) };
+const evidence = { schema: "ctxpack.real-smoke/5", id: task.id, condition: values.condition ?? "coding", formalSample: false, result: "unverified", limits, calls: [], host: {}, violations: [],
+  sourceHashes: Object.fromEntries(["run-real-smoke.mjs", "handoff-inputs.mjs", "access-policy.mjs", "restricted-host.mjs", "recovery-container.mjs", "historical-edits.mjs", "historical-case.mjs", "verify-historical-candidate.mjs", "JavaEditScope.java", "historical-environments-2026-10-03.json", "real-task-files.json", "smoke-environment.json", "HISTORICAL-EXECUTION.md"].map((file) => [file, captureSource(file)])) };
 let commandCount = 0;
 let host;
 let hostClosed = false;
@@ -138,8 +145,20 @@ try {
     : task.id === "lens-wal" ? "getRun花括号内部的原始正文（包含换行和缩进），以及紧接方法后新增的最多4个必要private实例辅助方法（helpers包含前置换行/缩进）；禁止字段、构造器、装饰器、静态成员或改签名"
       : `${{ "markdown-text": "stripTemplate", "ctx-fences": "parseList", "relay-clock": "until" }[task.id]}函数体内部正文，不含外层花括号或声明，最多8000字符`;
   tools.push({ type: "function", name: "apply_edit", description: `从冻结原文重新应用完整候选（不累计前次编辑）。范围：${scope}。`, inputSchema: { type: "object", properties, required: Object.keys(properties), additionalProperties: false } });
-  host = await restrictedHost({ executable: resolve(values.codex), cwd, dynamicTools: tools, onTool, evidence: evidence.host });
-  const prompt = `${manualHandoff(task)}\n\n${recoveryPrompt(task, scope, limits)}`;
+  const preparationAt = performance.now();
+  const setupDeadline = preparationAt + 120000;
+  const prepared = values.condition ? prepareHandoffInputs(task, setupDeadline) : undefined;
+  if (prepared) evidence.handoff = { directory: prepared.directory, ...prepared.evidence };
+  host = await restrictedHost({ executable: resolve(values.codex), cwd, dynamicTools: tools, onTool, evidence: evidence.host, setupDeadline });
+  if (values.condition === "native") {
+    await host.turn(prepared.inputs.nativePreparation, setupDeadline, "prepare");
+    await host.compact(setupDeadline);
+    evidence.handoff.nativeCompacted = true;
+  }
+  assert.ok(performance.now() < setupDeadline);
+  evidence.preparationMs = performance.now() - preparationAt;
+  const history = values.condition === "native" ? "" : values.condition === "ctxpack" ? prepared.inputs.ctxpack : manualHandoff(task);
+  const prompt = `${history}\n\n${recoveryPrompt(task, scope, limits)}`;
   evidence.prompt = prompt;
   console.log(JSON.stringify({ root, phase: "prepared" }));
   startedAt = performance.now(); deadline = startedAt + limits.wallMs;
