@@ -23,6 +23,19 @@ V0.1 的发布判定以 `PROJECT.md` 的命令和真实 Agent 交接 Demo 为准
 
 ## 本地开发
 
+当前可靠性交接候选已在[草稿 PR #3](https://github.com/mat973252/ctxpack/pull/3)公开，尚未发布为新的 npm 包。从空目录取得候选源码（另需 Git）并构建：
+
+```sh
+git clone --branch mat/c1-handoff-reliability --single-branch https://github.com/mat973252/ctxpack.git ctxpack-candidate
+cd ctxpack-candidate
+git rev-parse HEAD
+corepack pnpm install --frozen-lockfile
+corepack pnpm build
+node dist/cli.js --help
+```
+
+记录实际检出的完整提交；分支会随审阅更新。检查其他仓库时，在目标仓库内使用 `node "候选源码绝对路径/dist/cli.js"` 代替 `ctxpack`，避免误用旧版全局 CLI。
+
 要求：Node.js >= 22，pnpm 由 Corepack 提供（`packageManager` 固定为 pnpm 10.17.1）。
 
 ```bash
@@ -85,6 +98,8 @@ JSON 错误保留文件定位，不回显非法 JSON 正文或底层异常原文
 ### Codex 显式入口（当前源码）
 
 包内 `skills/ctxpack-handoff` 是项目自带 skill。安装当前候选包后，可将该目录复制到目标仓库的 `.agents/skills/ctxpack-handoff`，在新的 Codex 会话显式输入 `$ctxpack-handoff`。不要覆盖已有同名 skill。CLI 需支持上述 `validate --json`；已发布的旧包不因此自动获得新能力。
+
+使用上述公开源码时，可直接复制源码中的 `skills/ctxpack-handoff` 目录，并向 Codex 明确提供已构建的 `dist/cli.js` 绝对路径；无需安装旧版 npm 包。复制目标仍为目标仓库的 `.agents/skills/ctxpack-handoff`，已有同名目录时先检查。
 
 例如本地 npm 依赖安装后，在目标仓库的 PowerShell 中执行一次：
 

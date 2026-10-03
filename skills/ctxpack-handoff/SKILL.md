@@ -5,7 +5,7 @@ description: Inspect a repository's captured ctxpack handoff and preflight diagn
 
 # Inspect a ctxpack handoff
 
-Run in the repository the user wants to inspect. Use the installed `ctxpack` CLI, or its known local `node_modules/@mat973252/ctxpack/dist/cli.js` with Node. If neither is available, report the missing prerequisite; do not download or install packages as part of inspection. This skill requires a CLI supporting `validate --json`.
+Run in the repository the user wants to inspect. Use the installed `ctxpack` CLI, its known local `node_modules/@mat973252/ctxpack/dist/cli.js` with Node, or a user-supplied absolute path to a previously built candidate's `dist/cli.js`. For either Node entry point, replace `ctxpack` in the commands below with `node "absolute/path/to/dist/cli.js"` while keeping the target repository as the working directory. If no entry point is available, report the missing prerequisite; do not download, build or install packages as part of inspection. This skill requires a CLI supporting `validate --json`.
 
 1. Run `ctxpack validate --json`. Read `ctxpack.validate/1` and the exit code: 0 passes the metadata preflight; 1 needs repair or review. A dirty snapshot is not a clean pass. For malformed/unreadable files, incomplete capture, or an unparseable response, report the error and stop inspection without repair.
 2. If the pack was readable, run `ctxpack handoff --to codex --budget 4000` separately, even when validation returned field/Git review diagnostics. A failed preflight must remain visible beside the handoff. The budget is a heuristic estimate, not an exact model token count.
