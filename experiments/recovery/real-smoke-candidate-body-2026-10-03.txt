@@ -1,0 +1,11 @@
+
+  const lines = text.replace(/\r\n/g, "\n").split("\n");
+  const templateLines = MARKDOWN_TEMPLATES[key].replace(/\r\n/g, "\n").split("\n");
+  if (templateLines[templateLines.length - 1] === "") templateLines.pop();
+  let start = templateLines.every((line, index) => lines[index] === line)
+    ? templateLines.length
+    : 0;
+  let end = lines.length;
+  while (start < end && lines[start]?.trim() === "") start++;
+  while (end > start && lines[end - 1]?.trim() === "") end--;
+  return lines.slice(start, end);

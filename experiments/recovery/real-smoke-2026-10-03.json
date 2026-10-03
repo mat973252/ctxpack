@@ -1,0 +1,234 @@
+{
+  "schema": "ctxpack.real-smoke-summary/1",
+  "date": "2026-10-03",
+  "result": "accepted_single_coding_smoke",
+  "sampleCount": 1,
+  "comparisonCondition": "none",
+  "imageId": "sha256:afed18d08385349c99cedae6aafacab2b3f5f9b41c0a462fe7715c3d08f7d21f",
+  "sourceHashes": {
+    "run-real-smoke.mjs": "1a83254875ca13e0e4c3f597075cd2172de4ed15467094ca4ebcdfcf8bc2b62b",
+    "restricted-host.mjs": "e476bc09202d9e6d7ca68fdf53c58dd2931d6c20ed9b8ca5adf44331da6ebda5",
+    "recovery-container.mjs": "41316ad3b9a10c785a9eb599abd14a0266e44231df9a07df6a06ef46c7d8d747",
+    "smoke-body.mjs": "92bf4fe3b02cb2aec362d2fd38b8d5b5ec4f5e55b1eb9dcaa0556c312e31dca2",
+    "real-task-files.json": "129cacf817d0317d2ae26961c30e103a570dd8429701d74020b74ba5cac5948f",
+    "smoke-environment.json": "76c2a0afe030a172ff61cddd8da3ef4fa7ee9834dc0bc982281591e3c626822b",
+    "REAL-SMOKE.md": "9d70dab97ec0e20a8bcd615a9b21d9215a9f1d52e4082483f2573d46f976bb71"
+  },
+  "model": "gpt-6.1-sol",
+  "requestedEffort": "medium",
+  "cliVersion": "codex-cli 0.159.0-alpha.12.1",
+  "limits": {
+    "read_file": 24,
+    "replace_strip_template_body": 4,
+    "run_tests": 4,
+    "wallMs": 480000
+  },
+  "recoveryMs": 102923.4872,
+  "candidateSha256": "c4cc2e6b044e4db2bb5f966ace777bd0a11d24a1e437b065ac442db08bdfa8d0",
+  "calls": [
+    {
+      "tool": "read_file",
+      "path": "src/core/handoff.ts",
+      "suite": null,
+      "ms": 13346.8041,
+      "elapsedMs": 1072.9424,
+      "success": true,
+      "exitCode": null,
+      "sourceReviewWaitMs": null,
+      "repeated": false
+    },
+    {
+      "tool": "read_file",
+      "path": "tests/recovery-case.test.ts",
+      "suite": null,
+      "ms": 14721.9344,
+      "elapsedMs": 1110.4379000000008,
+      "success": true,
+      "exitCode": null,
+      "sourceReviewWaitMs": null,
+      "repeated": false
+    },
+    {
+      "tool": "read_file",
+      "path": "src/core/init.ts",
+      "suite": null,
+      "ms": 20727.780999999995,
+      "elapsedMs": 1096.364300000001,
+      "success": true,
+      "exitCode": null,
+      "sourceReviewWaitMs": null,
+      "repeated": false
+    },
+    {
+      "tool": "read_file",
+      "path": "tests/handoff.test.ts",
+      "suite": null,
+      "ms": 22122.833,
+      "elapsedMs": 1064.6633000000002,
+      "success": true,
+      "exitCode": null,
+      "sourceReviewWaitMs": null,
+      "repeated": false
+    },
+    {
+      "tool": "read_file",
+      "path": "src/adapters/view.ts",
+      "suite": null,
+      "ms": 23565.772099999995,
+      "elapsedMs": 1060.958900000005,
+      "success": true,
+      "exitCode": null,
+      "sourceReviewWaitMs": null,
+      "repeated": false
+    },
+    {
+      "tool": "replace_strip_template_body",
+      "path": null,
+      "suite": null,
+      "ms": 40093.843499999995,
+      "elapsedMs": 1346.9130000000005,
+      "success": true,
+      "exitCode": null,
+      "sourceReviewWaitMs": null,
+      "repeated": null
+    },
+    {
+      "tool": "run_tests",
+      "path": null,
+      "suite": "regression",
+      "ms": 41850.5717,
+      "elapsedMs": 33202.3107,
+      "success": true,
+      "exitCode": 0,
+      "sourceReviewWaitMs": 29706.098400000003,
+      "repeated": null
+    },
+    {
+      "tool": "run_tests",
+      "path": null,
+      "suite": "check",
+      "ms": 75354.03289999999,
+      "elapsedMs": 20590.093900000007,
+      "success": true,
+      "exitCode": 0,
+      "sourceReviewWaitMs": 0.9886000000115018,
+      "repeated": null
+    }
+  ],
+  "violations": [],
+  "inventory": [
+    {
+      "name": "agentmemory",
+      "status": "disabled",
+      "tools": [],
+      "resources": 0,
+      "resourceTemplates": 0
+    },
+    {
+      "name": "code-review",
+      "status": "disabled",
+      "tools": [],
+      "resources": 0,
+      "resourceTemplates": 0
+    },
+    {
+      "name": "codex_app",
+      "status": "disabled",
+      "tools": [],
+      "resources": 0,
+      "resourceTemplates": 0
+    },
+    {
+      "name": "cua_repl",
+      "status": "disabled",
+      "tools": [],
+      "resources": 0,
+      "resourceTemplates": 0
+    },
+    {
+      "name": "node_repl",
+      "status": "disabled",
+      "tools": [],
+      "resources": 0,
+      "resourceTemplates": 0
+    },
+    {
+      "name": "notion",
+      "status": "disabled",
+      "tools": [],
+      "resources": 0,
+      "resourceTemplates": 0
+    }
+  ],
+  "itemTypes": [
+    "agentMessage",
+    "dynamicToolCall",
+    "reasoning",
+    "userMessage"
+  ],
+  "workerProfile": {
+    "user": "1000:1000",
+    "network": "none",
+    "readOnlyRoot": true,
+    "capDrop": [
+      "ALL"
+    ],
+    "securityOpt": [
+      "no-new-privileges:true"
+    ],
+    "memory": 1073741824,
+    "pids": 128,
+    "nanoCpus": 2000000000,
+    "envNames": [
+      "CI",
+      "NODE_VERSION",
+      "PATH",
+      "YARN_VERSION"
+    ],
+    "mountTypes": [
+      "volume",
+      "volume"
+    ],
+    "dependencyReadOnly": true,
+    "tmpfs": {
+      "/tmp": "rw,noexec,nosuid,size=134217728",
+      "/workspace/node_modules/.vite": "rw,noexec,nosuid,size=16777216,uid=1000,gid=1000,mode=0700",
+      "/workspace/node_modules/.vite-temp": "rw,noexec,nosuid,size=16777216,uid=1000,gid=1000,mode=0700"
+    }
+  },
+  "verifierProfile": {
+    "user": "1000:1000",
+    "network": "none",
+    "readOnlyRoot": true,
+    "capDrop": [
+      "ALL"
+    ],
+    "securityOpt": [
+      "no-new-privileges:true"
+    ],
+    "memory": 1073741824,
+    "pids": 128,
+    "nanoCpus": 2000000000,
+    "envNames": [
+      "CI",
+      "NODE_VERSION",
+      "PATH",
+      "YARN_VERSION"
+    ],
+    "mountTypes": [
+      "volume",
+      "volume"
+    ],
+    "dependencyReadOnly": true,
+    "tmpfs": {
+      "/tmp": "rw,noexec,nosuid,size=134217728",
+      "/workspace/node_modules/.vite": "rw,noexec,nosuid,size=16777216,uid=1000,gid=1000,mode=0700",
+      "/workspace/node_modules/.vite-temp": "rw,noexec,nosuid,size=16777216,uid=1000,gid=1000,mode=0700"
+    }
+  },
+  "verifierCheckExit": 0,
+  "verifierPassedTests": 160,
+  "hostCleanup": true,
+  "workerCleanup": true,
+  "verifierCleanup": true
+}

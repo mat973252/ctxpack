@@ -6,7 +6,9 @@
 
 实际宿主的受限读取检查使用 `node experiments/recovery/probe-tool-isolation.mjs --codex <已验证的桌面CLI绝对路径>`；这会调用指定模型，只访问随机生成的合成材料。检查规则可离线运行 `node --test experiments/recovery/access-policy.check.mjs`。已观察结果与未覆盖范围见[访问探测报告](ACCESS-PROBE-2026-10-03.md)。该检查没有自动接入旧合成实验执行器，也不能使旧样本获得额外隔离保证。
 
-候选代码执行使用独立Docker volume，完整基线与实际权限检查见[容器执行环境报告](CONTAINER-PROBE-2026-10-03.md)。当前仅检查环境和冻结失败断言，尚未开展模型编码恢复。
+候选代码执行使用独立Docker volume，完整基线与实际权限检查见[容器执行环境报告](CONTAINER-PROBE-2026-10-03.md)。该阶段报告只覆盖环境和冻结失败断言。
+
+后续首次真实编码冒烟已完成，见[实际结果](REAL-SMOKE-RESULT-2026-10-03.md)：模型提交的函数体在第二个全新容器通过完整check及160项测试。它验证编码闭环，尚未应用三种交接条件，不是正式恢复对照或采用证据。
 
 当前执行器为协议v2：阈值题明确禁止提高用户阈值，准备阶段违例单列，恢复阶段独享8次读取预算并使用独立计时。用 `node --test experiments/recovery/protocol.check.mjs` 验证阶段预算边界。2026-10-03首批45样本属于v1，保留原判定，不用v2重评分；v2尚未开展新的模型采样。
 

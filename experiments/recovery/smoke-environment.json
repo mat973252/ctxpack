@@ -1,0 +1,5 @@
+{
+  "baseImageId": "sha256:8c3b08e1addc12193851b5cc89a56a91d892639dd9887e844595458e9bb7605e",
+  "imageId": "sha256:afed18d08385349c99cedae6aafacab2b3f5f9b41c0a462fe7715c3d08f7d21f",
+  "change": "Only add two empty Vite cache mount points; source and dependency versions unchanged."
+}
