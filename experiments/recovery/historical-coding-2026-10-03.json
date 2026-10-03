@@ -1,0 +1,654 @@
+{
+  "schema": "ctxpack.historical-coding/2",
+  "date": "2026-10-03",
+  "scope": "Maintainer calibration plus one Java coding smoke; no handoff comparison or independent adoption",
+  "referenceCases": [
+    {
+      "id": "markdown-text",
+      "imageId": "sha256:afed18d08385349c99cedae6aafacab2b3f5f9b41c0a462fe7715c3d08f7d21f",
+      "candidateSha256": "96be092858b40e843107a7343ff86ec2e84a1d60042f69007523b40248c3f3fa",
+      "checkExit": 0,
+      "tests": {
+        "total": 160,
+        "passed": 160,
+        "unhandled": []
+      },
+      "cleanupComplete": true,
+      "executionSourceHashes": {
+        "verify-historical-candidate.mjs": "e592c357657cd61a84df8edb743c52c4001b51ae18e23ce53e4ec27abbbdab42",
+        "historical-case.mjs": "541bedb6d0906ecdb725bca4e1ef04a7085f59d56291985769a407daa3ab7d82",
+        "historical-edits.mjs": "0c3ec7a3f23fc3f87964e1b20c46fac12c06d17edfcd7c1fbc63d3246cb638e5",
+        "JavaEditScope.java": "3181d0d254a60f2a39fc9e0c7739ed426c41c5c8e324c052a5c38fb4d8810088",
+        "recovery-container.mjs": "deebd3a5ac4f6671a4b3d625051790ccede55980c4ef08d5bd3f4e45d58de330",
+        "historical-environments-2026-10-03.json": "446753d96ec23d9a93bff31cb81bfabdf49946cd1c4e384927dd6c712fb682a3",
+        "real-task-files.json": "129cacf817d0317d2ae26961c30e103a570dd8429701d74020b74ba5cac5948f",
+        "smoke-environment.json": "76c2a0afe030a172ff61cddd8da3ef4fa7ee9834dc0bc982281591e3c626822b"
+      },
+      "rawEvidenceSha256": "73cefb7adfbbe104d22982eed6c108d2c32575010d60bb1afe0423cedc859862"
+    },
+    {
+      "id": "ctx-fences",
+      "imageId": "sha256:bb0f933c5c423e3c9f9f23b7dcb858be1a52d804ac4f5ed9478580b7350e8822",
+      "candidateSha256": "c3cd81e0af3018489438910548be8d5f1d152f0354d4edd05ec7930e90675eea",
+      "checkExit": 0,
+      "tests": {
+        "total": 156,
+        "passed": 156,
+        "unhandled": []
+      },
+      "cleanupComplete": true,
+      "executionSourceHashes": {
+        "verify-historical-candidate.mjs": "e592c357657cd61a84df8edb743c52c4001b51ae18e23ce53e4ec27abbbdab42",
+        "historical-case.mjs": "541bedb6d0906ecdb725bca4e1ef04a7085f59d56291985769a407daa3ab7d82",
+        "historical-edits.mjs": "0c3ec7a3f23fc3f87964e1b20c46fac12c06d17edfcd7c1fbc63d3246cb638e5",
+        "JavaEditScope.java": "3181d0d254a60f2a39fc9e0c7739ed426c41c5c8e324c052a5c38fb4d8810088",
+        "recovery-container.mjs": "deebd3a5ac4f6671a4b3d625051790ccede55980c4ef08d5bd3f4e45d58de330",
+        "historical-environments-2026-10-03.json": "446753d96ec23d9a93bff31cb81bfabdf49946cd1c4e384927dd6c712fb682a3",
+        "real-task-files.json": "129cacf817d0317d2ae26961c30e103a570dd8429701d74020b74ba5cac5948f",
+        "smoke-environment.json": "76c2a0afe030a172ff61cddd8da3ef4fa7ee9834dc0bc982281591e3c626822b"
+      },
+      "rawEvidenceSha256": "723f38152cd3a910200125474ee3bf4554a4d91db99479be524704c591838f93"
+    },
+    {
+      "id": "lens-wal",
+      "imageId": "sha256:23e03f93a6e216cb04e7c60aa98046fc6ae1cf0d6d5cff8291d37abb1145e8e0",
+      "candidateSha256": "b4785ed2dd701da145fb375a1265c42008dcdafef70b613777f5503ee9f99e3d",
+      "checkExit": 0,
+      "tests": {
+        "total": 266,
+        "passed": 266,
+        "unhandled": []
+      },
+      "cleanupComplete": true,
+      "executionSourceHashes": {
+        "verify-historical-candidate.mjs": "e592c357657cd61a84df8edb743c52c4001b51ae18e23ce53e4ec27abbbdab42",
+        "historical-case.mjs": "f186356075e7ca7b47c2a88ff6ec07b87355c5cf97a2a705624ccad0f619f541",
+        "historical-edits.mjs": "0c3ec7a3f23fc3f87964e1b20c46fac12c06d17edfcd7c1fbc63d3246cb638e5",
+        "JavaEditScope.java": "3181d0d254a60f2a39fc9e0c7739ed426c41c5c8e324c052a5c38fb4d8810088",
+        "recovery-container.mjs": "deebd3a5ac4f6671a4b3d625051790ccede55980c4ef08d5bd3f4e45d58de330",
+        "historical-environments-2026-10-03.json": "446753d96ec23d9a93bff31cb81bfabdf49946cd1c4e384927dd6c712fb682a3",
+        "real-task-files.json": "129cacf817d0317d2ae26961c30e103a570dd8429701d74020b74ba5cac5948f",
+        "smoke-environment.json": "76c2a0afe030a172ff61cddd8da3ef4fa7ee9834dc0bc982281591e3c626822b"
+      },
+      "rawEvidenceSha256": "dd8b9aab71b0da7dfa4ba73a556724548e5748606e43065dae70cc2ee6183b2c"
+    },
+    {
+      "id": "relay-clock",
+      "imageId": "sha256:238292f8875edc1e650ad6fff680e584b55603c7ab84d8ff39765f29e700000f",
+      "candidateSha256": "f3d890806abf647e139829d1c3f23151bd17c31ae35993751bf7d8e2ece239ac",
+      "checkExit": 0,
+      "tests": {
+        "total": 208,
+        "passed": 208,
+        "packages": [
+          {
+            "name": "adapter-pi",
+            "counts": {
+              "tests": 7,
+              "failed": 0,
+              "passed": 7,
+              "cancelled": 0,
+              "skipped": 0,
+              "todo": 0,
+              "topLevel": 3,
+              "suites": 3
+            }
+          },
+          {
+            "name": "artifact-fs",
+            "counts": {
+              "tests": 12,
+              "failed": 0,
+              "passed": 12,
+              "cancelled": 0,
+              "skipped": 0,
+              "todo": 0,
+              "topLevel": 5,
+              "suites": 5
+            }
+          },
+          {
+            "name": "cli",
+            "counts": {
+              "tests": 49,
+              "failed": 0,
+              "passed": 49,
+              "cancelled": 0,
+              "skipped": 0,
+              "todo": 0,
+              "topLevel": 10,
+              "suites": 8
+            }
+          },
+          {
+            "name": "core",
+            "counts": {
+              "tests": 40,
+              "failed": 0,
+              "passed": 40,
+              "cancelled": 0,
+              "skipped": 0,
+              "todo": 0,
+              "topLevel": 9,
+              "suites": 9
+            }
+          },
+          {
+            "name": "epistemic",
+            "counts": {
+              "tests": 8,
+              "failed": 0,
+              "passed": 8,
+              "cancelled": 0,
+              "skipped": 0,
+              "todo": 0,
+              "topLevel": 3,
+              "suites": 3
+            }
+          },
+          {
+            "name": "mcp",
+            "counts": {
+              "tests": 57,
+              "failed": 0,
+              "passed": 57,
+              "cancelled": 0,
+              "skipped": 0,
+              "todo": 0,
+              "topLevel": 21,
+              "suites": 14
+            }
+          },
+          {
+            "name": "storage-sqlite",
+            "counts": {
+              "tests": 35,
+              "failed": 0,
+              "passed": 35,
+              "cancelled": 0,
+              "skipped": 0,
+              "todo": 0,
+              "topLevel": 6,
+              "suites": 6
+            }
+          }
+        ]
+      },
+      "cleanupComplete": true,
+      "executionSourceHashes": {
+        "verify-historical-candidate.mjs": "7a8addebb2a61a2e75eae625da9cdc7813d8df5e9f019982e1d6d9caa6b0556a",
+        "historical-case.mjs": "0c6bbf8ad09f468d6e9ee1d8bec27f461920484e388e5bf5d48dae59ab952bf2",
+        "historical-edits.mjs": "0c3ec7a3f23fc3f87964e1b20c46fac12c06d17edfcd7c1fbc63d3246cb638e5",
+        "JavaEditScope.java": "3181d0d254a60f2a39fc9e0c7739ed426c41c5c8e324c052a5c38fb4d8810088",
+        "recovery-container.mjs": "deebd3a5ac4f6671a4b3d625051790ccede55980c4ef08d5bd3f4e45d58de330",
+        "historical-environments-2026-10-03.json": "446753d96ec23d9a93bff31cb81bfabdf49946cd1c4e384927dd6c712fb682a3",
+        "real-task-files.json": "129cacf817d0317d2ae26961c30e103a570dd8429701d74020b74ba5cac5948f",
+        "smoke-environment.json": "76c2a0afe030a172ff61cddd8da3ef4fa7ee9834dc0bc982281591e3c626822b"
+      },
+      "rawEvidenceSha256": "d415993fe4a58eb67f7fb5dffdd74a14e986eb53881448542ba9557e6514e625"
+    },
+    {
+      "id": "permit-proxy",
+      "imageId": "sha256:d7b26b13fe8666ecc6e99533956272c2dd582ca399f6f35647715e229a613e34",
+      "candidateSha256": "fec268928038ab7c7a2703d6a44ee94391bcf1dd9ff52b17f84c47ad0ab5e64a",
+      "checkExit": 0,
+      "tests": {
+        "tests": 216,
+        "cases": 216,
+        "bad": 0,
+        "failed": 0,
+        "identities": [
+          "io.github.agentpermit4j.core.RiskAssessmentTest#carriesMachineReadableRiskDecision",
+          "io.github.agentpermit4j.core.RiskAssessmentTest#rejectsInvalidRiskDecision",
+          "io.github.agentpermit4j.core.ToolDescriptorTest#carriesStaticRiskMetadata",
+          "io.github.agentpermit4j.core.ToolDescriptorTest#rejectsMissingStaticRiskMetadata",
+          "io.github.agentpermit4j.core.ToolInvocationTest#rejectsBlankRequiredText",
+          "io.github.agentpermit4j.core.ToolInvocationTest#representsDifferentToolCategoriesWithOneDomainModel(String, ToolInvocation)[1]",
+          "io.github.agentpermit4j.core.ToolInvocationTest#representsDifferentToolCategoriesWithOneDomainModel(String, ToolInvocation)[2]",
+          "io.github.agentpermit4j.core.ToolInvocationTest#representsDifferentToolCategoriesWithOneDomainModel(String, ToolInvocation)[3]",
+          "io.github.agentpermit4j.core.ToolInvocationTest#representsDifferentToolCategoriesWithOneDomainModel(String, ToolInvocation)[4]",
+          "io.github.agentpermit4j.core.ToolInvocationTest#representsDifferentToolCategoriesWithOneDomainModel(String, ToolInvocation)[5]",
+          "io.github.agentpermit4j.core.ToolInvocationTest#rejectsMissingInvocationParts",
+          "io.github.agentpermit4j.core.ToolInvocationTest#protectsPolicyInputsFromCallerMutation",
+          "io.github.agentpermit4j.policy.RiskEvaluatorRegistryTest#deniesResourceTypesWithoutRegisteredEvaluator",
+          "io.github.agentpermit4j.policy.RiskEvaluatorRegistryTest#snapshotsRuntimeConfiguration",
+          "io.github.agentpermit4j.policy.RiskEvaluatorRegistryTest#deniesWhenRegisteredEvaluatorReturnsNoAssessment",
+          "io.github.agentpermit4j.policy.RiskEvaluatorRegistryTest#deniesWhenRegisteredEvaluatorFails",
+          "io.github.agentpermit4j.policy.RiskEvaluatorRegistryTest#routesByResourceTypeAndPreservesAssessment",
+          "io.github.agentpermit4j.policy.file.ProtectedPathAuthorizerTest#doesNotConfuseSiblingPrefixWithProtectedRoot",
+          "io.github.agentpermit4j.policy.file.ProtectedPathAuthorizerTest#allowsReadingReadmeInsideWorkspace",
+          "io.github.agentpermit4j.policy.file.ProtectedPathAuthorizerTest#deniesDeletionThatCanRemoveProtectedWorkspace(String, boolean)[1]",
+          "io.github.agentpermit4j.policy.file.ProtectedPathAuthorizerTest#deniesDeletionThatCanRemoveProtectedWorkspace(String, boolean)[2]",
+          "io.github.agentpermit4j.policy.file.ProtectedPathAuthorizerTest#deniesDeletionThatCanRemoveProtectedWorkspace(String, boolean)[3]",
+          "io.github.agentpermit4j.policy.file.ProtectedPathAuthorizerTest#deniesDeletionThatCanRemoveProtectedWorkspace(String, boolean)[4]",
+          "io.github.agentpermit4j.policy.file.ProtectedPathAuthorizerTest#deniesDeletionThatCanRemoveProtectedWorkspace(String, boolean)[5]",
+          "io.github.agentpermit4j.policy.file.ProtectedPathAuthorizerTest#deniesDeletionThatCanRemoveProtectedWorkspace(String, boolean)[6]",
+          "io.github.agentpermit4j.policy.file.ProtectedPathAuthorizerTest#deniesControlCharactersInFilePath",
+          "io.github.agentpermit4j.policy.file.ProtectedPathAuthorizerTest#deniesAmbiguousRecursiveFlag",
+          "io.github.agentpermit4j.policy.file.ProtectedPathAuthorizerTest#deniesAmbiguousOrNonPortableFilePath(String)[1]",
+          "io.github.agentpermit4j.policy.file.ProtectedPathAuthorizerTest#deniesAmbiguousOrNonPortableFilePath(String)[2]",
+          "io.github.agentpermit4j.policy.file.ProtectedPathAuthorizerTest#deniesAmbiguousOrNonPortableFilePath(String)[3]",
+          "io.github.agentpermit4j.policy.file.ProtectedPathAuthorizerTest#deniesAmbiguousOrNonPortableFilePath(String)[4]",
+          "io.github.agentpermit4j.policy.file.ProtectedPathAuthorizerTest#deniesAmbiguousOrNonPortableFilePath(String)[5]",
+          "io.github.agentpermit4j.policy.file.ProtectedPathAuthorizerTest#deniesFileActionDisguisedAsAnotherResourceType",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#matchesConfiguredHostsCaseInsensitively",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#deniesRequestsThatCannotBeSafelyExecuted(String, ToolInvocation, String)[1]",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#deniesRequestsThatCannotBeSafelyExecuted(String, ToolInvocation, String)[2]",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#deniesRequestsThatCannotBeSafelyExecuted(String, ToolInvocation, String)[3]",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#deniesRequestsThatCannotBeSafelyExecuted(String, ToolInvocation, String)[4]",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#deniesRequestsThatCannotBeSafelyExecuted(String, ToolInvocation, String)[5]",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#deniesRequestsThatCannotBeSafelyExecuted(String, ToolInvocation, String)[6]",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#deniesRequestsThatCannotBeSafelyExecuted(String, ToolInvocation, String)[7]",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#deniesRequestsThatCannotBeSafelyExecuted(String, ToolInvocation, String)[8]",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#deniesRequestsThatCannotBeSafelyExecuted(String, ToolInvocation, String)[9]",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#deniesRequestsThatCannotBeSafelyExecuted(String, ToolInvocation, String)[10]",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#deniesRequestsThatCannotBeSafelyExecuted(String, ToolInvocation, String)[11]",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#deniesRequestsThatCannotBeSafelyExecuted(String, ToolInvocation, String)[12]",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#deniesRequestsThatCannotBeSafelyExecuted(String, ToolInvocation, String)[13]",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#deniesRequestsThatCannotBeSafelyExecuted(String, ToolInvocation, String)[14]",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#rejectsInvalidRuntimePolicy",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#classifiesAllowedHttpsRequestsByMethod(String, String, RiskLevel, String)[1]",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#classifiesAllowedHttpsRequestsByMethod(String, String, RiskLevel, String)[2]",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#classifiesAllowedHttpsRequestsByMethod(String, String, RiskLevel, String)[3]",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#classifiesAllowedHttpsRequestsByMethod(String, String, RiskLevel, String)[4]",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#classifiesAllowedHttpsRequestsByMethod(String, String, RiskLevel, String)[5]",
+          "io.github.agentpermit4j.policy.http.HttpRiskEvaluatorTest#classifiesAllowedHttpsRequestsByMethod(String, String, RiskLevel, String)[6]",
+          "io.github.agentpermit4j.policy.messaging.MessagingRiskEvaluatorTest#rejectsInvalidRuntimePolicy",
+          "io.github.agentpermit4j.policy.messaging.MessagingRiskEvaluatorTest#classifiesAllowedSendAsHighRisk",
+          "io.github.agentpermit4j.policy.messaging.MessagingRiskEvaluatorTest#deniesMessagesThatViolateDestinationOrContentPolicy(String, ToolInvocation, String)[1]",
+          "io.github.agentpermit4j.policy.messaging.MessagingRiskEvaluatorTest#deniesMessagesThatViolateDestinationOrContentPolicy(String, ToolInvocation, String)[2]",
+          "io.github.agentpermit4j.policy.messaging.MessagingRiskEvaluatorTest#deniesMessagesThatViolateDestinationOrContentPolicy(String, ToolInvocation, String)[3]",
+          "io.github.agentpermit4j.policy.messaging.MessagingRiskEvaluatorTest#deniesMessagesThatViolateDestinationOrContentPolicy(String, ToolInvocation, String)[4]",
+          "io.github.agentpermit4j.policy.messaging.MessagingRiskEvaluatorTest#deniesMessagesThatViolateDestinationOrContentPolicy(String, ToolInvocation, String)[5]",
+          "io.github.agentpermit4j.policy.messaging.MessagingRiskEvaluatorTest#deniesMessagesThatViolateDestinationOrContentPolicy(String, ToolInvocation, String)[6]",
+          "io.github.agentpermit4j.policy.sql.SqlRiskEvaluatorTest#classifiesSqlByParsedStatementShape(String, String, RiskLevel, String)[1]",
+          "io.github.agentpermit4j.policy.sql.SqlRiskEvaluatorTest#classifiesSqlByParsedStatementShape(String, String, RiskLevel, String)[2]",
+          "io.github.agentpermit4j.policy.sql.SqlRiskEvaluatorTest#classifiesSqlByParsedStatementShape(String, String, RiskLevel, String)[3]",
+          "io.github.agentpermit4j.policy.sql.SqlRiskEvaluatorTest#classifiesSqlByParsedStatementShape(String, String, RiskLevel, String)[4]",
+          "io.github.agentpermit4j.policy.sql.SqlRiskEvaluatorTest#classifiesSqlByParsedStatementShape(String, String, RiskLevel, String)[5]",
+          "io.github.agentpermit4j.policy.sql.SqlRiskEvaluatorTest#classifiesSqlByParsedStatementShape(String, String, RiskLevel, String)[6]",
+          "io.github.agentpermit4j.policy.sql.SqlRiskEvaluatorTest#classifiesSqlByParsedStatementShape(String, String, RiskLevel, String)[7]",
+          "io.github.agentpermit4j.policy.sql.SqlRiskEvaluatorTest#classifiesSqlByParsedStatementShape(String, String, RiskLevel, String)[8]",
+          "io.github.agentpermit4j.policy.sql.SqlRiskEvaluatorTest#deniesInputsThatCannotBeSafelyClassified(String, ToolInvocation, String)[1]",
+          "io.github.agentpermit4j.policy.sql.SqlRiskEvaluatorTest#deniesInputsThatCannotBeSafelyClassified(String, ToolInvocation, String)[2]",
+          "io.github.agentpermit4j.policy.sql.SqlRiskEvaluatorTest#deniesInputsThatCannotBeSafelyClassified(String, ToolInvocation, String)[3]",
+          "io.github.agentpermit4j.policy.sql.SqlRiskEvaluatorTest#deniesInputsThatCannotBeSafelyClassified(String, ToolInvocation, String)[4]",
+          "io.github.agentpermit4j.policy.sql.SqlRiskEvaluatorTest#deniesInputsThatCannotBeSafelyClassified(String, ToolInvocation, String)[5]",
+          "io.github.agentpermit4j.policy.sql.SqlRiskEvaluatorTest#deniesInputsThatCannotBeSafelyClassified(String, ToolInvocation, String)[6]",
+          "io.github.agentpermit4j.execution.ApprovalAwareResultIdempotencyTest#approvedExecutionPassesApprovalIdToIdempotencyBoundary",
+          "io.github.agentpermit4j.execution.ApprovalAwareResultIdempotencyTest#approvedExecutionFailsClosedWhenGuardCannotConsumeApproval",
+          "io.github.agentpermit4j.execution.ApprovalAwareResultIdempotencyTest#lowRiskExecutionDoesNotConsumeAnUnusedApprovalId",
+          "io.github.agentpermit4j.execution.ApprovalAwareResultIdempotencyTest#inMemoryGuardBindsApprovalToOneIdempotencyKey",
+          "io.github.agentpermit4j.execution.ApprovalFingerprintAcceptanceTest#verifiesApprovalAgainstNormalizedInvocation",
+          "io.github.agentpermit4j.execution.ApprovalFingerprintAcceptanceTest#changedInvocationCannotReuseApproval(String, ToolInvocation)[1]",
+          "io.github.agentpermit4j.execution.ApprovalFingerprintAcceptanceTest#changedInvocationCannotReuseApproval(String, ToolInvocation)[2]",
+          "io.github.agentpermit4j.execution.AuditTimelineAcceptanceTest#approvedExecutionProducesCompleteReplaySafeTimeline",
+          "io.github.agentpermit4j.execution.AuditTimelineAcceptanceTest#approvalRequiredTimelineOmitsExecutionAndHasNoSideEffect",
+          "io.github.agentpermit4j.execution.DecisionPipelineTest#mapsNonExecutableRiskToTerminalDecision(String, RiskAssessment, DecisionOutcome)[1]",
+          "io.github.agentpermit4j.execution.DecisionPipelineTest#mapsNonExecutableRiskToTerminalDecision(String, RiskAssessment, DecisionOutcome)[2]",
+          "io.github.agentpermit4j.execution.DecisionPipelineTest#mapsNonExecutableRiskToTerminalDecision(String, RiskAssessment, DecisionOutcome)[3]",
+          "io.github.agentpermit4j.execution.DecisionPipelineTest#deniesInvalidInvocationWithoutCallingDownstreamStages",
+          "io.github.agentpermit4j.execution.DecisionPipelineTest#convertsExecutionFailureToAuditedStructuredDecision",
+          "io.github.agentpermit4j.execution.DecisionPipelineTest#executesLowRiskInvocationInDeterministicOrder",
+          "io.github.agentpermit4j.execution.DecisionPipelineTest#deniesUnauthorizedInvocationBeforeRiskEvaluation",
+          "io.github.agentpermit4j.execution.IdempotencyAcceptanceTest#concurrentInvocationsWithOneKeyProduceOneSideEffect",
+          "io.github.agentpermit4j.execution.IdempotencyAcceptanceTest#idempotencyFingerprintUsesNormalizedInvocation",
+          "io.github.agentpermit4j.execution.IdempotencyAcceptanceTest#completedAndFailedResultsAreReusedWithoutExecutingAgain",
+          "io.github.agentpermit4j.execution.IdempotencyAcceptanceTest#oneKeyCannotBeReusedForAnotherNormalizedInvocation",
+          "io.github.agentpermit4j.execution.ProtectedPathPolicyAcceptanceTest#protectedWorkspaceDeletionProducesZeroExecutions",
+          "io.github.agentpermit4j.execution.ResultDecisionPipelineAcceptanceTest#concurrentRetriesReuseTheExactToolOutput",
+          "io.github.agentpermit4j.execution.ResultDecisionPipelineAcceptanceTest#idempotencyMismatchCannotExposeCachedOutput",
+          "io.github.agentpermit4j.execution.ResultDecisionPipelineAcceptanceTest#failedExecutionIsCachedWithoutAnOutput",
+          "io.github.agentpermit4j.execution.ResultDecisionPipelineAcceptanceTest#auditEventsExcludeToolOutput",
+          "io.github.agentpermit4j.execution.ToolExecutionResultTest#outputExistsOnlyForExecutedDecisions",
+          "io.github.agentpermit4j.approval.InMemoryApprovalServiceTest#invalidatesApprovalWhenInvocationFingerprintChanges",
+          "io.github.agentpermit4j.approval.InMemoryApprovalServiceTest#expiresAtTheExactBoundary",
+          "io.github.agentpermit4j.approval.InMemoryApprovalServiceTest#approvesAndVerifiesMatchingInvocationBeforeExpiry",
+          "io.github.agentpermit4j.approval.InMemoryApprovalServiceTest#rejectsNonPositiveRequestLifetime",
+          "io.github.agentpermit4j.approval.InMemoryApprovalServiceTest#rejectsApprovalAfterExpiryAndUnknownRequest",
+          "io.github.agentpermit4j.approval.InvocationFingerprinterTest#lengthPrefixesPreventFieldConcatenationCollisions",
+          "io.github.agentpermit4j.approval.InvocationFingerprinterTest#changesDigestWhenServiceOrVersionChanges",
+          "io.github.agentpermit4j.approval.InvocationFingerprinterTest#producesStableDigestIndependentOfMapInsertionOrder",
+          "io.github.agentpermit4j.audit.InMemoryAuditLogTest#replaySafeViewFiltersAndOrdersWithoutChangingTheLog",
+          "io.github.agentpermit4j.audit.InMemoryAuditLogTest#appendsEventsAndReturnsDetachedImmutableSnapshots",
+          "io.github.agentpermit4j.jdbc.approval.JdbcApprovalReviewTest#concurrentReviewersPersistExactlyOneDecision",
+          "io.github.agentpermit4j.jdbc.approval.JdbcApprovalReviewTest#decisionStorageFailureRollsBackApproval",
+          "io.github.agentpermit4j.jdbc.approval.JdbcApprovalServiceTest#rejectsCorruptApprovalState",
+          "io.github.agentpermit4j.jdbc.approval.JdbcApprovalServiceTest#doesNotExposeDuplicateIdDatabaseDetails",
+          "io.github.agentpermit4j.jdbc.approval.JdbcApprovalServiceTest#approvesOnlyOnceAcrossConcurrentCallers",
+          "io.github.agentpermit4j.jdbc.approval.JdbcApprovalServiceTest#executesHighRiskInvocationOnlyAfterPersistedApproval",
+          "io.github.agentpermit4j.jdbc.approval.JdbcApprovalServiceTest#failsClosedWhenApprovalTableIsUnavailable",
+          "io.github.agentpermit4j.jdbc.approval.JdbcApprovalServiceTest#persistsApprovalAcrossServiceInstances",
+          "io.github.agentpermit4j.jdbc.approval.JdbcApprovalServiceTest#rejectsChangedInvocationAndExpiresAtExactBoundary",
+          "io.github.agentpermit4j.jdbc.audit.JdbcAuditLogTest#bridgesLegacyDecisionEventsToIndependentResultTimelines",
+          "io.github.agentpermit4j.jdbc.audit.JdbcAuditLogTest#rejectsDuplicateSequenceWithoutOverwriting",
+          "io.github.agentpermit4j.jdbc.audit.JdbcAuditLogTest#rejectsCorruptPersistedEvent",
+          "io.github.agentpermit4j.jdbc.audit.JdbcAuditLogTest#rejectsResultWhoseStoredStatusDoesNotMatchDecision",
+          "io.github.agentpermit4j.jdbc.audit.JdbcAuditLogTest#appendsOneTimelineConcurrentlyAcrossServiceInstances",
+          "io.github.agentpermit4j.jdbc.audit.JdbcAuditLogTest#failsWithGenericErrorWhenAuditTableIsUnavailable",
+          "io.github.agentpermit4j.jdbc.audit.JdbcAuditLogTest#persistsOrderedReplayAcrossServiceInstances",
+          "io.github.agentpermit4j.jdbc.audit.JdbcAuditLogTest#persistsPipelineTimelineWithoutSensitiveInvocationData",
+          "io.github.agentpermit4j.jdbc.audit.JdbcAuditLogTest#hidesRuntimeDataSourceFailureDetails",
+          "io.github.agentpermit4j.redis.RedisLuaScriptsTest#bundledClaimAndCompletionScriptsCanBeLoaded",
+          "io.github.agentpermit4j.redis.RedisResultIdempotencyGuardTest#completedRetryReturnsCachedOutputWithoutExecuting",
+          "io.github.agentpermit4j.redis.RedisResultIdempotencyGuardTest#fingerprintMismatchCannotExposeCachedOutput",
+          "io.github.agentpermit4j.redis.RedisResultIdempotencyGuardTest#oneApprovalCannotAuthorizeAnotherIdempotencyKey",
+          "io.github.agentpermit4j.redis.RedisResultIdempotencyGuardTest#ownerFailureIsCompletedAndCachedWithoutDetails",
+          "io.github.agentpermit4j.redis.RedisResultIdempotencyGuardTest#ownerExecutesOnceAndPersistsTheExactResult",
+          "io.github.agentpermit4j.redis.RedisResultIdempotencyGuardTest#waiterPollsUntilTheOwnerResultIsAvailable",
+          "io.github.agentpermit4j.redis.RedisResultIdempotencyGuardTest#redisClaimFailureStopsBeforeTheSideEffect",
+          "io.github.agentpermit4j.springai.SpringAiInvocationMapperTest#rejectsNestedArgumentsAndMissingTransportContext",
+          "io.github.agentpermit4j.springai.SpringAiInvocationMapperTest#modelArgumentsCannotOverrideTrustedIdentity",
+          "io.github.agentpermit4j.springai.SpringAiInvocationMapperTest#mapsFlatJsonAndTrustedToolContext",
+          "io.github.agentpermit4j.springai.consumer.AgentPermitAnnotationPublicApiTest#rejectsInvalidCustomErrorCode",
+          "io.github.agentpermit4j.springai.consumer.AgentPermitAnnotationPublicApiTest#rejectsHttpOnlyLimitsOnAnotherResourceType",
+          "io.github.agentpermit4j.springai.consumer.AgentPermitAnnotationPublicApiTest#annotationDenialCanReturnCustomError",
+          "io.github.agentpermit4j.springai.consumer.AgentPermitAnnotationPublicApiTest#nonHttpToolOnlyOverridesResourceMapping",
+          "io.github.agentpermit4j.springai.consumer.AgentPermitAnnotationPublicApiTest#annotationDenialCanKeepDefaultCodeWithCustomMessage",
+          "io.github.agentpermit4j.springai.consumer.AgentPermitAnnotationPublicApiTest#annotationRiskRequiresApprovalBeforeExecution",
+          "io.github.agentpermit4j.springai.consumer.AgentPermitAnnotationPublicApiTest#rejectsMethodWithoutAgentPermitAnnotation",
+          "io.github.agentpermit4j.springai.consumer.AgentPermitAnnotationPublicApiTest#derivesToolIdentityFromSpringToolAnnotation",
+          "io.github.agentpermit4j.springai.consumer.AgentPermitAnnotationPublicApiTest#rejectsReservedCustomErrorCode",
+          "io.github.agentpermit4j.springai.consumer.AgentPermitAnnotationPublicApiTest#annotationParametersDenyDisallowedCalls",
+          "io.github.agentpermit4j.springai.consumer.AgentPermitAnnotationPublicApiTest#annotationRiskCannotLowerDynamicRisk",
+          "io.github.agentpermit4j.springai.consumer.GuardedToolCallbackPublicApiTest#externalConsumerConstructsGuardedCallback",
+          "io.github.agentpermit4j.springai.consumer.GuardedToolCallbackPublicApiTest#externalConsumerResolvesTrustedContextBeforeInvocationMapping",
+          "io.github.agentpermit4j.springai.consumer.GuardedToolCallbackPublicApiTest#rejectsMismatchedDefinitionAndDescriptorNames",
+          "io.github.agentpermit4j.springai.consumer.GuardedToolCallbackPublicApiTest#resolverFailureDeniesBeforeExecutor",
+          "io.github.agentpermit4j.springai.consumer.GuardedToolMethodsAcceptanceTest#rejectsDuplicateToolNamesAndUnprotectedMethodsAtRegistration",
+          "io.github.agentpermit4j.springai.consumer.GuardedToolMethodsAcceptanceTest#rejectsFinalToolOnClassProxyBeforeAnyInvocation",
+          "io.github.agentpermit4j.springai.consumer.GuardedToolMethodsAcceptanceTest#registersMultipleMethodsAndExecutesNormalizedArgumentsOnceWithTrustedIdentity",
+          "io.github.agentpermit4j.springai.consumer.GuardedToolMethodsAcceptanceTest#discoversClassProxyAnnotationsWithoutBypassingAdviceApprovalOrIdempotency",
+          "io.github.agentpermit4j.springai.autoconfigure.AgentPermitSpringAiAutoConfigurationTest#preservesUserProvidedCallback",
+          "io.github.agentpermit4j.springai.autoconfigure.AgentPermitSpringAiAutoConfigurationTest#appliesUniqueTrustedContextResolverToAutoConfiguredCallback",
+          "io.github.agentpermit4j.springai.autoconfigure.AgentPermitSpringAiAutoConfigurationTest#registersAutoConfigurationInBootImports",
+          "io.github.agentpermit4j.springai.autoconfigure.AgentPermitSpringAiAutoConfigurationTest#failsWhenToolContractIsAmbiguous",
+          "io.github.agentpermit4j.springai.autoconfigure.AgentPermitSpringAiAutoConfigurationTest#createsCallbackFromUniqueUserProvidedInputs",
+          "io.github.agentpermit4j.springai.autoconfigure.AgentPermitSpringAiAutoConfigurationTest#backsOffWithoutAllRequiredInputs",
+          "io.github.agentpermit4j.springai.autoconfigure.AgentPermitSpringSecurityAutoConfigurationTest#invalidApplicationResolutionFailsClosed",
+          "io.github.agentpermit4j.springai.autoconfigure.AgentPermitSpringSecurityAutoConfigurationTest#backsOffWhenSpringSecurityIsUnavailable",
+          "io.github.agentpermit4j.springai.autoconfigure.AgentPermitSpringSecurityAutoConfigurationTest#snapshotsAuthenticatedPrincipalNameOnce",
+          "io.github.agentpermit4j.springai.autoconfigure.AgentPermitSpringSecurityAutoConfigurationTest#missingUnauthenticatedAndAnonymousContextsFailClosed",
+          "io.github.agentpermit4j.springai.autoconfigure.AgentPermitSpringSecurityAutoConfigurationTest#backsOffWithoutApplicationTenantAndEnvironmentResolver",
+          "io.github.agentpermit4j.springai.autoconfigure.AgentPermitSpringSecurityAutoConfigurationTest#authenticatedContextOverridesSuppliedIdentityAndPreservesExecutionMetadata",
+          "io.github.agentpermit4j.springai.autoconfigure.AgentPermitSpringSecurityAutoConfigurationTest#createsResolverOnlyFromExplicitTenantAndEnvironmentResolver",
+          "io.github.agentpermit4j.springai.autoconfigure.AutoConfigurationDiscoveryTest#bootDiscoversBothGuardedToolAutoConfigurations",
+          "io.github.agentpermit4j.playground.PlaygroundAcceptanceTest#cliPrintsStructuredResultsAndReturnsSuccess",
+          "io.github.agentpermit4j.playground.PlaygroundAcceptanceTest#runsFiveRealPipelineScenariosWithExpectedSideEffects",
+          "io.github.agentpermit4j.playground.PlaygroundLiveApiAcceptanceTest#servesUiAndRunsOnlyServerDefinedDecisions",
+          "io.github.agentpermit4j.playground.PlaygroundLiveApiAcceptanceTest#approvesExactInvocationAndRetriesWithoutDuplicateSideEffect",
+          "io.github.agentpermit4j.playground.PlaygroundLiveApiAcceptanceTest#auditAndReplayAreReadOnlyAndExcludeExecutionSecrets",
+          "io.github.agentpermit4j.playground.WebUiResourceTest#approvalResponseCannotOverwriteANewerScenarioSelection",
+          "io.github.agentpermit4j.playground.WebUiResourceTest#webUiExposesTheRequiredWorkingSurface",
+          "io.github.agentpermit4j.playground.WebUiResourceTest#liveUiDoesNotReferenceSyntheticDecisionFixture",
+          "io.github.agentpermit4j.playground.refund.RefundLedgerAcceptanceTest#orderChangedDuringApprovalVerificationIsRejectedBeforeRefundPayment",
+          "io.github.agentpermit4j.playground.refund.RefundLedgerAcceptanceTest#approvalAndConcurrentRetriesProduceOnePaymentAndOneLedgerChange",
+          "io.github.agentpermit4j.playground.refund.RefundLedgerAcceptanceTest#staleVersionOrExcessiveAmountCannotReachPayment",
+          "io.github.agentpermit4j.playground.refund.RefundLedgerAcceptanceTest#knownPaymentFailureRollsBackTheLedgerAndIsNotAutomaticallyRetried",
+          "io.github.agentpermit4j.playground.refund.RefundLostResponseTest#successfulPaymentSurvivesLostResponseAndLocalRollback",
+          "io.github.agentpermit4j.playground.refund.RefundReconciliationAcceptanceTest#confirmedRejectionReleasesReservationWithoutPaymentOrRetry",
+          "io.github.agentpermit4j.playground.refund.RefundReconciliationAcceptanceTest#independentConcurrentServiceInstancesStartOnlyOnePayment",
+          "io.github.agentpermit4j.playground.refund.RefundReconciliationAcceptanceTest#lostResponseRemainsUnknownUntilAuthoritativeQuerySettlesTheOrderOnce",
+          "io.github.agentpermit4j.playground.refund.RefundReconciliationAcceptanceTest#restartRetainsUnknownReservationAndNeverResendsAnUncertainPayment",
+          "io.github.agentpermit4j.playground.refund.RefundReconciliationAcceptanceTest#referenceAloneCannotExposeOrReconcileAnotherOwnerTenantOrEnvironment",
+          "io.github.agentpermit4j.playground.refund.RefundReconciliationAcceptanceTest#missingOrUnavailableDownstreamEvidenceKeepsTheOperationFenced",
+          "io.github.agentpermit4j.playground.refund.RefundReconciliationFaultTest#lostReservationAcknowledgmentDoesNotPermitPaymentOrReleaseWithoutEvidence",
+          "io.github.agentpermit4j.playground.refund.RefundReconciliationFaultTest#paymentSurvivesLostSettlementCommitAndRecoveryUpdatesTheLedgerOnlyOnce(boolean)[1]",
+          "io.github.agentpermit4j.playground.refund.RefundReconciliationFaultTest#paymentSurvivesLostSettlementCommitAndRecoveryUpdatesTheLedgerOnlyOnce(boolean)[2]",
+          "io.github.agentpermit4j.playground.refund.RefundReconciliationFaultTest#mismatchedPaymentEvidenceCannotResolveOrReleaseAnUnknownOperation(boolean)[1]",
+          "io.github.agentpermit4j.playground.refund.RefundReconciliationFaultTest#mismatchedPaymentEvidenceCannotResolveOrReleaseAnUnknownOperation(boolean)[2]",
+          "io.github.agentpermit4j.playground.refund.RefundWorkspaceAcceptanceTest#changedOrderVersionIsRejectedBeforeAnotherPayment",
+          "io.github.agentpermit4j.playground.refund.RefundWorkspaceAcceptanceTest#threeBusinessToolsReviewAndExecuteOneConcreteRefund",
+          "io.github.agentpermit4j.playground.refund.RefundWorkspaceAcceptanceTest#missingRefundNumbersAreRejectedAsInvalidInputBeforePayment",
+          "io.github.agentpermit4j.playground.refund.RefundWorkspaceAcceptanceTest#concurrentCallbackRetriesReturnOneRefundAndCannotReuseApprovalWithAnotherKey",
+          "io.github.agentpermit4j.playground.refund.RefundWorkspaceAcceptanceTest#changedAmountOrPolicyCannotUseTheOriginalApproval",
+          "io.github.agentpermit4j.playground.refund.RefundWorkspaceRecoveryTest#changedOperationReferenceInvalidatesApprovalAndReferenceWithoutApprovalCannotPay",
+          "io.github.agentpermit4j.playground.refund.RefundWorkspaceRecoveryTest#approvedToolReturnsSafeUnknownReferenceAndRebuiltServicesReconcileWithoutRepayment",
+          "io.github.agentpermit4j.playground.refund.ReviewedApprovalAcceptanceTest#rejectsChangedAmountAndPolicyBeforeRecordingApproval(boolean)[1]",
+          "io.github.agentpermit4j.playground.refund.ReviewedApprovalAcceptanceTest#rejectsChangedAmountAndPolicyBeforeRecordingApproval(boolean)[2]",
+          "io.github.agentpermit4j.playground.refund.ReviewedApprovalAcceptanceTest#requiresAuthorizedReviewerAndPreservesTheFirstDecision(boolean)[1]",
+          "io.github.agentpermit4j.playground.refund.ReviewedApprovalAcceptanceTest#requiresAuthorizedReviewerAndPreservesTheFirstDecision(boolean)[2]",
+          "io.github.agentpermit4j.playground.springai.GuardedToolCallbackAcceptanceTest#failsClosedWhenPipelineDependencyThrows",
+          "io.github.agentpermit4j.playground.springai.GuardedToolCallbackAcceptanceTest#pausesHighRiskCallUntilExactApprovalIsProvided",
+          "io.github.agentpermit4j.playground.springai.GuardedToolCallbackAcceptanceTest#executesLowRiskCallOnceAcrossIdempotentRetry",
+          "io.github.agentpermit4j.playground.springai.GuardedToolCallbackAcceptanceTest#safelySerializesToolOutputAsJson",
+          "io.github.agentpermit4j.playground.springai.GuardedToolCallbackAcceptanceTest#deniesSsrfAndInvalidContextWithoutSideEffects",
+          "io.github.agentpermit4j.playground.springai.PersistedSpringAiAcceptanceTest#resumesSpringAiCallFromPersistedApprovalAndExposesPersistedTimeline"
+        ],
+        "suites": 43
+      },
+      "cleanupComplete": true,
+      "executionSourceHashes": {
+        "verify-historical-candidate.mjs": "e592c357657cd61a84df8edb743c52c4001b51ae18e23ce53e4ec27abbbdab42",
+        "historical-case.mjs": "541bedb6d0906ecdb725bca4e1ef04a7085f59d56291985769a407daa3ab7d82",
+        "historical-edits.mjs": "0c3ec7a3f23fc3f87964e1b20c46fac12c06d17edfcd7c1fbc63d3246cb638e5",
+        "JavaEditScope.java": "3181d0d254a60f2a39fc9e0c7739ed426c41c5c8e324c052a5c38fb4d8810088",
+        "recovery-container.mjs": "deebd3a5ac4f6671a4b3d625051790ccede55980c4ef08d5bd3f4e45d58de330",
+        "historical-environments-2026-10-03.json": "446753d96ec23d9a93bff31cb81bfabdf49946cd1c4e384927dd6c712fb682a3",
+        "real-task-files.json": "129cacf817d0317d2ae26961c30e103a570dd8429701d74020b74ba5cac5948f",
+        "smoke-environment.json": "76c2a0afe030a172ff61cddd8da3ef4fa7ee9834dc0bc982281591e3c626822b"
+      },
+      "rawEvidenceSha256": "6384da3d5592619090b65a60debc8a406ce8c29f167bef482bfe198e23df0de7"
+    }
+  ],
+  "failedReferenceAttempts": [
+    {
+      "id": "lens-wal",
+      "log": "round15-verify-lens-wal-final.log",
+      "failure": {
+        "phase": "structured_results",
+        "command": 16,
+        "kind": "assertion"
+      },
+      "cleanupComplete": true,
+      "rawEvidenceSha256": "550a637125354f9bcba39c31ca52fe42cdf52ef05735d3a09c6625c31051dbbf"
+    },
+    {
+      "id": "lens-wal",
+      "log": "round15-verify-lens-wal.log",
+      "failure": {
+        "phase": "check",
+        "command": 9,
+        "kind": "assertion"
+      },
+      "cleanupComplete": true,
+      "rawEvidenceSha256": "0aacf593e7254a4ea6de3f1dafe63b1b8e5a06432de02834443109aed341ed0d"
+    },
+    {
+      "id": "relay-clock",
+      "log": "round15-verify-relay-clock-final.log",
+      "failure": {
+        "phase": "check",
+        "command": 16,
+        "kind": "assertion"
+      },
+      "cleanupComplete": true,
+      "rawEvidenceSha256": "3ad8cd849d8b2f3f1f587b1fe455be22bd92d1733c465caac6c65b3fd8360423"
+    },
+    {
+      "id": "relay-clock",
+      "log": "round15-verify-relay-clock-final2.log",
+      "failure": {
+        "phase": "structured_results",
+        "command": 19,
+        "kind": "assertion"
+      },
+      "cleanupComplete": true,
+      "rawEvidenceSha256": "a062f943c521a37f1b5271db3eb6e9ae6bbe2891c14d94c5aa44f4092fe38b34"
+    },
+    {
+      "id": "relay-clock",
+      "log": "round15-verify-relay-clock.log",
+      "failure": {
+        "phase": "check",
+        "command": 16,
+        "kind": "assertion"
+      },
+      "cleanupComplete": true,
+      "rawEvidenceSha256": "4b950ce90ab55b0a5c90a63802549b21eedde807e0e44739662d17fd50ad3595"
+    }
+  ],
+  "modelSmoke": {
+    "id": "permit-proxy",
+    "result": "accepted_single_coding_smoke",
+    "version": "codex-cli 0.160.0",
+    "model": "gpt-6.1-sol",
+    "requestedEffort": "medium",
+    "limits": {
+      "read_file": 24,
+      "apply_edit": 4,
+      "run_tests": 4,
+      "wallMs": 480000
+    },
+    "candidateSha256": "d3eda589b8ef9f73eb29dc41c8ba5ae06800b946a6be45e5583919da5cfa76e0",
+    "recoveryMs": 92246.21500000001,
+    "sourceReviewWaitMs": 15825.568600000006,
+    "calls": [
+      {
+        "tool": "read_file",
+        "success": true,
+        "ms": 8074.3351999999995,
+        "elapsedMs": 711.3877000000011,
+        "repeated": false
+      },
+      {
+        "tool": "read_file",
+        "success": true,
+        "ms": 9001.0321,
+        "elapsedMs": 722.7870999999996,
+        "repeated": false
+      },
+      {
+        "tool": "read_file",
+        "success": true,
+        "ms": 14068.411399999999,
+        "elapsedMs": 731.4400999999998,
+        "repeated": false
+      },
+      {
+        "tool": "read_file",
+        "success": true,
+        "ms": 15019.137100000002,
+        "elapsedMs": 723.1683999999987,
+        "repeated": false
+      },
+      {
+        "tool": "read_file",
+        "success": true,
+        "ms": 15962.492199999999,
+        "elapsedMs": 710.9504000000034,
+        "repeated": false
+      },
+      {
+        "tool": "run_tests",
+        "success": true,
+        "ms": 24233.633,
+        "elapsedMs": 6083.324499999995,
+        "exitCode": 1
+      },
+      {
+        "tool": "apply_edit",
+        "success": true,
+        "ms": 38857.8082,
+        "elapsedMs": 2155.239600000001
+      },
+      {
+        "tool": "run_tests",
+        "success": true,
+        "ms": 41222.6777,
+        "elapsedMs": 21783.6331,
+        "exitCode": 0,
+        "sourceReviewWaitMs": 15824.720200000003
+      },
+      {
+        "tool": "run_tests",
+        "success": true,
+        "ms": 68231.4574,
+        "elapsedMs": 17447.24160000001,
+        "exitCode": 0,
+        "sourceReviewWaitMs": 0.8484000000025844
+      },
+      {
+        "tool": "read_file",
+        "success": true,
+        "ms": 85908.31920000001,
+        "elapsedMs": 745.9154999999882,
+        "repeated": true
+      }
+    ],
+    "violations": [],
+    "hostInventory": [
+      {
+        "name": "agentmemory",
+        "status": "disabled",
+        "tools": [],
+        "resources": 0,
+        "resourceTemplates": 0
+      },
+      {
+        "name": "code-review",
+        "status": "disabled",
+        "tools": [],
+        "resources": 0,
+        "resourceTemplates": 0
+      },
+      {
+        "name": "codex_app",
+        "status": "disabled",
+        "tools": [],
+        "resources": 0,
+        "resourceTemplates": 0
+      },
+      {
+        "name": "cua_repl",
+        "status": "disabled",
+        "tools": [],
+        "resources": 0,
+        "resourceTemplates": 0
+      },
+      {
+        "name": "node_repl",
+        "status": "disabled",
+        "tools": [],
+        "resources": 0,
+        "resourceTemplates": 0
+      },
+      {
+        "name": "notion",
+        "status": "disabled",
+        "tools": [],
+        "resources": 0,
+        "resourceTemplates": 0
+      }
+    ],
+    "hostStreamsDrained": true,
+    "cleanupComplete": true,
+    "fullTests": 216,
+    "regressionTests": 4,
+    "executionSourceHashes": {
+      "run-real-smoke.mjs": "e229641d95f43d5e62fdcd5cc426c1c693e8ce6115ca3f18ba834e88430edc6d",
+      "restricted-host.mjs": "a1970f13b849a554a23704f8807194a05ded160e5e1ee3fda7ecd20df22df780",
+      "recovery-container.mjs": "deebd3a5ac4f6671a4b3d625051790ccede55980c4ef08d5bd3f4e45d58de330",
+      "historical-edits.mjs": "0c3ec7a3f23fc3f87964e1b20c46fac12c06d17edfcd7c1fbc63d3246cb638e5",
+      "historical-case.mjs": "b6f8dbd2ec9fdfbb13f2a78abb972dc868f4260bfbceb5f529b0e134964b67b1",
+      "verify-historical-candidate.mjs": "e592c357657cd61a84df8edb743c52c4001b51ae18e23ce53e4ec27abbbdab42",
+      "JavaEditScope.java": "3181d0d254a60f2a39fc9e0c7739ed426c41c5c8e324c052a5c38fb4d8810088",
+      "historical-environments-2026-10-03.json": "446753d96ec23d9a93bff31cb81bfabdf49946cd1c4e384927dd6c712fb682a3",
+      "real-task-files.json": "129cacf817d0317d2ae26961c30e103a570dd8429701d74020b74ba5cac5948f",
+      "smoke-environment.json": "76c2a0afe030a172ff61cddd8da3ef4fa7ee9834dc0bc982281591e3c626822b",
+      "HISTORICAL-EXECUTION.md": "8e26f2e6ca0bf3371cd4bed1c5d1b8d4fcd6e2be17f08f9a615405f8ee58feae"
+    },
+    "verificationSourceHashes": {
+      "verify-historical-candidate.mjs": "e592c357657cd61a84df8edb743c52c4001b51ae18e23ce53e4ec27abbbdab42",
+      "historical-case.mjs": "b6f8dbd2ec9fdfbb13f2a78abb972dc868f4260bfbceb5f529b0e134964b67b1",
+      "historical-edits.mjs": "0c3ec7a3f23fc3f87964e1b20c46fac12c06d17edfcd7c1fbc63d3246cb638e5",
+      "JavaEditScope.java": "3181d0d254a60f2a39fc9e0c7739ed426c41c5c8e324c052a5c38fb4d8810088",
+      "recovery-container.mjs": "deebd3a5ac4f6671a4b3d625051790ccede55980c4ef08d5bd3f4e45d58de330",
+      "historical-environments-2026-10-03.json": "446753d96ec23d9a93bff31cb81bfabdf49946cd1c4e384927dd6c712fb682a3",
+      "real-task-files.json": "129cacf817d0317d2ae26961c30e103a570dd8429701d74020b74ba5cac5948f",
+      "smoke-environment.json": "76c2a0afe030a172ff61cddd8da3ef4fa7ee9834dc0bc982281591e3c626822b"
+    },
+    "rawEvidenceSha256": "a20ad1bae345c5d63a6ca83d69d12299738ad479c3ccd1c8831630616a7e1a67"
+  },
+  "formalComparisonSamples": 0
+}

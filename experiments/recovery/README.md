@@ -6,6 +6,10 @@
 
 后续四个历史任务及五题范围见[任务集](HISTORICAL-TASKS.md)。材料生成器只构造基线与冻结测试，不启动模型；Relay时钟题属于测试辅助代码维护，单独标注，不冒充产品恢复逻辑。判定器校准与正式交接对照分开计数。
 
+五题的真实编码入口、逐语言修改范围、源码审阅及全新容器复验见[编码执行协议2](HISTORICAL-EXECUTION.md)。这是普通编码闭环；下文的合成只读对照有自己的版本与数据，尚未把三组交接条件接入真实编码任务。
+
+五题完整参考复验及一次Java真实模型编码的结果、全部失败与边界见[编码验收记录](HISTORICAL-CODING-2026-10-03.md)。
+
 实际宿主的受限读取检查使用 `node experiments/recovery/probe-tool-isolation.mjs --codex <已验证的桌面CLI绝对路径>`；这会调用指定模型，只访问随机生成的合成材料。检查规则可离线运行 `node --test experiments/recovery/access-policy.check.mjs`。已观察结果与未覆盖范围见[访问探测报告](ACCESS-PROBE-2026-10-03.md)。该检查没有自动接入旧合成实验执行器，也不能使旧样本获得额外隔离保证。
 
 候选代码执行使用独立Docker volume，完整基线与实际权限检查见[容器执行环境报告](CONTAINER-PROBE-2026-10-03.md)。该阶段报告只覆盖环境和冻结失败断言。

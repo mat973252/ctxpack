@@ -37,6 +37,7 @@ export async function restrictedHost({ executable, cwd, dynamicTools, onTool, ev
     child.once("exit", stop);
     child.on("error", () => { evidence.processError = true; if (!child.pid) stop(); });
   });
+  const streamsClosed = new Promise((done) => child.once("close", () => done(true)));
   const send = (message) => { if (!stopped) child.stdin.write(`${JSON.stringify(message)}\n`); };
   evidence.inventory = []; evidence.itemTypes = []; evidence.messages = []; evidence.otherRequests = [];
   createInterface({ input: child.stdout }).on("line", (line) => {
@@ -87,8 +88,14 @@ export async function restrictedHost({ executable, cwd, dynamicTools, onTool, ev
     if (!stopped) child.kill();
     if (!(await waitExit())) child.kill("SIGKILL");
     const complete = await waitExit();
+    let timer;
+    let drained;
+    try { drained = await Promise.race([streamsClosed, new Promise((done) => { timer = setTimeout(() => done(false), 3000); })]); }
+    finally { clearTimeout(timer); }
+    await queue;
     child.stdin.destroy(); child.stdout.destroy(); child.stderr.destroy(); child.unref();
-    return complete;
+    evidence.streamsDrained = drained;
+    return complete && drained;
   }
   try {
     await request("initialize", { clientInfo: { name: "ctxpack-real-smoke", version: "1" }, capabilities: { experimentalApi: true } });
@@ -110,6 +117,11 @@ export async function restrictedHost({ executable, cwd, dynamicTools, onTool, ev
   } catch (error) { evidence.cleanupComplete = await close(); throw error; }
   return {
     close, abort: () => child.kill(),
+    assertFinalProtocol() {
+      assert.equal(evidence.streamsDrained, true);
+      assertOnlyMaterialItems(evidence.itemTypes);
+      assert.deepEqual(evidence.otherRequests, []);
+    },
     async turn(prompt, deadline) {
       const offset = events.length;
       accepting = true;

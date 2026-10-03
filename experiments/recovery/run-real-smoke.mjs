@@ -13,31 +13,34 @@ import { parseArgs } from "node:util";
 import { setTimeout } from "node:timers/promises";
 import { recoveryContainer } from "./recovery-container.mjs";
 import { restrictedHost } from "./restricted-host.mjs";
-import { replaceBody } from "./smoke-body.mjs";
+import { applyHistoricalEdit } from "./historical-edits.mjs";
+import { historicalCase, taskCommand } from "./historical-case.mjs";
+import { assertCandidateFiles, candidateCommands, verifyHistoricalCandidate } from "./verify-historical-candidate.mjs";
 
-const { values } = parseArgs({ options: { codex: { type: "string" }, image: { type: "string" } } });
-assert.ok(values.codex && values.image, "Supply verified --codex and --image");
-const load = (file) => JSON.parse(readFileSync(new URL(file, import.meta.url), "utf8"));
-const approved = load("./real-task-files.json");
-const frozenImage = load("./smoke-environment.json").imageId;
+const { values } = parseArgs({ options: { codex: { type: "string" }, image: { type: "string" }, id: { type: "string", default: "markdown-text" } } });
+assert.ok(values.codex, "Supply verified --codex");
+const task = historicalCase(values.id);
+const approved = { files: task.files };
+const frozenImage = task.imageId;
 const sha = (value) => createHash("sha256").update(value).digest("hex");
 const root = mkdtempSync(join(tmpdir(), "ctxpack-real-smoke-"));
 const cwd = join(root, "empty-host"); mkdirSync(cwd);
-const limits = { read_file: 24, replace_strip_template_body: 4, run_tests: 4, wallMs: 480000 };
-const evidence = { schema: "ctxpack.real-smoke/1", result: "unverified", limits, calls: [], host: {}, violations: [],
-  sourceHashes: Object.fromEntries(["run-real-smoke.mjs", "restricted-host.mjs", "recovery-container.mjs", "smoke-body.mjs", "real-task-files.json", "smoke-environment.json", "REAL-SMOKE.md"].map((file) => [file, sha(readFileSync(new URL(file, import.meta.url)))])) };
+const limits = { read_file: 24, apply_edit: 4, run_tests: 4, wallMs: 480000 };
+const evidence = { schema: "ctxpack.real-smoke/2", id: task.id, result: "unverified", limits, calls: [], host: {}, violations: [],
+  sourceHashes: Object.fromEntries(["run-real-smoke.mjs", "restricted-host.mjs", "recovery-container.mjs", "historical-edits.mjs", "historical-case.mjs", "verify-historical-candidate.mjs", "JavaEditScope.java", "historical-environments-2026-10-03.json", "real-task-files.json", "smoke-environment.json", "HISTORICAL-EXECUTION.md"].map((file) => [file, sha(readFileSync(new URL(file, import.meta.url)))])) };
 let commandCount = 0;
 let host;
 let hostClosed = false;
 let deadline = Infinity;
 let startedAt;
 let candidate;
-let candidateBody;
+let candidateEdit;
 let fatal = false;
 const counts = {};
 const readPaths = new Set();
 const testPasses = {};
 function docker(args, timeout = 30000) {
+  assert.ok(performance.now() < deadline, "No command may start after the shared deadline");
   const result = spawnSync("docker", args, { encoding: "utf8", timeout: Math.floor(Math.max(1, Math.min(timeout, deadline - performance.now()))), maxBuffer: 4 * 1024 * 1024 });
   try { writeFileSync(join(root, `command-${++commandCount}.log`), `${result.stdout ?? ""}${result.stderr ?? ""}`); }
   catch { evidence.loggingFailed = true; }
@@ -49,25 +52,29 @@ function checked(args, timeout) {
   assert.equal(result.status, 0, "Docker command failed");
   return result.stdout.trim();
 }
-const worker = recoveryContainer(checked);
-const verifier = recoveryContainer(checked);
+const worker = recoveryContainer(checked, task.profile);
 const read = (environment, path) => JSON.parse(environment.exec(["node", "-e", "process.stdout.write(JSON.stringify(require('node:fs').readFileSync(process.argv[1], 'utf8')))", `/workspace/${path}`]));
-const writeCandidate = (environment, text) => environment.exec(["node", "-e", "require('node:fs').writeFileSync('/workspace/src/core/handoff.ts', Buffer.from(process.argv[1], 'base64'))", Buffer.from(text).toString("base64")]);
+const writeCandidate = (environment, text) => environment.exec(["node", "-e", "require('node:fs').writeFileSync(process.argv[1], Buffer.from(process.argv[2], 'base64'))", `/workspace/${task.source}`, Buffer.from(text).toString("base64")]);
 function assertFiles(environment, expectedCandidate) {
-  const files = environment.files();
-  const sourceFiles = Object.fromEntries(Object.entries(files).filter(([path]) => !path.startsWith("dist/")));
-  assert.deepEqual(sourceFiles, { ...approved.files, "src/core/handoff.ts": sha(expectedCandidate) });
+  assertCandidateFiles(task, environment.files(), expectedCandidate);
 }
 function runSuite(environment, suite) {
-  const args = suite === "regression" ? ["pnpm", "exec", "vitest", "run", "tests/recovery-case.test.ts"] : ["pnpm", "check"];
-  return docker(["exec", environment.id, ...args], 120000);
+  let output = "";
+  for (const args of candidateCommands(task, suite)) {
+    assertFiles(environment, candidate);
+    assert.ok(performance.now() < deadline);
+    const result = docker(["exec", environment.id, ...taskCommand(task, args)], task.id === "relay-clock" ? 240000 : 180000);
+    output += result.stdout + result.stderr;
+    if (result.status !== 0) return { status: result.status, stdout: output, stderr: "" };
+  }
+  return { status: 0, stdout: output, stderr: "" };
 }
 try {
-  const imageId = checked(["image", "inspect", values.image, "--format", "{{.Id}}"]);
+  const imageId = checked(["image", "inspect", values.image ?? frozenImage, "--format", "{{.Id}}"]);
   assert.equal(imageId, frozenImage);
   evidence.imageId = imageId;
   evidence.workerProfile = worker.start(imageId, approved.files);
-  const original = read(worker, "src/core/handoff.ts");
+  const original = read(worker, task.source);
   candidate = original;
   async function onTool(tool, args, isOpen) {
     const call = { tool, args, ms: performance.now() - startedAt };
@@ -84,20 +91,21 @@ try {
         assert.ok(Object.hasOwn(approved.files, args.path));
         text = read(worker, args.path);
         call.repeated = readPaths.has(args.path); readPaths.add(args.path);
-      } else if (tool === "replace_strip_template_body") {
-        assert.deepEqual(Object.keys(args), ["body"]);
-        assert.ok(readPaths.has("src/core/handoff.ts") && readPaths.has("tests/recovery-case.test.ts"));
-        const next = replaceBody(original, args.body);
-        writeCandidate(worker, next); candidate = next; candidateBody = args.body;
-        text = JSON.stringify({ written: "src/core/handoff.ts", candidateSha256: sha(candidate) });
+      } else if (tool === "apply_edit") {
+        assert.ok(readPaths.has(task.source) && readPaths.has(task.test));
+        const next = applyHistoricalEdit(task.id, original, args);
+        assert.ok(isOpen() && performance.now() < deadline);
+        writeCandidate(worker, next); candidate = next; candidateEdit = args;
+        text = JSON.stringify({ written: task.source, candidateSha256: sha(candidate) });
       } else {
         assert.deepEqual(Object.keys(args), ["suite"]);
         assert.ok(["regression", "check"].includes(args.suite));
-        if (candidateBody) {
+        if (candidateEdit) {
           const candidateHash = sha(candidate);
           const approvalFile = join(root, `review-${candidateHash}.approved`);
           const waitingAt = performance.now();
-          writeFileSync(join(root, "pending-review.json"), JSON.stringify({ candidateSha256: candidateHash, body: candidateBody, approvalFile }, null, 2));
+          writeFileSync(join(root, "pending-review.json"), JSON.stringify({ id: task.id, candidateSha256: candidateHash, edit: candidateEdit, approvalFile }, null, 2));
+          writeFileSync(join(root, "pending-candidate.txt"), candidate);
           while (!existsSync(approvalFile) && performance.now() < deadline && isOpen()) await setTimeout(100);
           assert.ok(isOpen() && performance.now() < deadline);
           assert.equal(readFileSync(approvalFile, "utf8").trim(), candidateHash);
@@ -121,12 +129,24 @@ try {
   }
   const tools = [
     ["read_file", "Read one listed material file, preserving its text.", "path", { type: "string" }],
-    ["replace_strip_template_body", "Replace only the statements inside stripTemplate. Supply no outer braces or declaration; preserve its signature. Maximum 8000 characters.", "body", { type: "string" }],
     ["run_tests", "Run only the frozen regression test or complete repository check (lint, tests, build).", "suite", { type: "string", enum: ["regression", "check"] }],
   ].map(([name, description, key, schema]) => ({ type: "function", name, description, inputSchema: { type: "object", properties: { [key]: schema }, required: [key], additionalProperties: false } }));
+  const properties = task.id === "permit-proxy" ? { fromAnnotated: { type: "string" }, create: { type: "string" }, imports: { type: "array", items: { type: "string" } } }
+    : task.id === "lens-wal" ? { body: { type: "string" }, helpers: { type: "string" } } : { body: { type: "string" } };
+  const scope = task.id === "permit-proxy" ? "fromAnnotated/create的花括号内部正文，以及最多4个新增普通导入的完整限定名；其他字节冻结"
+    : task.id === "lens-wal" ? "getRun花括号内部的原始正文（包含换行和缩进），以及紧接方法后新增的最多4个必要private实例辅助方法（helpers包含前置换行/缩进）；禁止字段、构造器、装饰器、静态成员或改签名"
+      : `${{ "markdown-text": "stripTemplate", "ctx-fences": "parseList", "relay-clock": "until" }[task.id]}函数体内部正文，不含外层花括号或声明，最多8000字符`;
+  tools.push({ type: "function", name: "apply_edit", description: `从冻结原文重新应用完整候选（不累计前次编辑）。范围：${scope}。`, inputSchema: { type: "object", properties, required: Object.keys(properties), additionalProperties: false } });
   host = await restrictedHost({ executable: resolve(values.codex), cwd, dynamicTools: tools, onTool, evidence: evidence.host });
-  const prompt = `接手一个已经复现、尚未修复的 Markdown 交接缺陷。四类 Markdown 文档的初始模板之后，同文正文、内部空行和 Markdown 行尾双空格被错误删除。修复要求：CRLF 归一化为 LF；纯初始模板不输出；正文中非前缀模板不能过滤；generic/codex/pi/claude 四入口保留相同正文（pi 按原格式加 PROJECT 前缀）；handoff 不写工作树。围栏条目解析是别的任务，不要改它。
-只允许修改 src/core/handoff.ts 的 stripTemplate 函数体。先读取该文件和 tests/recovery-case.test.ts；可读取其他列出的材料理解类型/模板。不得更改测试、依赖、配置或规避断言。用 run_tests 的 regression 和 check 验证最终修改，再报告结果。
+  const facts = {
+    "markdown-text": "初始模板后的用户正文、重复模板文本、内部空行和Markdown硬换行应保留；CRLF归一为LF；纯模板不输出；四个handoff入口保持正文且不写工作树。围栏分类是另一任务，不修改它。",
+    "ctx-fences": "围栏内的决策/失败列表是示例，保留在notes；围栏外真实条目正常解析；短围栏、异类标记不能提前结束示例，未闭合围栏持续保留为notes。不修改模板处理。",
+    "lens-wal": "WAL写者在元数据与事件查询之间提交终态时，getRun必须返回同一已提交快照，不能混合；不能提交调用者外层事务，失败后仍可继续读取。",
+    "relay-clock": "业务沙箱测试的等待辅助函数不能因墙钟调整提前超时或延长五秒预算；恰好截止时拒绝。这是测试辅助维护，其他测试断言冻结。",
+    "permit-proxy": "真实CGLIB类代理应能注册原方法注解，执行仍经过原代理advice及审批/幂等流程；代理final工具方法明确拒绝，普通对象final方法仍支持。",
+  };
+  const prompt = `接手已复现、尚未修复的历史任务。${facts[task.id]}
+只允许修改${task.source}，范围：${scope}。先读取该文件和${task.test}。可读取索引中其他文件。不得更改测试、依赖、配置或规避断言。每次apply_edit替换完整候选，不累计旧编辑。用run_tests的regression和check验证最终修改，再报告结果。
 工具预算：24次读、4次修改、4次测试，所有调用总计480秒，失败请求也计数。禁止其他工具、网络、路径或委派。文件索引：${JSON.stringify(Object.keys(approved.files))}`;
   evidence.prompt = prompt;
   console.log(JSON.stringify({ root, phase: "prepared" }));
@@ -134,45 +154,30 @@ try {
   await host.turn(prompt, deadline);
   evidence.recoveryMs = performance.now() - startedAt;
   evidence.host.cleanupComplete = await host.close(); hostClosed = true;
+  host.assertFinalProtocol();
   deadline = Infinity;
   assert.deepEqual(evidence.violations, []);
-  assert.ok(candidateBody);
+  assert.ok(candidateEdit);
   assert.equal(testPasses.regression, sha(candidate)); assert.equal(testPasses.check, sha(candidate));
   assertFiles(worker, candidate);
-  writeFileSync(join(root, "candidate-body.txt"), candidateBody);
-  writeFileSync(join(root, "candidate-handoff.ts"), candidate);
-  writeFileSync(join(root, "candidate.diff"), worker.exec(["git", "diff", "--", "src/core/handoff.ts"]));
+  writeFileSync(join(root, "candidate-edit.json"), JSON.stringify(candidateEdit));
+  writeFileSync(join(root, "candidate.txt"), candidate);
+  writeFileSync(join(root, "candidate.diff"), worker.exec(["git", "diff", "--", task.source]));
   evidence.candidateSha256 = sha(candidate);
-  evidence.verifierProfile = verifier.start(imageId, approved.files);
-  writeCandidate(verifier, replaceBody(read(verifier, "src/core/handoff.ts"), candidateBody));
-  assertFiles(verifier, candidate);
-  const verified = runSuite(verifier, "check");
-  evidence.verifierCheckExit = verified.status;
-  assert.equal(verified.status, 0);
-  const reporter = "import { writeFileSync } from 'node:fs'; export default class { onFinished(_files, errors) { writeFileSync('/tmp/smoke-errors.json', JSON.stringify(errors.map(error => error.name || 'error'))); } }";
-  verifier.exec(["node", "-e", "require('node:fs').writeFileSync('/tmp/smoke-reporter.mjs', process.argv[1])", reporter]);
-  const results = docker(["exec", verifier.id, "pnpm", "exec", "vitest", "run", "--reporter=json", "--reporter=/tmp/smoke-reporter.mjs", "--outputFile=/tmp/smoke-tests.json"], 120000);
-  assert.equal(results.status, 0);
-  const report = JSON.parse(verifier.exec(["cat", "/tmp/smoke-tests.json"]));
-  assert.equal(report.numTotalTests, 160); assert.equal(report.numPassedTests, 160);
-  assert.equal(report.numFailedTests, 0); assert.equal(report.numPendingTests, 0); assert.equal(report.numTodoTests, 0);
-  assert.equal(report.success, true);
-  assert.ok(report.testResults.every((suite) => suite.message === "" && suite.status === "passed"));
-  assert.deepEqual(JSON.parse(verifier.exec(["cat", "/tmp/smoke-errors.json"])), []);
-  assertFiles(verifier, candidate);
-  evidence.verifierPassedTests = report.numPassedTests;
+  evidence.verification = verifyHistoricalCandidate(task.id, candidateEdit, sha(candidate));
+  assert.equal(evidence.verification.evidence.result, "verified_pending_source_review");
   evidence.result = "verified_pending_source_review";
 } catch {
   evidence.result = "failed"; evidence.failedAfterCommand = commandCount; process.exitCode = 1;
 } finally {
   deadline = Infinity;
   if (!hostClosed) evidence.host.cleanupComplete = host ? await host.close() : evidence.host.cleanupComplete ?? true;
-  evidence.workerCleanupComplete = worker.close(); evidence.verifierCleanupComplete = verifier.close();
+  evidence.workerCleanupComplete = worker.close(); evidence.verifierCleanupComplete = evidence.verification?.evidence.cleanupComplete ?? true;
   if (!evidence.host.cleanupComplete || !evidence.workerCleanupComplete || !evidence.verifierCleanupComplete) { evidence.result = "cleanup_failed"; process.exitCode = 1; }
   try {
-    if (candidateBody) { writeFileSync(join(root, "candidate-body.txt"), candidateBody); writeFileSync(join(root, "candidate-handoff.ts"), candidate); }
+    if (candidateEdit) { writeFileSync(join(root, "candidate-edit.json"), JSON.stringify(candidateEdit)); writeFileSync(join(root, "candidate.txt"), candidate); }
     if (evidence.loggingFailed) { evidence.result = "evidence_write_failed"; process.exitCode = 1; }
     writeFileSync(join(root, "evidence.json"), JSON.stringify(evidence, null, 2));
   } catch { evidence.result = "evidence_write_failed"; process.exitCode = 1; }
-  console.log(JSON.stringify({ root, result: evidence.result, calls: evidence.calls.length, passed: evidence.verifierPassedTests }));
+  console.log(JSON.stringify({ root, result: evidence.result, calls: evidence.calls.length, verification: evidence.verification?.root }));
 }

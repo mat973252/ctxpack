@@ -2,6 +2,8 @@
 
 冻结于2026-10-03，先验证完整任务执行闭环，不属于三组对照或正式样本。
 
+本文保留为历史协议1；对应实现可在提交`1b97c807`中查看。当前入口已扩展到[五题编码执行协议2](HISTORICAL-EXECUTION.md)，旧观测不重标为新协议结果。
+
 - 材料为real-task-files.json的完整52文件基线和同一镜像，每次新建volume。模型只得到任务事实、文件路径清单和受控工具输出；不给参考修复、主仓位置或实验报告。
 - 宿主请求gpt-6.1-sol/medium，禁止模型回退；使用已核验的MCP disabled、无环境访问/原生shell/apps配置，先核对实际运行时清单。
 - 工具只有read_file、replace_strip_template_body、run_tests。读取仅限清单文件，修改只限stripTemplate函数体，测试只能选择冻结regression或check命令；无任意shell入口。工具请求串行处理。
