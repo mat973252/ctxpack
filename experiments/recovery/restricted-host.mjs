@@ -4,10 +4,11 @@ import { createInterface } from "node:readline";
 import { setTimeout, clearTimeout } from "node:timers";
 import { performance } from "node:perf_hooks";
 import process from "node:process";
-import { acceptsMaterialCall, assertCompactionEvents, assertDisabledInventory, assertPhaseItems, assertReadyReply, assertTurnLifecycles, completesActiveTurn, remainingTime } from "./access-policy.mjs";
+import { acceptsMaterialCall, assertCompactionEvents, assertDisabledInventory, assertHostTransport, assertPhaseItems, assertReadyReply, assertTurnLifecycles, completesActiveTurn, remainingTime } from "./access-policy.mjs";
 
 // Only the fixed broker is callable; no raw diagnostics/configuration is retained.
-export async function restrictedHost({ executable, cwd, dynamicTools, onTool, evidence, setupDeadline = performance.now() + 120000 }) {
+export async function restrictedHost({ executable, cwd, dynamicTools, onTool, evidence, setupDeadline = performance.now() + 120000,
+  developerInstructions = "During handoff preparation, remember the supplied history, use no tools and only answer READY. During recovery, read the current source and acceptance tests, implement within scope, and run the fixed tests. The host enables tools only during recovery. Do not delegate or claim tests passed without tool evidence." }) {
   const isolation = { "features.memories": false, "memories.use_memories": false, "memories.generate_memories": false,
     "plugins.agentmemory@agentmemory.enabled": false };
   const configArgs = (config) => Object.entries(config).flatMap(([key, value]) => ["-c", `${key}=${JSON.stringify(value)}`]);
@@ -129,7 +130,7 @@ export async function restrictedHost({ executable, cwd, dynamicTools, onTool, ev
     const started = await request("thread/start", { model: "gpt-6.1-sol", allowProviderModelFallback: false,
       cwd, ephemeral: true, approvalPolicy: "never", sandbox: "read-only", environments: [], dynamicTools,
       baseInstructions: "You are a coding-task participant. Use only the provided material tools. Do not access unrelated files, credentials or network.",
-      developerInstructions: "During handoff preparation, remember the supplied history, use no tools and only answer READY. During recovery, read the current source and acceptance tests, implement within scope, and run the fixed tests. The host enables tools only during recovery. Do not delegate or claim tests passed without tool evidence." });
+      developerInstructions });
     threadId = started.thread.id;
     evidence.model = started.model; evidence.requestedEffort = "medium";
     assert.equal(started.model, "gpt-6.1-sol");
@@ -157,6 +158,7 @@ export async function restrictedHost({ executable, cwd, dynamicTools, onTool, ev
   return {
     close, abort: () => child.kill(),
     assertFinalProtocol() {
+      assertHostTransport(evidence);
       assert.equal(evidence.streamsDrained, true);
       assertProtocol();
     },

@@ -77,6 +77,10 @@ export function assertTurnLifecycles(events, threadId, turns, phases) {
     assert.ok(group.slice(1, -1).every((event) => ["item/started", "item/completed"].includes(event.method)));
   }
 }
+export class PreparationReplyError extends Error {}
+export function assertHostTransport(evidence) {
+  assert.ok(!evidence.transportError && !evidence.processError, "Host transport or process error was recorded");
+}
 export function assertReadyReply(messages) {
-  assert.deepEqual(messages.map((text) => text.trim()), ["READY"], "Preparation must reply only READY");
+  if (messages.length !== 1 || messages[0].trim() !== "READY") throw new PreparationReplyError("Preparation must reply only READY");
 }

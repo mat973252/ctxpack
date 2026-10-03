@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { acceptsMaterialCall, assertCompactionEvents, assertPhaseItems, assertReadyReply, assertTurnLifecycles, completesActiveTurn, remainingTime } from "./access-policy.mjs";
+import { acceptsMaterialCall, assertCompactionEvents, assertHostTransport, assertPhaseItems, assertReadyReply, assertTurnLifecycles, completesActiveTurn, remainingTime } from "./access-policy.mjs";
 
 test("a queued preparation request cannot become a recovery tool", () => {
   const current = { phase: "recovery", epoch: 2, threadId: "thread", activeTurn: "new", accepting: true };
@@ -67,5 +67,12 @@ test("preparation cannot add a solution or extra message to READY", () => {
   assertReadyReply(["READY\n"]);
   for (const messages of [[], ["READY", "Use a transaction"], ["READY: solution follows"], ["Done"]]) {
     assert.throws(() => assertReadyReply(messages));
+  }
+});
+
+test("recorded transport or process errors prevent accepting an otherwise completed host", () => {
+  assertHostTransport({});
+  for (const flags of [{ transportError: true }, { processError: true }, { transportError: true, processError: true }]) {
+    assert.throws(() => assertHostTransport({ streamsDrained: true, cleanupComplete: true, ...flags }));
   }
 });
