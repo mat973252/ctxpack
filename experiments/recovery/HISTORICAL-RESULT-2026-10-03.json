@@ -1,0 +1,1600 @@
+{
+  "planSha256": "3945cdb73da31df26bf060bd0bbeb2cad80697a47a367b7cf44a5febe021d043",
+  "planned": 45,
+  "provisional": false,
+  "scope": "Fixed historical tasks; protocolEligible does not resolve phase-cue ambiguity. No causal efficiency or independent-adoption claim.",
+  "rows": [
+    {
+      "id": "01-markdown-text-manual-r1",
+      "task": "markdown-text",
+      "condition": "manual",
+      "repeat": 1,
+      "position": 0,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 8152.879199999999,
+      "preparationMs": 2742.652,
+      "recoveryMs": 83236.6906,
+      "reviewWaitMs": 25963.730299999996,
+      "toolCalls": 10,
+      "repeatedReads": 0,
+      "candidateTestFailures": 1,
+      "hostViolations": 0
+    },
+    {
+      "id": "02-markdown-text-native-r1",
+      "task": "markdown-text",
+      "condition": "native",
+      "repeat": 1,
+      "position": 1,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 4742.838299999999,
+      "preparationMs": 21784.5598,
+      "recoveryMs": 56413.3177,
+      "reviewWaitMs": 19213.206700000002,
+      "toolCalls": 7,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "03-markdown-text-ctxpack-r1",
+      "task": "markdown-text",
+      "condition": "ctxpack",
+      "repeat": 1,
+      "position": 2,
+      "status": "failed",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": null,
+      "preparationMs": 2694.2793,
+      "recoveryMs": 5831.9635,
+      "reviewWaitMs": 0,
+      "toolCalls": 0,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "04-ctx-fences-native-r1",
+      "task": "ctx-fences",
+      "condition": "native",
+      "repeat": 1,
+      "position": 0,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 3816.1722999999984,
+      "preparationMs": 19591.4263,
+      "recoveryMs": 120687.6295,
+      "reviewWaitMs": 68747.70250000001,
+      "toolCalls": 9,
+      "repeatedReads": 0,
+      "candidateTestFailures": 1,
+      "hostViolations": 0
+    },
+    {
+      "id": "05-ctx-fences-ctxpack-r1",
+      "task": "ctx-fences",
+      "condition": "ctxpack",
+      "repeat": 1,
+      "position": 1,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 9935.171299999998,
+      "preparationMs": 2696.3665,
+      "recoveryMs": 95054.1925,
+      "reviewWaitMs": 37047.4213,
+      "toolCalls": 9,
+      "repeatedReads": 0,
+      "candidateTestFailures": 1,
+      "hostViolations": 0
+    },
+    {
+      "id": "06-ctx-fences-manual-r1",
+      "task": "ctx-fences",
+      "condition": "manual",
+      "repeat": 1,
+      "position": 2,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 10789.8768,
+      "preparationMs": 2643.3839,
+      "recoveryMs": 75280.1363,
+      "reviewWaitMs": 29040.579600000012,
+      "toolCalls": 6,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "07-lens-wal-ctxpack-r1",
+      "task": "lens-wal",
+      "condition": "ctxpack",
+      "repeat": 1,
+      "position": 0,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 11562.7384,
+      "preparationMs": 2843.685299999999,
+      "recoveryMs": 55202.668699999995,
+      "reviewWaitMs": 7225.620300000002,
+      "toolCalls": 5,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "08-lens-wal-manual-r1",
+      "task": "lens-wal",
+      "condition": "manual",
+      "repeat": 1,
+      "position": 1,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 6685.534799999999,
+      "preparationMs": 2717.5095,
+      "recoveryMs": 70979.1234,
+      "reviewWaitMs": 27633.296800000007,
+      "toolCalls": 5,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "09-lens-wal-native-r1",
+      "task": "lens-wal",
+      "condition": "native",
+      "repeat": 1,
+      "position": 2,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 3957.6180999999997,
+      "preparationMs": 18945.4516,
+      "recoveryMs": 76636.5809,
+      "reviewWaitMs": 36336.78789999999,
+      "toolCalls": 5,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "10-relay-clock-manual-r1",
+      "task": "relay-clock",
+      "condition": "manual",
+      "repeat": 1,
+      "position": 0,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 7639.2189,
+      "preparationMs": 2618.0452000000005,
+      "recoveryMs": 240193.30560000002,
+      "reviewWaitMs": 11779.9614,
+      "toolCalls": 4,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "11-relay-clock-native-r1",
+      "task": "relay-clock",
+      "condition": "native",
+      "repeat": 1,
+      "position": 1,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 4082.472600000001,
+      "preparationMs": 21502.2956,
+      "recoveryMs": 257599.56420000002,
+      "reviewWaitMs": 36558.7326,
+      "toolCalls": 4,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "12-relay-clock-ctxpack-r1",
+      "task": "relay-clock",
+      "condition": "ctxpack",
+      "repeat": 1,
+      "position": 2,
+      "status": "failed",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": null,
+      "preparationMs": 2871.9278999999988,
+      "recoveryMs": 8757.9029,
+      "reviewWaitMs": 0,
+      "toolCalls": 0,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "13-permit-proxy-native-r1",
+      "task": "permit-proxy",
+      "condition": "native",
+      "repeat": 1,
+      "position": 0,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 5107.889300000003,
+      "preparationMs": 23929.9409,
+      "recoveryMs": 88056.6785,
+      "reviewWaitMs": 33836.2973,
+      "toolCalls": 7,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "14-permit-proxy-ctxpack-r1",
+      "task": "permit-proxy",
+      "condition": "ctxpack",
+      "repeat": 1,
+      "position": 1,
+      "status": "failed",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": null,
+      "preparationMs": 2617.2819999999997,
+      "recoveryMs": 8025.819299999999,
+      "reviewWaitMs": 0,
+      "toolCalls": 0,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "15-permit-proxy-manual-r1",
+      "task": "permit-proxy",
+      "condition": "manual",
+      "repeat": 1,
+      "position": 2,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 11096.3851,
+      "preparationMs": 2675.1252999999997,
+      "recoveryMs": 67458.7691,
+      "reviewWaitMs": 9126.634099999996,
+      "toolCalls": 7,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "16-markdown-text-native-r2",
+      "task": "markdown-text",
+      "condition": "native",
+      "repeat": 2,
+      "position": 0,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 4305.165399999998,
+      "preparationMs": 26081.9208,
+      "recoveryMs": 98417.4744,
+      "reviewWaitMs": 39344.7224,
+      "toolCalls": 11,
+      "repeatedReads": 0,
+      "candidateTestFailures": 1,
+      "hostViolations": 0
+    },
+    {
+      "id": "17-markdown-text-ctxpack-r2",
+      "task": "markdown-text",
+      "condition": "ctxpack",
+      "repeat": 2,
+      "position": 1,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 9274.139799999999,
+      "preparationMs": 2678.6234999999997,
+      "recoveryMs": 79553.89480000001,
+      "reviewWaitMs": 19055.048000000003,
+      "toolCalls": 10,
+      "repeatedReads": 0,
+      "candidateTestFailures": 1,
+      "hostViolations": 0
+    },
+    {
+      "id": "18-markdown-text-manual-r2",
+      "task": "markdown-text",
+      "condition": "manual",
+      "repeat": 2,
+      "position": 2,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 10275.8144,
+      "preparationMs": 2647.2513,
+      "recoveryMs": 93000.5586,
+      "reviewWaitMs": 35203.76629999999,
+      "toolCalls": 10,
+      "repeatedReads": 0,
+      "candidateTestFailures": 1,
+      "hostViolations": 0
+    },
+    {
+      "id": "19-ctx-fences-ctxpack-r2",
+      "task": "ctx-fences",
+      "condition": "ctxpack",
+      "repeat": 2,
+      "position": 0,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 9400.7159,
+      "preparationMs": 2827.8527999999997,
+      "recoveryMs": 85835.03330000001,
+      "reviewWaitMs": 26288.960299999995,
+      "toolCalls": 9,
+      "repeatedReads": 0,
+      "candidateTestFailures": 1,
+      "hostViolations": 0
+    },
+    {
+      "id": "20-ctx-fences-manual-r2",
+      "task": "ctx-fences",
+      "condition": "manual",
+      "repeat": 2,
+      "position": 1,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 9892.7515,
+      "preparationMs": 2929.4471000000003,
+      "recoveryMs": 79041.5956,
+      "reviewWaitMs": 27143.843299999993,
+      "toolCalls": 8,
+      "repeatedReads": 0,
+      "candidateTestFailures": 1,
+      "hostViolations": 0
+    },
+    {
+      "id": "21-ctx-fences-native-r2",
+      "task": "ctx-fences",
+      "condition": "native",
+      "repeat": 2,
+      "position": 2,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 3812.4452999999994,
+      "preparationMs": 21960.8054,
+      "recoveryMs": 108547.02389999999,
+      "reviewWaitMs": 54701.403300000005,
+      "toolCalls": 9,
+      "repeatedReads": 0,
+      "candidateTestFailures": 1,
+      "hostViolations": 0
+    },
+    {
+      "id": "22-lens-wal-manual-r2",
+      "task": "lens-wal",
+      "condition": "manual",
+      "repeat": 2,
+      "position": 0,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 8903.9424,
+      "preparationMs": 2806.5545,
+      "recoveryMs": 60938.803,
+      "reviewWaitMs": 11651.287600000003,
+      "toolCalls": 5,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "23-lens-wal-native-r2",
+      "task": "lens-wal",
+      "condition": "native",
+      "repeat": 2,
+      "position": 1,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 3775.5465000000004,
+      "preparationMs": 21713.698,
+      "recoveryMs": 73435.2078,
+      "reviewWaitMs": 30522.714799999994,
+      "toolCalls": 5,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "24-lens-wal-ctxpack-r2",
+      "task": "lens-wal",
+      "condition": "ctxpack",
+      "repeat": 2,
+      "position": 2,
+      "status": "failed",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": null,
+      "preparationMs": 2798.6786999999995,
+      "recoveryMs": 9221.6813,
+      "reviewWaitMs": 0,
+      "toolCalls": 0,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "25-relay-clock-native-r2",
+      "task": "relay-clock",
+      "condition": "native",
+      "repeat": 2,
+      "position": 0,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 4731.099699999999,
+      "preparationMs": 19362.699999999997,
+      "recoveryMs": 236259.10510000002,
+      "reviewWaitMs": 11859.3347,
+      "toolCalls": 5,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "26-relay-clock-ctxpack-r2",
+      "task": "relay-clock",
+      "condition": "ctxpack",
+      "repeat": 2,
+      "position": 1,
+      "status": "failed",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": null,
+      "preparationMs": 3077.5337,
+      "recoveryMs": 5424.662200000001,
+      "reviewWaitMs": 0,
+      "toolCalls": 0,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "27-relay-clock-manual-r2",
+      "task": "relay-clock",
+      "condition": "manual",
+      "repeat": 2,
+      "position": 2,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 10109.846099999999,
+      "preparationMs": 2713.2994,
+      "recoveryMs": 236500.93459999998,
+      "reviewWaitMs": 8105.0124,
+      "toolCalls": 4,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "28-permit-proxy-ctxpack-r2",
+      "task": "permit-proxy",
+      "condition": "ctxpack",
+      "repeat": 2,
+      "position": 0,
+      "status": "failed",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": null,
+      "preparationMs": 2823.5319999999997,
+      "recoveryMs": 9471.5447,
+      "reviewWaitMs": 0,
+      "toolCalls": 0,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "29-permit-proxy-manual-r2",
+      "task": "permit-proxy",
+      "condition": "manual",
+      "repeat": 2,
+      "position": 1,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 8103.844400000001,
+      "preparationMs": 2694.7839,
+      "recoveryMs": 72969.13540000001,
+      "reviewWaitMs": 16958.635799999993,
+      "toolCalls": 7,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "30-permit-proxy-native-r2",
+      "task": "permit-proxy",
+      "condition": "native",
+      "repeat": 2,
+      "position": 2,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 4595.702400000002,
+      "preparationMs": 24460.5446,
+      "recoveryMs": 73872.73389999999,
+      "reviewWaitMs": 21412.55109999999,
+      "toolCalls": 8,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "31-markdown-text-ctxpack-r3",
+      "task": "markdown-text",
+      "condition": "ctxpack",
+      "repeat": 3,
+      "position": 0,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 10623.7969,
+      "preparationMs": 2730.7510999999995,
+      "recoveryMs": 100649.1867,
+      "reviewWaitMs": 39559.7062,
+      "toolCalls": 10,
+      "repeatedReads": 0,
+      "candidateTestFailures": 1,
+      "hostViolations": 0
+    },
+    {
+      "id": "32-markdown-text-manual-r3",
+      "task": "markdown-text",
+      "condition": "manual",
+      "repeat": 3,
+      "position": 1,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 10275.402599999998,
+      "preparationMs": 2691.6715999999997,
+      "recoveryMs": 96593.6247,
+      "reviewWaitMs": 41381.92619999999,
+      "toolCalls": 10,
+      "repeatedReads": 0,
+      "candidateTestFailures": 1,
+      "hostViolations": 0
+    },
+    {
+      "id": "33-markdown-text-native-r3",
+      "task": "markdown-text",
+      "condition": "native",
+      "repeat": 3,
+      "position": 2,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 3953.7864000000045,
+      "preparationMs": 27731.173200000005,
+      "recoveryMs": 85853.38160000001,
+      "reviewWaitMs": 31436.634399999995,
+      "toolCalls": 10,
+      "repeatedReads": 0,
+      "candidateTestFailures": 1,
+      "hostViolations": 0
+    },
+    {
+      "id": "34-ctx-fences-manual-r3",
+      "task": "ctx-fences",
+      "condition": "manual",
+      "repeat": 3,
+      "position": 0,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 11528.325,
+      "preparationMs": 2852.923,
+      "recoveryMs": 91403.8138,
+      "reviewWaitMs": 32856.549900000005,
+      "toolCalls": 9,
+      "repeatedReads": 0,
+      "candidateTestFailures": 1,
+      "hostViolations": 0
+    },
+    {
+      "id": "35-ctx-fences-native-r3",
+      "task": "ctx-fences",
+      "condition": "native",
+      "repeat": 3,
+      "position": 1,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 4258.262999999999,
+      "preparationMs": 27271.4633,
+      "recoveryMs": 79188.9429,
+      "reviewWaitMs": 15187.153299999984,
+      "toolCalls": 6,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "36-ctx-fences-ctxpack-r3",
+      "task": "ctx-fences",
+      "condition": "ctxpack",
+      "repeat": 3,
+      "position": 2,
+      "status": "failed",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": null,
+      "preparationMs": 2710.4952000000003,
+      "recoveryMs": 9927.5645,
+      "reviewWaitMs": 0,
+      "toolCalls": 0,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "37-lens-wal-native-r3",
+      "task": "lens-wal",
+      "condition": "native",
+      "repeat": 3,
+      "position": 0,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 5871.588599999999,
+      "preparationMs": 25982.2635,
+      "recoveryMs": 55223.7092,
+      "reviewWaitMs": 12082.969899999996,
+      "toolCalls": 5,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "38-lens-wal-ctxpack-r3",
+      "task": "lens-wal",
+      "condition": "ctxpack",
+      "repeat": 3,
+      "position": 1,
+      "status": "failed",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": null,
+      "preparationMs": 2704.8365999999996,
+      "recoveryMs": 8805.955,
+      "reviewWaitMs": 0,
+      "toolCalls": 0,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "39-lens-wal-manual-r3",
+      "task": "lens-wal",
+      "condition": "manual",
+      "repeat": 3,
+      "position": 2,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 9068.962899999999,
+      "preparationMs": 2638.3759999999993,
+      "recoveryMs": 67148.4544,
+      "reviewWaitMs": 13936.2595,
+      "toolCalls": 5,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "40-relay-clock-ctxpack-r3",
+      "task": "relay-clock",
+      "condition": "ctxpack",
+      "repeat": 3,
+      "position": 0,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 8900.9767,
+      "preparationMs": 2668.7500999999993,
+      "recoveryMs": 242968.2794,
+      "reviewWaitMs": 14722.7759,
+      "toolCalls": 4,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "41-relay-clock-manual-r3",
+      "task": "relay-clock",
+      "condition": "manual",
+      "repeat": 3,
+      "position": 1,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 12119.645199999999,
+      "preparationMs": 2730.269400000001,
+      "recoveryMs": 244566.6497,
+      "reviewWaitMs": 12905.480900000006,
+      "toolCalls": 4,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "42-relay-clock-native-r3",
+      "task": "relay-clock",
+      "condition": "native",
+      "repeat": 3,
+      "position": 2,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 6549.235799999995,
+      "preparationMs": 24916.2896,
+      "recoveryMs": 229507.8788,
+      "reviewWaitMs": 7566.6158,
+      "toolCalls": 4,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "43-permit-proxy-manual-r3",
+      "task": "permit-proxy",
+      "condition": "manual",
+      "repeat": 3,
+      "position": 0,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 8992.7805,
+      "preparationMs": 2631.5923000000003,
+      "recoveryMs": 74592.072,
+      "reviewWaitMs": 21524.0907,
+      "toolCalls": 5,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "44-permit-proxy-native-r3",
+      "task": "permit-proxy",
+      "condition": "native",
+      "repeat": 3,
+      "position": 1,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 4577.947799999998,
+      "preparationMs": 23969.4894,
+      "recoveryMs": 66333.67379999999,
+      "reviewWaitMs": 11983.255799999999,
+      "toolCalls": 7,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    },
+    {
+      "id": "45-permit-proxy-ctxpack-r3",
+      "task": "permit-proxy",
+      "condition": "ctxpack",
+      "repeat": 3,
+      "position": 2,
+      "status": "accepted",
+      "protocolEligible": true,
+      "terminal": true,
+      "firstReadMs": 9148.175599999999,
+      "preparationMs": 2627.7168,
+      "recoveryMs": 76912.227,
+      "reviewWaitMs": 20563.0349,
+      "toolCalls": 7,
+      "repeatedReads": 0,
+      "candidateTestFailures": 0,
+      "hostViolations": 0
+    }
+  ],
+  "groups": [
+    {
+      "task": "markdown-text",
+      "condition": "manual",
+      "planned": 3,
+      "attempted": 3,
+      "terminal": 3,
+      "protocolEligible": 3,
+      "accepted": 3,
+      "failed": 0,
+      "metrics": {
+        "firstReadMs": {
+          "median": 10275.402599999998,
+          "n": 3,
+          "missing": 0
+        },
+        "preparationMs": {
+          "median": 2691.6715999999997,
+          "n": 3,
+          "missing": 0
+        },
+        "recoveryMs": {
+          "median": 93000.5586,
+          "n": 3,
+          "missing": 0
+        },
+        "reviewWaitMs": {
+          "median": 35203.76629999999,
+          "n": 3,
+          "missing": 0
+        },
+        "toolCalls": {
+          "median": 10,
+          "n": 3,
+          "missing": 0
+        },
+        "repeatedReads": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "candidateTestFailures": {
+          "median": 1,
+          "n": 3,
+          "missing": 0
+        },
+        "hostViolations": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        }
+      }
+    },
+    {
+      "task": "markdown-text",
+      "condition": "native",
+      "planned": 3,
+      "attempted": 3,
+      "terminal": 3,
+      "protocolEligible": 3,
+      "accepted": 3,
+      "failed": 0,
+      "metrics": {
+        "firstReadMs": {
+          "median": 4305.165399999998,
+          "n": 3,
+          "missing": 0
+        },
+        "preparationMs": {
+          "median": 26081.9208,
+          "n": 3,
+          "missing": 0
+        },
+        "recoveryMs": {
+          "median": 85853.38160000001,
+          "n": 3,
+          "missing": 0
+        },
+        "reviewWaitMs": {
+          "median": 31436.634399999995,
+          "n": 3,
+          "missing": 0
+        },
+        "toolCalls": {
+          "median": 10,
+          "n": 3,
+          "missing": 0
+        },
+        "repeatedReads": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "candidateTestFailures": {
+          "median": 1,
+          "n": 3,
+          "missing": 0
+        },
+        "hostViolations": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        }
+      }
+    },
+    {
+      "task": "markdown-text",
+      "condition": "ctxpack",
+      "planned": 3,
+      "attempted": 3,
+      "terminal": 3,
+      "protocolEligible": 3,
+      "accepted": 2,
+      "failed": 1,
+      "metrics": {
+        "firstReadMs": {
+          "median": 9948.96835,
+          "n": 2,
+          "missing": 1
+        },
+        "preparationMs": {
+          "median": 2694.2793,
+          "n": 3,
+          "missing": 0
+        },
+        "recoveryMs": {
+          "median": 79553.89480000001,
+          "n": 3,
+          "missing": 0
+        },
+        "reviewWaitMs": {
+          "median": 19055.048000000003,
+          "n": 3,
+          "missing": 0
+        },
+        "toolCalls": {
+          "median": 10,
+          "n": 3,
+          "missing": 0
+        },
+        "repeatedReads": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "candidateTestFailures": {
+          "median": 1,
+          "n": 3,
+          "missing": 0
+        },
+        "hostViolations": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        }
+      }
+    },
+    {
+      "task": "ctx-fences",
+      "condition": "manual",
+      "planned": 3,
+      "attempted": 3,
+      "terminal": 3,
+      "protocolEligible": 3,
+      "accepted": 3,
+      "failed": 0,
+      "metrics": {
+        "firstReadMs": {
+          "median": 10789.8768,
+          "n": 3,
+          "missing": 0
+        },
+        "preparationMs": {
+          "median": 2852.923,
+          "n": 3,
+          "missing": 0
+        },
+        "recoveryMs": {
+          "median": 79041.5956,
+          "n": 3,
+          "missing": 0
+        },
+        "reviewWaitMs": {
+          "median": 29040.579600000012,
+          "n": 3,
+          "missing": 0
+        },
+        "toolCalls": {
+          "median": 8,
+          "n": 3,
+          "missing": 0
+        },
+        "repeatedReads": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "candidateTestFailures": {
+          "median": 1,
+          "n": 3,
+          "missing": 0
+        },
+        "hostViolations": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        }
+      }
+    },
+    {
+      "task": "ctx-fences",
+      "condition": "native",
+      "planned": 3,
+      "attempted": 3,
+      "terminal": 3,
+      "protocolEligible": 3,
+      "accepted": 3,
+      "failed": 0,
+      "metrics": {
+        "firstReadMs": {
+          "median": 3816.1722999999984,
+          "n": 3,
+          "missing": 0
+        },
+        "preparationMs": {
+          "median": 21960.8054,
+          "n": 3,
+          "missing": 0
+        },
+        "recoveryMs": {
+          "median": 108547.02389999999,
+          "n": 3,
+          "missing": 0
+        },
+        "reviewWaitMs": {
+          "median": 54701.403300000005,
+          "n": 3,
+          "missing": 0
+        },
+        "toolCalls": {
+          "median": 9,
+          "n": 3,
+          "missing": 0
+        },
+        "repeatedReads": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "candidateTestFailures": {
+          "median": 1,
+          "n": 3,
+          "missing": 0
+        },
+        "hostViolations": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        }
+      }
+    },
+    {
+      "task": "ctx-fences",
+      "condition": "ctxpack",
+      "planned": 3,
+      "attempted": 3,
+      "terminal": 3,
+      "protocolEligible": 3,
+      "accepted": 2,
+      "failed": 1,
+      "metrics": {
+        "firstReadMs": {
+          "median": 9667.943599999999,
+          "n": 2,
+          "missing": 1
+        },
+        "preparationMs": {
+          "median": 2710.4952000000003,
+          "n": 3,
+          "missing": 0
+        },
+        "recoveryMs": {
+          "median": 85835.03330000001,
+          "n": 3,
+          "missing": 0
+        },
+        "reviewWaitMs": {
+          "median": 26288.960299999995,
+          "n": 3,
+          "missing": 0
+        },
+        "toolCalls": {
+          "median": 9,
+          "n": 3,
+          "missing": 0
+        },
+        "repeatedReads": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "candidateTestFailures": {
+          "median": 1,
+          "n": 3,
+          "missing": 0
+        },
+        "hostViolations": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        }
+      }
+    },
+    {
+      "task": "lens-wal",
+      "condition": "manual",
+      "planned": 3,
+      "attempted": 3,
+      "terminal": 3,
+      "protocolEligible": 3,
+      "accepted": 3,
+      "failed": 0,
+      "metrics": {
+        "firstReadMs": {
+          "median": 8903.9424,
+          "n": 3,
+          "missing": 0
+        },
+        "preparationMs": {
+          "median": 2717.5095,
+          "n": 3,
+          "missing": 0
+        },
+        "recoveryMs": {
+          "median": 67148.4544,
+          "n": 3,
+          "missing": 0
+        },
+        "reviewWaitMs": {
+          "median": 13936.2595,
+          "n": 3,
+          "missing": 0
+        },
+        "toolCalls": {
+          "median": 5,
+          "n": 3,
+          "missing": 0
+        },
+        "repeatedReads": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "candidateTestFailures": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "hostViolations": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        }
+      }
+    },
+    {
+      "task": "lens-wal",
+      "condition": "native",
+      "planned": 3,
+      "attempted": 3,
+      "terminal": 3,
+      "protocolEligible": 3,
+      "accepted": 3,
+      "failed": 0,
+      "metrics": {
+        "firstReadMs": {
+          "median": 3957.6180999999997,
+          "n": 3,
+          "missing": 0
+        },
+        "preparationMs": {
+          "median": 21713.698,
+          "n": 3,
+          "missing": 0
+        },
+        "recoveryMs": {
+          "median": 73435.2078,
+          "n": 3,
+          "missing": 0
+        },
+        "reviewWaitMs": {
+          "median": 30522.714799999994,
+          "n": 3,
+          "missing": 0
+        },
+        "toolCalls": {
+          "median": 5,
+          "n": 3,
+          "missing": 0
+        },
+        "repeatedReads": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "candidateTestFailures": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "hostViolations": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        }
+      }
+    },
+    {
+      "task": "lens-wal",
+      "condition": "ctxpack",
+      "planned": 3,
+      "attempted": 3,
+      "terminal": 3,
+      "protocolEligible": 3,
+      "accepted": 1,
+      "failed": 2,
+      "metrics": {
+        "firstReadMs": {
+          "median": 11562.7384,
+          "n": 1,
+          "missing": 2
+        },
+        "preparationMs": {
+          "median": 2798.6786999999995,
+          "n": 3,
+          "missing": 0
+        },
+        "recoveryMs": {
+          "median": 9221.6813,
+          "n": 3,
+          "missing": 0
+        },
+        "reviewWaitMs": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "toolCalls": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "repeatedReads": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "candidateTestFailures": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "hostViolations": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        }
+      }
+    },
+    {
+      "task": "relay-clock",
+      "condition": "manual",
+      "planned": 3,
+      "attempted": 3,
+      "terminal": 3,
+      "protocolEligible": 3,
+      "accepted": 3,
+      "failed": 0,
+      "metrics": {
+        "firstReadMs": {
+          "median": 10109.846099999999,
+          "n": 3,
+          "missing": 0
+        },
+        "preparationMs": {
+          "median": 2713.2994,
+          "n": 3,
+          "missing": 0
+        },
+        "recoveryMs": {
+          "median": 240193.30560000002,
+          "n": 3,
+          "missing": 0
+        },
+        "reviewWaitMs": {
+          "median": 11779.9614,
+          "n": 3,
+          "missing": 0
+        },
+        "toolCalls": {
+          "median": 4,
+          "n": 3,
+          "missing": 0
+        },
+        "repeatedReads": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "candidateTestFailures": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "hostViolations": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        }
+      }
+    },
+    {
+      "task": "relay-clock",
+      "condition": "native",
+      "planned": 3,
+      "attempted": 3,
+      "terminal": 3,
+      "protocolEligible": 3,
+      "accepted": 3,
+      "failed": 0,
+      "metrics": {
+        "firstReadMs": {
+          "median": 4731.099699999999,
+          "n": 3,
+          "missing": 0
+        },
+        "preparationMs": {
+          "median": 21502.2956,
+          "n": 3,
+          "missing": 0
+        },
+        "recoveryMs": {
+          "median": 236259.10510000002,
+          "n": 3,
+          "missing": 0
+        },
+        "reviewWaitMs": {
+          "median": 11859.3347,
+          "n": 3,
+          "missing": 0
+        },
+        "toolCalls": {
+          "median": 4,
+          "n": 3,
+          "missing": 0
+        },
+        "repeatedReads": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "candidateTestFailures": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "hostViolations": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        }
+      }
+    },
+    {
+      "task": "relay-clock",
+      "condition": "ctxpack",
+      "planned": 3,
+      "attempted": 3,
+      "terminal": 3,
+      "protocolEligible": 3,
+      "accepted": 1,
+      "failed": 2,
+      "metrics": {
+        "firstReadMs": {
+          "median": 8900.9767,
+          "n": 1,
+          "missing": 2
+        },
+        "preparationMs": {
+          "median": 2871.9278999999988,
+          "n": 3,
+          "missing": 0
+        },
+        "recoveryMs": {
+          "median": 8757.9029,
+          "n": 3,
+          "missing": 0
+        },
+        "reviewWaitMs": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "toolCalls": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "repeatedReads": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "candidateTestFailures": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "hostViolations": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        }
+      }
+    },
+    {
+      "task": "permit-proxy",
+      "condition": "manual",
+      "planned": 3,
+      "attempted": 3,
+      "terminal": 3,
+      "protocolEligible": 3,
+      "accepted": 3,
+      "failed": 0,
+      "metrics": {
+        "firstReadMs": {
+          "median": 8992.7805,
+          "n": 3,
+          "missing": 0
+        },
+        "preparationMs": {
+          "median": 2675.1252999999997,
+          "n": 3,
+          "missing": 0
+        },
+        "recoveryMs": {
+          "median": 72969.13540000001,
+          "n": 3,
+          "missing": 0
+        },
+        "reviewWaitMs": {
+          "median": 16958.635799999993,
+          "n": 3,
+          "missing": 0
+        },
+        "toolCalls": {
+          "median": 7,
+          "n": 3,
+          "missing": 0
+        },
+        "repeatedReads": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "candidateTestFailures": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "hostViolations": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        }
+      }
+    },
+    {
+      "task": "permit-proxy",
+      "condition": "native",
+      "planned": 3,
+      "attempted": 3,
+      "terminal": 3,
+      "protocolEligible": 3,
+      "accepted": 3,
+      "failed": 0,
+      "metrics": {
+        "firstReadMs": {
+          "median": 4595.702400000002,
+          "n": 3,
+          "missing": 0
+        },
+        "preparationMs": {
+          "median": 23969.4894,
+          "n": 3,
+          "missing": 0
+        },
+        "recoveryMs": {
+          "median": 73872.73389999999,
+          "n": 3,
+          "missing": 0
+        },
+        "reviewWaitMs": {
+          "median": 21412.55109999999,
+          "n": 3,
+          "missing": 0
+        },
+        "toolCalls": {
+          "median": 7,
+          "n": 3,
+          "missing": 0
+        },
+        "repeatedReads": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "candidateTestFailures": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "hostViolations": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        }
+      }
+    },
+    {
+      "task": "permit-proxy",
+      "condition": "ctxpack",
+      "planned": 3,
+      "attempted": 3,
+      "terminal": 3,
+      "protocolEligible": 3,
+      "accepted": 1,
+      "failed": 2,
+      "metrics": {
+        "firstReadMs": {
+          "median": 9148.175599999999,
+          "n": 1,
+          "missing": 2
+        },
+        "preparationMs": {
+          "median": 2627.7168,
+          "n": 3,
+          "missing": 0
+        },
+        "recoveryMs": {
+          "median": 9471.5447,
+          "n": 3,
+          "missing": 0
+        },
+        "reviewWaitMs": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "toolCalls": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "repeatedReads": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "candidateTestFailures": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        },
+        "hostViolations": {
+          "median": 0,
+          "n": 3,
+          "missing": 0
+        }
+      }
+    }
+  ]
+}
