@@ -1,0 +1,12 @@
+{
+  "mode": "full",
+  "model": "gpt-6.1-sol",
+  "effort": "medium",
+  "repetitions": 3,
+  "toolBudget": 8,
+  "resumeTimeoutMs": 120000,
+  "scriptSha256": "93d750637fc1d9088220ece7d26f64e19c63840481d5aaedbebcd6dd805f3619",
+  "fixturesSha256": "2f04003fc1c820c06bf8d1b7489a2909a0b99a2936f7833c031b12db4e03eeba",
+  "cliSha256": "fbaacc207cf3d1f270a7a7e73c4c795ff376d492580e6c31c1fba0d8c4f25cac",
+  "note": "Synthetic read-only diagnosis; not adoption or coding productivity. Preparations are measured separately."
+}

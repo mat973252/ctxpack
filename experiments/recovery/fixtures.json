@@ -1,0 +1,62 @@
+[
+  {
+    "id": "paid-total",
+    "goal": "恢复发票总额故障定位，选择下一步修复，不执行修改。",
+    "completed": ["已确认测试期望仅累计 paid=true 的订单", "旧缓存路径已判定无效，不再读取 cache.json"],
+    "next": "读取 src/total.js 与 fixtures/orders.json，定位应改哪条过滤规则。",
+    "files": {"src/total.js": "export const total = rows => rows.reduce((sum, row) => sum + row.cents, 0);", "fixtures/orders.json": "[{\"paid\":true,\"cents\":500},{\"paid\":false,\"cents\":900},{\"paid\":true,\"cents\":700}]"},
+    "required": ["src/total.js", "fixtures/orders.json"],
+    "choices": ["filter-paid", "change-expected-total", "retry-cache"],
+    "expected": "filter-paid",
+    "evidencePrompt": "evidence依次给出当前函数总和、按paid约定的总和，均用数字字符串。",
+    "expectedEvidence": ["2100", "1200"]
+  },
+  {
+    "id": "threshold-edge",
+    "goal": "恢复阈值边界故障定位，选择下一步修复，不执行修改。",
+    "completed": ["约定 delta 等于 maxIncrease 时通过", "旧实现用了严格小于，历史计划改成小于等于；尚未核对最新源码"],
+    "next": "读取 src/gate.js 和 fixtures/boundary.json，判断边界比较。",
+    "files": {"src/gate.js": "export const passes = (delta, maxIncrease) => delta <= maxIncrease;", "fixtures/boundary.json": "{\"delta\":1,\"maxIncrease\":0,\"expected\":true}"},
+    "required": ["src/gate.js", "fixtures/boundary.json"],
+    "choices": ["increase-threshold", "use-less-or-equal", "fix-fixture-expectation"],
+    "expected": "fix-fixture-expectation",
+    "evidencePrompt": "evidence依次给出当前比较运算符、当前输入按约定应返回的布尔值，均用字符串。",
+    "expectedEvidence": ["<=", "false"]
+  },
+  {
+    "id": "missing-usage",
+    "goal": "恢复未记录用量的错误门禁诊断，选择下一步修复。",
+    "completed": ["未记录 usage 不能补零", "两边缺少指标时应返回 insufficient_data"],
+    "next": "读取 src/usage.js 与 fixtures/runs.json，定位错误默认值。",
+    "files": {"src/usage.js": "export const delta = (a, b) => (b.inputTokens ?? 0) - (a.inputTokens ?? 0);", "fixtures/runs.json": "{\"a\":{\"status\":\"passed\"},\"b\":{\"status\":\"passed\"}}"},
+    "required": ["src/usage.js", "fixtures/runs.json"],
+    "choices": ["accept-zero-delta", "request-more-output-tokens", "preserve-missing"],
+    "expected": "preserve-missing",
+    "evidencePrompt": "evidence依次给出当前函数输出数字、正确的数据充分性状态，均用字符串。",
+    "expectedEvidence": ["0", "insufficient_data"]
+  },
+  {
+    "id": "unknown-effect",
+    "goal": "恢复远端回执丢失后的安全诊断，只选择下一动作。",
+    "completed": ["提交请求已经发出且响应丢失", "UNKNOWN 不允许自动重试，必须权威只读核对"],
+    "next": "读取 journal.json 与 provider.json，决定可执行的恢复动作。",
+    "files": {"journal.json": "{\"status\":\"UNKNOWN\",\"key\":\"fixture-17\",\"requestHash\":\"fixture-hash\"}", "provider.json": "{\"queryAvailable\":true,\"lookupKey\":\"fixture-17\",\"result\":\"not-yet-queried\"}"},
+    "required": ["journal.json", "provider.json"],
+    "choices": ["repeat-post", "read-only-reconcile", "declare-success"],
+    "expected": "read-only-reconcile",
+    "evidencePrompt": "evidence依次给出当前journal状态、queryAvailable布尔值，均用字符串。",
+    "expectedEvidence": ["UNKNOWN", "true"]
+  },
+  {
+    "id": "old-schema",
+    "goal": "恢复旧版trace只读兼容问题，选择应使用的入口。",
+    "completed": ["schema-v1 读取不允许迁移或写回", "历史文件hash必须保持不变"],
+    "next": "读取 src/inspect.js 和 src/store-api.js，选择兼容入口。",
+    "files": {"src/inspect.js": "const db = Store.open(path); return db.inspect(id);", "src/store-api.js": "Store.open(path): writable, migrates v1 to v2. Store.openReadOnly(path): reads supported v1/v2, no migration."},
+    "required": ["src/inspect.js", "src/store-api.js"],
+    "choices": ["migrate-on-read", "copy-over-original", "open-read-only"],
+    "expected": "open-read-only",
+    "evidencePrompt": "evidence依次给出当前入口名称、满足约束的入口名称，均以Store.开头。",
+    "expectedEvidence": ["Store.open", "Store.openReadOnly"]
+  }
+]
