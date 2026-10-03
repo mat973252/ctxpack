@@ -15,6 +15,7 @@ import { recoveryContainer } from "./recovery-container.mjs";
 import { restrictedHost } from "./restricted-host.mjs";
 import { applyHistoricalEdit } from "./historical-edits.mjs";
 import { historicalCase, taskCommand } from "./historical-case.mjs";
+import { manualHandoff, recoveryPrompt } from "./handoff-inputs.mjs";
 import { assertCandidateFiles, candidateCommands, verifyHistoricalCandidate } from "./verify-historical-candidate.mjs";
 
 const { values } = parseArgs({ options: { codex: { type: "string" }, image: { type: "string" }, id: { type: "string", default: "markdown-text" } } });
@@ -27,7 +28,7 @@ const root = mkdtempSync(join(tmpdir(), "ctxpack-real-smoke-"));
 const cwd = join(root, "empty-host"); mkdirSync(cwd);
 const limits = { read_file: 24, apply_edit: 4, run_tests: 4, wallMs: 480000 };
 const evidence = { schema: "ctxpack.real-smoke/2", id: task.id, result: "unverified", limits, calls: [], host: {}, violations: [],
-  sourceHashes: Object.fromEntries(["run-real-smoke.mjs", "restricted-host.mjs", "recovery-container.mjs", "historical-edits.mjs", "historical-case.mjs", "verify-historical-candidate.mjs", "JavaEditScope.java", "historical-environments-2026-10-03.json", "real-task-files.json", "smoke-environment.json", "HISTORICAL-EXECUTION.md"].map((file) => [file, sha(readFileSync(new URL(file, import.meta.url)))])) };
+  sourceHashes: Object.fromEntries(["run-real-smoke.mjs", "handoff-inputs.mjs", "restricted-host.mjs", "recovery-container.mjs", "historical-edits.mjs", "historical-case.mjs", "verify-historical-candidate.mjs", "JavaEditScope.java", "historical-environments-2026-10-03.json", "real-task-files.json", "smoke-environment.json", "HISTORICAL-EXECUTION.md"].map((file) => [file, sha(readFileSync(new URL(file, import.meta.url)))])) };
 let commandCount = 0;
 let host;
 let hostClosed = false;
@@ -138,16 +139,7 @@ try {
       : `${{ "markdown-text": "stripTemplate", "ctx-fences": "parseList", "relay-clock": "until" }[task.id]}函数体内部正文，不含外层花括号或声明，最多8000字符`;
   tools.push({ type: "function", name: "apply_edit", description: `从冻结原文重新应用完整候选（不累计前次编辑）。范围：${scope}。`, inputSchema: { type: "object", properties, required: Object.keys(properties), additionalProperties: false } });
   host = await restrictedHost({ executable: resolve(values.codex), cwd, dynamicTools: tools, onTool, evidence: evidence.host });
-  const facts = {
-    "markdown-text": "初始模板后的用户正文、重复模板文本、内部空行和Markdown硬换行应保留；CRLF归一为LF；纯模板不输出；四个handoff入口保持正文且不写工作树。围栏分类是另一任务，不修改它。",
-    "ctx-fences": "围栏内的决策/失败列表是示例，保留在notes；围栏外真实条目正常解析；短围栏、异类标记不能提前结束示例，未闭合围栏持续保留为notes。不修改模板处理。",
-    "lens-wal": "WAL写者在元数据与事件查询之间提交终态时，getRun必须返回同一已提交快照，不能混合；不能提交调用者外层事务，失败后仍可继续读取。",
-    "relay-clock": "业务沙箱测试的等待辅助函数不能因墙钟调整提前超时或延长五秒预算；恰好截止时拒绝。这是测试辅助维护，其他测试断言冻结。",
-    "permit-proxy": "真实CGLIB类代理应能注册原方法注解，执行仍经过原代理advice及审批/幂等流程；代理final工具方法明确拒绝，普通对象final方法仍支持。",
-  };
-  const prompt = `接手已复现、尚未修复的历史任务。${facts[task.id]}
-只允许修改${task.source}，范围：${scope}。先读取该文件和${task.test}。可读取索引中其他文件。不得更改测试、依赖、配置或规避断言。每次apply_edit替换完整候选，不累计旧编辑。用run_tests的regression和check验证最终修改，再报告结果。
-工具预算：24次读、4次修改、4次测试，所有调用总计480秒，失败请求也计数。禁止其他工具、网络、路径或委派。文件索引：${JSON.stringify(Object.keys(approved.files))}`;
+  const prompt = `${manualHandoff(task)}\n\n${recoveryPrompt(task, scope, limits)}`;
   evidence.prompt = prompt;
   console.log(JSON.stringify({ root, phase: "prepared" }));
   startedAt = performance.now(); deadline = startedAt + limits.wallMs;
